@@ -213,7 +213,6 @@
     <!-- Default for Settings.Secure.NFC_PAYMENT_COMPONENT -->
     <string name="def_nfc_payment_component"></string>
 
-<<<<<<< HEAD
     <!--
          Default Input Method, its value is from inputmethod's package name and main class name
               such as "com.android.inputmethod.pinyin/.PinyinIME"
