@@ -4046,18 +4046,6 @@ public final class Settings {
        public static final String QS_FOOTER_WARNINGS = "qs_footer_warnings";
 
         /**
-         * Whether to launch default music player when headset plugged in
-         * 0 = don't do anything (default)
-         * 1 = launch only on wired connection
-         * 2 = launch only on bt connection but no carkit
-         * 3 = launch only on bt connection
-         * 4 = launch on both connection types but no carkit
-         * 5 = launch on both connection types
-         * @hide
-         */
-        public static final String HEADSET_CONNECT_PLAYER = "headset_connect_player";
-
-        /**
          * Whether to mute annoying notifications
          * @hide
          */
@@ -4428,7 +4416,7 @@ public final class Settings {
          * @hide
          */
         public static final String PROXIMITY_AUTO_SPEAKER_INCALL_ONLY = "proximity_auto_speaker_incall_only";
- 
+
          /**
          * Show or hide clock
          * 0 - hide
@@ -4577,6 +4565,18 @@ public final class Settings {
          */
         public static final String VOLUME_KEYS_CONTROL_MEDIA_STREAM =
                 "volume_keys_control_media_stream";
+
+        /**
+         * Whether to launch default music player when headset plugged in
+         * 0 = don't do anything (default)
+         * 1 = launch only on wired connection
+         * 2 = launch only on bt connection but no carkit
+         * 3 = launch only on bt connection
+         * 4 = launch on both connection types but no carkit
+         * 5 = launch on both connection types
+         * @hide
+         */
+        public static final String HEADSET_CONNECT_PLAYER = "headset_connect_player";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -4755,7 +4755,6 @@ public final class Settings {
             PRIVATE_SETTINGS.add(STATUS_BAR_QUICK_QS_PULLDOWN);
             PRIVATE_SETTINGS.add(VOLUME_BUTTON_MUSIC_CONTROL);
             PRIVATE_SETTINGS.add(LOCKSCREEN_MEDIA_METADATA);
-            PRIVATE_SETTINGS.add(HEADSET_CONNECT_PLAYER);
             PRIVATE_SETTINGS.add(BATTERY_LIGHT_ALLOW_ON_DND);
             PRIVATE_SETTINGS.add(BATTERY_LIGHT_LOW_COLOR);
             PRIVATE_SETTINGS.add(BATTERY_LIGHT_MEDIUM_COLOR);
@@ -4776,6 +4775,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(PROXIMITY_AUTO_SPEAKER_DELAY);
             PRIVATE_SETTINGS.add(PROXIMITY_AUTO_SPEAKER_INCALL_ONLY);
             PRIVATE_SETTINGS.add(VOLUME_KEYS_CONTROL_MEDIA_STREAM);
+            PRIVATE_SETTINGS.add(HEADSET_CONNECT_PLAYER);
         }
 
         /**
