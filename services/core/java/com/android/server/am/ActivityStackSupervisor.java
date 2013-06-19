@@ -1128,6 +1128,10 @@ public final class ActivityStackSupervisor implements DisplayListener {
         final long origId = Binder.clearCallingIdentity();
         try {
             synchronized (mService) {
+                boolean floating = false;
+                if (intents.length > 0) {
+                    floating = (intents[intents.length - 1].getFlags()&Intent.FLAG_FLOATING_WINDOW) == Intent.FLAG_FLOATING_WINDOW;
+                }
                 ActivityRecord[] outActivity = new ActivityRecord[1];
                 for (int i=0; i<intents.length; i++) {
                     Intent intent = intents[i];
@@ -1157,6 +1161,9 @@ public final class ActivityStackSupervisor implements DisplayListener {
                                 "FLAG_CANT_SAVE_STATE not supported here");
                     }
 
+                    if (floating) {
+                        intent.addFlags(Intent.FLAG_FLOATING_WINDOW);
+                    }
                     Bundle theseOptions;
                     if (options != null && i == intents.length-1) {
                         theseOptions = options;
