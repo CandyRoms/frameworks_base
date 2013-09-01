@@ -14,25 +14,30 @@
    limitations under the License.
 -->
 <resources>
-  <!-- Custom default wallpaper -->
-  <java-symbol type="drawable" name="custom_default_wallpaper" />
+    <!-- Custom default wallpaper -->
+    <java-symbol type="drawable" name="custom_default_wallpaper" />
 
-  <!-- Fonts -->
-  <java-symbol type="string" name="config_lightFontFamily" />
-  <java-symbol type="string" name="config_regularFontFamily" />
-  <java-symbol type="string" name="config_headlineFontFamilyMedium" />
-  <java-symbol type="string" name="config_bodyFontFamily" />
-  <java-symbol type="string" name="config_bodyFontFamilyMedium" />
+    <!-- Fonts -->
+    <java-symbol type="string" name="config_lightFontFamily" />
+    <java-symbol type="string" name="config_regularFontFamily" />
+    <java-symbol type="string" name="config_headlineFontFamilyMedium" />
+    <java-symbol type="string" name="config_bodyFontFamily" />
+    <java-symbol type="string" name="config_bodyFontFamilyMedium" />
 
-  <!-- Device keyhandlers -->
-  <java-symbol type="array" name="config_deviceKeyHandlerLibs" />
-  <java-symbol type="array" name="config_deviceKeyHandlerClasses" />
+    <!-- Device keyhandlers -->
+    <java-symbol type="array" name="config_deviceKeyHandlerLibs" />
+    <java-symbol type="array" name="config_deviceKeyHandlerClasses" />
 
-  <!-- App error dialog -->
-  <java-symbol type="id" name="aerr_copy" />
-  <java-symbol type="string" name="url_copy_success" />
-  <java-symbol type="string" name="url_copy_failed" />
+    <!-- App error dialog -->
+    <java-symbol type="id" name="aerr_copy" />
+    <java-symbol type="string" name="url_copy_success" />
+    <java-symbol type="string" name="url_copy_failed" />
 
-  <!-- In-display Fingerprint -->
-  <java-symbol type="bool" name="config_needCustomFODView" />
+    <!-- In-display Fingerprint -->
+    <java-symbol type="bool" name="config_needCustomFODView" />
+
+    <!-- Package Manager -->
+    <java-symbol type="array" name="config_deviceDisabledComponents" />
+    <java-symbol type="array" name="config_globallyDisabledComponents" />
+    <java-symbol type="array" name="config_forceEnabledComponents" />
 </resources>
