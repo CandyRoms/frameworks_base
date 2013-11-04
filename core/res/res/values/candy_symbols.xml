@@ -56,6 +56,11 @@
     <java-symbol type="drawable" name="ic_lock_user" />
     <java-symbol type="drawable" name="ic_lock_assist" />
     <java-symbol type="drawable" name="ic_lock_voice" />
+
+    <!-- ADB notification -->
+    <java-symbol type="string" name="adb_net_active_notification_title" />
+    <java-symbol type="string" name="adb_both_active_notification_title" />
+    <java-symbol type="string" name="adb_active_generic_notification_message" />
     
     <!-- AOKP custom system animations -->
     <java-symbol type="string" name="action_null"/>
