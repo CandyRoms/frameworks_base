@@ -778,6 +778,15 @@ public class DocumentsActivity extends BaseActivity {
                     } else {
                         Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
                     }
+                } else if ("com.android.providers.downloads.documents".equals(doc.authority)) {
+                    File volume = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    file = new File(volume, doc.displayName);
+                    view.setDataAndType(Uri.fromFile(file), doc.mimeType);
+                    try {
+                        startActivity(view);
+                    } catch (ActivityNotFoundException ex3) {
+                        Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
                 }
