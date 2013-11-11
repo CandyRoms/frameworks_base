@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2013 The Android Open Source Project
+ * Modifications Copyright (C) 2013 The OmniROM Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +13,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Per article 5 of the Apache 2.0 License, some modifications to this code
+ * were made by the OmniROM Project.
+ *
+ * Modifications Copyright (C) 2013 The OmniROM Project
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 package com.android.documentsui;
@@ -23,6 +38,7 @@ import static com.android.documentsui.BaseActivity.State.ACTION_MANAGE;
 import static com.android.documentsui.BaseActivity.State.ACTION_OPEN;
 import static com.android.documentsui.BaseActivity.State.ACTION_OPEN_COPY_DESTINATION;
 import static com.android.documentsui.BaseActivity.State.ACTION_OPEN_TREE;
+import static com.android.documentsui.BaseActivity.State.ACTION_STANDALONE;
 import static com.android.documentsui.DirectoryFragment.ANIM_DOWN;
 import static com.android.documentsui.DirectoryFragment.ANIM_NONE;
 import static com.android.documentsui.DirectoryFragment.ANIM_UP;
@@ -35,6 +51,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ComponentName;
@@ -49,7 +66,12 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.RemoteException;
+import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Root;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -71,6 +93,23 @@ import com.android.documentsui.model.DocumentInfo;
 import com.android.documentsui.model.DocumentStack;
 import com.android.documentsui.model.DurableUtils;
 import com.android.documentsui.model.RootInfo;
+import com.google.common.collect.Maps;
+
+import libcore.io.IoUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Executor;
 
 public class DocumentsActivity extends BaseActivity {
     private static final int CODE_FORWARD = 42;
@@ -98,9 +137,25 @@ public class DocumentsActivity extends BaseActivity {
         super(TAG);
     }
 
+    private List<DocumentInfo> mClipboardFiles;
+    /* true if copy, false if cut */
+    private boolean mClipboardIsCopy;
+
+    private StorageManager mStorageManager;
+
+    private final Object mRootsLock = new Object();
+    private HashMap<String, File> mIdToPath;
+
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+
+        mRoots = DocumentsApplication.getRootsCache(this);
+
+        mStorageManager = (StorageManager) getSystemService(Context.STORAGE_SERVICE);
+
+        mIdToPath = Maps.newHashMap();
+        updateVolumes();
 
         setResult(Activity.RESULT_CANCELED);
         setContentView(R.layout.activity);
@@ -181,7 +236,8 @@ public class DocumentsActivity extends BaseActivity {
         } else if (mState.action == ACTION_OPEN ||
                    mState.action == ACTION_CREATE ||
                    mState.action == ACTION_OPEN_TREE ||
-                   mState.action == ACTION_OPEN_COPY_DESTINATION) {
+                   mState.action == ACTION_OPEN_COPY_DESTINATION ||
+                   mState.action == ACTION_STANDALONE) {
             RootsFragment.show(getFragmentManager(), null);
         }
 
@@ -191,7 +247,11 @@ public class DocumentsActivity extends BaseActivity {
             setTitle("");
             if (mState.action == ACTION_MANAGE || mState.action == ACTION_BROWSE) {
                 final Uri rootUri = getIntent().getData();
-                new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
+                if (rootUri != null) {
+                    new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
+                } else {
+                    new RestoreStackTask().execute();
+                }
             } else {
                 new RestoreStackTask().execute();
             }
@@ -208,6 +268,41 @@ public class DocumentsActivity extends BaseActivity {
         } else {
             onCurrentDirectoryChanged(ANIM_NONE);
         }
+    }
+
+    public void updateVolumes() {
+        synchronized (mRootsLock) {
+            updateVolumesLocked();
+        }
+    }
+
+    private void updateVolumesLocked() {
+        mIdToPath.clear();
+
+        final StorageVolume[] volumes = mStorageManager.getVolumeList();
+        for (StorageVolume volume : volumes) {
+            final boolean mounted = Environment.MEDIA_MOUNTED.equals(volume.getState())
+                    || Environment.MEDIA_MOUNTED_READ_ONLY.equals(volume.getState());
+            if (!mounted) continue;
+
+            final String rootId;
+            if (volume.isPrimary() && volume.isEmulated()) {
+                rootId = "primary";
+            } else if (volume.getUuid() != null) {
+                rootId = volume.getUuid();
+            } else {
+                continue;
+            }
+
+            if (mIdToPath.containsKey(rootId)) {
+                continue;
+            }
+
+            final File path = volume.getPathFile();
+            mIdToPath.put(rootId, path);
+            Log.d(TAG, "Found volume path: " + rootId + ":" + path);
+        }
+
     }
 
     private State buildDefaultState() {
@@ -229,11 +324,15 @@ public class DocumentsActivity extends BaseActivity {
             state.action = ACTION_BROWSE;
         } else if (DocumentsIntent.ACTION_OPEN_COPY_DESTINATION.equals(action)) {
             state.action = ACTION_OPEN_COPY_DESTINATION;
+        } else if (Intent.ACTION_MAIN.equals(action)) {
+            state.action = ACTION_STANDALONE;
         }
 
         if (state.action == ACTION_OPEN || state.action == ACTION_GET_CONTENT) {
             state.allowMultiple = intent.getBooleanExtra(
                     Intent.EXTRA_ALLOW_MULTIPLE, false);
+        } else if (state.action == ACTION_STANDALONE) {
+            state.allowMultiple = true;
         }
 
         if (state.action == ACTION_MANAGE || state.action == ACTION_BROWSE) {
@@ -281,8 +380,6 @@ public class DocumentsActivity extends BaseActivity {
         @Override
         protected void onPostExecute(RootInfo root) {
             if (isDestroyed()) return;
-            mState.restored = true;
-
             if (root != null) {
                 onRootPicked(root);
             } else {
@@ -396,6 +493,12 @@ public class DocumentsActivity extends BaseActivity {
     @Override
     public void updateActionBar() {
         if (mRootsToolbar != null) {
+            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT
+                    || mState.action == ACTION_OPEN_TREE) {
+                mRootsToolbar.setTitle(R.string.title_open);
+            } else if (mState.action == ACTION_CREATE) {
+                mRootsToolbar.setTitle(R.string.title_save);
+            }
             final String prompt = getIntent().getStringExtra(DocumentsContract.EXTRA_PROMPT);
             if (prompt != null) {
                 mRootsToolbar.setTitle(prompt);
@@ -407,6 +510,8 @@ public class DocumentsActivity extends BaseActivity {
                 } else if (mState.action == ACTION_CREATE ||
                            mState.action == ACTION_OPEN_COPY_DESTINATION) {
                     mRootsToolbar.setTitle(R.string.title_save);
+                } else if (mState.action == ACTION_STANDALONE) {
+                    mRootsToolbar.setTitle(R.string.title_standalone);
                 }
             }
         }
@@ -470,6 +575,13 @@ public class DocumentsActivity extends BaseActivity {
         final MenuItem list = menu.findItem(R.id.menu_list);
         final MenuItem advanced = menu.findItem(R.id.menu_advanced);
         final MenuItem fileSize = menu.findItem(R.id.menu_file_size);
+        final MenuItem paste = menu.findItem(R.id.menu_paste);
+
+        // Paste is visible only if we have files in the clipboard, and if
+        // we can paste in this directory
+        paste.setVisible(mClipboardFiles != null && mClipboardFiles.size() > 0
+            && cwd != null && cwd.isCreateSupported());
+
         final MenuItem settings = menu.findItem(R.id.menu_settings);
 
         boolean fileSizeVisible = !(mState.action == ACTION_MANAGE
@@ -575,7 +687,7 @@ public class DocumentsActivity extends BaseActivity {
         }
 
         // Forget any replacement target
-        if (mState.action == ACTION_CREATE) {
+        if (mState.action == ACTION_CREATE || mState.action == ACTION_STANDALONE) {
             final SaveFragment save = SaveFragment.get(fm);
             if (save != null) {
                 save.setReplaceTarget(null);
@@ -638,7 +750,7 @@ public class DocumentsActivity extends BaseActivity {
                     Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
                 }
             }
-        } else if (mState.action == ACTION_BROWSE) {
+        } else if (mState.action == ACTION_STANDALONE || mState.action == ACTION_BROWSE) {
             // Go straight to viewing
             final Intent view = new Intent(Intent.ACTION_VIEW);
             view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -646,8 +758,29 @@ public class DocumentsActivity extends BaseActivity {
 
             try {
                 startActivity(view);
-            } catch (ActivityNotFoundException ex) {
-                Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+            } catch (ActivityNotFoundException ex2) {
+                File file = null;
+                int idx = doc.documentId.indexOf(":");
+                if (idx != -1){
+                    String id = doc.documentId.substring(0, idx);
+                    File volume = mIdToPath.get(id);
+                    if (volume != null) {
+                        String fileName = doc.documentId.substring(doc.documentId.indexOf(":") + 1);
+                        file = new File(volume, fileName);
+                    }
+                    if (file != null) {
+                        view.setDataAndType(Uri.fromFile(file), doc.mimeType);
+                        try {
+                            startActivity(view);
+                        } catch (ActivityNotFoundException ex3) {
+                            Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
@@ -662,6 +795,30 @@ public class DocumentsActivity extends BaseActivity {
             }
             new ExistingFinishTask(uris).executeOnExecutor(getCurrentExecutor());
         }
+    }
+
+    public void setClipboardDocuments(List<DocumentInfo> docs, boolean copy) {
+        mClipboardFiles = docs;
+        mClipboardIsCopy = copy;
+        final Resources r = getResources();
+        Toast.makeText(this,
+            r.getQuantityString(R.plurals.files_copied, docs.size(), docs.size()),
+            Toast.LENGTH_SHORT).show();
+
+        // Update the action bar buttons
+        invalidateOptionsMenu();
+    }
+
+    public void onPasteRequested() {
+        if (mClipboardFiles == null) {
+            return;
+        }
+
+        // Run the corresponding asynctask
+        new CopyOrCutFilesTask(mClipboardFiles.toArray(new DocumentInfo[0])).executeOnExecutor(getCurrentExecutor());
+
+        // Clear the copy buffer
+        mClipboardFiles = null;
     }
 
     public void onPickRequested(DocumentInfo pickTarget) {
@@ -739,6 +896,17 @@ public class DocumentsActivity extends BaseActivity {
         finish();
     }
 
+    public void copyFile(Uri input, Uri output) throws IOException {
+        OutputStream os = getContentResolver().openOutputStream(output);
+        InputStream is = getContentResolver().openInputStream(input);
+
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+    }
+
     public static DocumentsActivity get(Fragment fragment) {
         return (DocumentsActivity) fragment.getActivity();
     }
@@ -810,7 +978,7 @@ public class DocumentsActivity extends BaseActivity {
                         resolver, cwd.derivedUri.getAuthority());
                 childUri = DocumentsContract.createDocument(
                         client, cwd.derivedUri, mMimeType, mDisplayName);
-            } catch (Exception e) {
+            } catch (RemoteException e) {
                 Log.w(TAG, "Failed to create document", e);
             } finally {
                 ContentProviderClient.releaseQuietly(client);
@@ -833,6 +1001,94 @@ public class DocumentsActivity extends BaseActivity {
             }
 
             setPending(false);
+        }
+    }
+
+    private class CopyOrCutFilesTask extends AsyncTask<Void, Integer, Void> {
+        private final DocumentInfo[] mDocs;
+        private boolean mIsCopy;
+        private ProgressDialog mProgressDialog;
+
+        public CopyOrCutFilesTask(DocumentInfo... docs) {
+            mDocs = docs;
+            mIsCopy = mClipboardIsCopy;
+            mProgressDialog = new ProgressDialog(DocumentsActivity.this);
+            mProgressDialog.setMessage(getString(R.string.copy_in_progress));
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setMax(docs.length);
+            mProgressDialog.setProgress(0);
+            mProgressDialog.setCanceledOnTouchOutside(false);
+
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            final ContentResolver resolver = getContentResolver();
+            ContentProviderClient client = null;
+
+            int count = 0;
+            for (DocumentInfo doc : mDocs) {
+                try {
+                    final DocumentInfo cwd = getCurrentDirectory();
+                    client = DocumentsApplication.acquireUnstableProviderOrThrow(
+                        resolver, cwd.derivedUri.getAuthority());
+
+                    // Create a new file of the same MIME type as the original
+                    final Uri childUri = DocumentsContract.createDocument(
+                            client, cwd.derivedUri, doc.mimeType, doc.displayName);
+
+                    ContentProviderClient.releaseQuietly(client);
+
+                    if (childUri == null) {
+                        Log.e(TAG, "Failed to create a new document (uri is null)");
+                        continue;
+                    }
+
+                    final DocumentInfo copy = DocumentInfo.fromUri(resolver, childUri);
+
+                    // Push data to the new file
+                    copyFile(doc.derivedUri, copy.derivedUri);
+
+                    // If we cut, delete the original file
+                    if (!mIsCopy) {
+                        DocumentsContract.deleteDocument(client, doc.derivedUri);
+                    }
+
+                    count++;
+                    publishProgress((Integer) count);
+                } catch (RemoteException e) {
+                    Log.w(TAG, "Failed to copy " + doc, e);
+                } catch (FileNotFoundException e) {
+                    Log.w(TAG, "Failed to copy " + doc, e);
+                }catch (IOException e) {
+                    Log.w(TAG, "Failed to copy " + doc, e);
+                }
+            }
+
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            mProgressDialog.setProgress(progress[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            mProgressDialog.dismiss();
+
+             // Notify that files were copied
+            final Resources r = getResources();
+            Toast.makeText(DocumentsActivity.this,
+                r.getQuantityString(R.plurals.files_pasted, mDocs.length, mDocs.length),
+                Toast.LENGTH_SHORT).show();
+
+            // Update the action bar buttons
+            invalidateOptionsMenu();
+
+            // Hack to refresh the contents.
+            DirectoryFragment.get(getFragmentManager()).onUserSortOrderChanged();
         }
     }
 }

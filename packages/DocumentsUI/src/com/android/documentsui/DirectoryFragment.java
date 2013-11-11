@@ -12,6 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Per article 5 of the Apache 2.0 License, some modifications to this code
+ * were made by the OmniROM Project.
+ *
+ * Modifications Copyright (C) 2013 The OmniROM Project
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 package com.android.documentsui;
@@ -21,6 +35,7 @@ import static com.android.documentsui.BaseActivity.State.ACTION_BROWSE_ALL;
 import static com.android.documentsui.BaseActivity.State.ACTION_CREATE;
 import static com.android.documentsui.BaseActivity.State.ACTION_GET_CONTENT;
 import static com.android.documentsui.BaseActivity.State.ACTION_MANAGE;
+import static com.android.documentsui.BaseActivity.State.ACTION_STANDALONE;
 import static com.android.documentsui.BaseActivity.State.ACTION_OPEN;
 import static com.android.documentsui.BaseActivity.State.ACTION_OPEN_TREE;
 import static com.android.documentsui.BaseActivity.State.MODE_GRID;
@@ -33,14 +48,17 @@ import static com.android.documentsui.model.DocumentInfo.getCursorLong;
 import static com.android.documentsui.model.DocumentInfo.getCursorString;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.app.ProgressDialog;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.res.Resources;
@@ -57,6 +75,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.OperationCanceledException;
 import android.os.Parcelable;
+import android.os.RemoteException;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Document;
 import android.text.TextUtils;
@@ -92,8 +111,12 @@ import com.android.documentsui.model.DocumentStack;
 import com.android.documentsui.model.RootInfo;
 import com.google.android.collect.Lists;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Executor;
 
 /**
  * Display the documents inside a single directory.
@@ -139,6 +162,7 @@ public class DirectoryFragment extends Fragment {
     private static final String EXTRA_IGNORE_STATE = "ignoreState";
 
     private final int mLoaderId = 42;
+    private DirectoryLoader mLoader;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -361,6 +385,8 @@ public class DirectoryFragment extends Fragment {
         getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
 
         updateDisplayState();
+
+        mLoader = new DirectoryLoader(context);
     }
 
     @Override
@@ -509,13 +535,16 @@ public class DirectoryFragment extends Fragment {
             final MenuItem share = menu.findItem(R.id.menu_share);
             final MenuItem delete = menu.findItem(R.id.menu_delete);
             final MenuItem copy = menu.findItem(R.id.menu_copy);
+            final MenuItem cut = menu.findItem(R.id.menu_cut);
 
             final boolean manageOrBrowse = (state.action == ACTION_MANAGE
                     || state.action == ACTION_BROWSE || state.action == ACTION_BROWSE_ALL);
+            final boolean stdMode = state.action == ACTION_STANDALONE;
 
-            open.setVisible(!manageOrBrowse);
-            share.setVisible(manageOrBrowse);
-            delete.setVisible(manageOrBrowse);
+
+            open.setVisible(!manageOrBrowse && !stdMode);
+            share.setVisible(manageOrBrowse || stdMode);
+            delete.setVisible(manageOrBrowse || stdMode);
             // Disable copying from the Recents view.
             copy.setVisible(manageOrBrowse && mType != TYPE_RECENT_OPEN);
 
@@ -557,13 +586,16 @@ public class DirectoryFragment extends Fragment {
                 onCopyDocuments(docs);
                 mode.finish();
                 return true;
-
             } else if (id == R.id.menu_select_all) {
                 int count = mCurrentView.getCount();
                 for (int i = 0; i < count; i++) {
                     mCurrentView.setItemChecked(i, true);
                 }
                 updateDisplayState();
+                return true;
+            } else if (id == R.id.menu_cut) {
+                onCutDocuments(docs);
+                mode.finish();
                 return true;
 
             } else {
@@ -582,24 +614,38 @@ public class DirectoryFragment extends Fragment {
             if (checked) {
                 // Directories and footer items cannot be checked
                 boolean valid = false;
+                boolean hasFolder = false;
 
                 final State state = getDisplayState(DirectoryFragment.this);
                 final Cursor cursor = mAdapter.getItem(position);
                 if (cursor != null) {
                     final String docMimeType = getCursorString(cursor, Document.COLUMN_MIME_TYPE);
                     final int docFlags = getCursorInt(cursor, Document.COLUMN_FLAGS);
-                    switch (state.action) {
-                        case ACTION_OPEN:
-                        case ACTION_CREATE:
-                        case ACTION_GET_CONTENT:
-                        case ACTION_OPEN_TREE:
-                            valid = isDocumentEnabled(docMimeType, docFlags)
-                                    && !Document.MIME_TYPE_DIR.equals(docMimeType);
-                            break;
-                        default:
-                            valid = isDocumentEnabled(docMimeType, docFlags);
-                            break;
+                    if (Document.MIME_TYPE_DIR.equals(docMimeType)) {
+                        hasFolder = true;
                     }
+                    if (!Document.MIME_TYPE_DIR.equals(docMimeType) || state.action == ACTION_STANDALONE) {
+                        switch (state.action) {
+                            case ACTION_OPEN:
+                            case ACTION_CREATE:
+                            case ACTION_GET_CONTENT:
+                            case ACTION_OPEN_TREE:
+                                valid = isDocumentEnabled(docMimeType, docFlags)
+                                        && !Document.MIME_TYPE_DIR.equals(docMimeType);
+                                break;
+                            default:
+                                valid = isDocumentEnabled(docMimeType, docFlags);
+                                break;
+                        }
+                    }
+                }
+
+                if (hasFolder) {
+                    final Menu menu = mode.getMenu();
+                    final MenuItem copy = menu.findItem(R.id.menu_copy);
+                    final MenuItem cut = menu.findItem(R.id.menu_cut);
+                    copy.setVisible(false);
+                    cut.setVisible(false);
                 }
 
                 if (!valid) {
@@ -668,7 +714,33 @@ public class DirectoryFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void onDeleteDocuments(List<DocumentInfo> docs) {
+    private void onDeleteDocuments(final List<DocumentInfo> docs) {
+        final Context context = getActivity();
+        final ContentResolver resolver = context.getContentResolver();
+        final Resources resources = context.getResources();
+
+        // Open a confirmation dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                new DeleteFilesTask(docs.toArray(new DocumentInfo[0])).executeOnExecutor(getCurrentExecutor());
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog, ignore actions
+            }
+        });
+
+        builder.setTitle(R.string.dialog_delete_confirm_title)
+            .setMessage(resources.getQuantityString(R.plurals.dialog_delete_confirm_message, docs.size(), docs.size()));
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private boolean onDeleteDocumentsImpl(final List<DocumentInfo> docs) {
         final Context context = getActivity();
         final ContentResolver resolver = context.getContentResolver();
 
@@ -684,18 +756,46 @@ public class DirectoryFragment extends Fragment {
             try {
                 client = DocumentsApplication.acquireUnstableProviderOrThrow(
                         resolver, doc.derivedUri.getAuthority());
+
+                if (Document.MIME_TYPE_DIR.equals(doc.mimeType)) {
+                    // In order to delete a directory, we must delete its contents first. We
+                    // recursively do so.
+                    Uri contentsUri = DocumentsContract.buildChildDocumentsUri(
+                        doc.authority, doc.documentId);
+                    final RootInfo root = getArguments().getParcelable(EXTRA_ROOT);
+
+                    // We get the contents of the directory
+                    mLoader.init(mType, root, doc, contentsUri, SORT_ORDER_UNKNOWN);
+
+                    DirectoryResult result = mLoader.loadInBackground();
+                    Cursor cursor = result.cursor;
+
+                    // Build a list of the docs to delete, and delete them
+                    ArrayList<DocumentInfo> docsToDelete = new ArrayList<DocumentInfo>();
+                    for (int i = 0; i < cursor.getCount(); i++) {
+                        cursor.moveToPosition(i);
+                        final DocumentInfo subDoc = DocumentInfo.fromDirectoryCursor(cursor);
+                        docsToDelete.add(subDoc);
+                    }
+
+                    onDeleteDocumentsImpl(docsToDelete);
+                }
+
+
                 DocumentsContract.deleteDocument(client, doc.derivedUri);
-            } catch (Exception e) {
-                Log.w(TAG, "Failed to delete " + doc);
+            } catch (RemoteException e) {
+                Log.w(TAG, "Failed to delete " + doc, e);
                 hadTrouble = true;
             } finally {
                 ContentProviderClient.releaseQuietly(client);
             }
         }
 
-        if (hadTrouble) {
-            Toast.makeText(context, R.string.toast_failed_delete, Toast.LENGTH_SHORT).show();
-        }
+        return !hadTrouble;
+    }
+
+    private void onCutDocuments(final List<DocumentInfo> docs) {
+        ((DocumentsActivity) getActivity()).setClipboardDocuments(docs, false);
     }
 
     private void onCopyDocuments(List<DocumentInfo> docs) {
@@ -1093,6 +1193,45 @@ public class DirectoryFragment extends Fragment {
         }
     }
 
+    private class DeleteFilesTask extends AsyncTask<Void, Integer, Boolean> {
+        private final DocumentInfo[] mDocs;
+        private ProgressDialog mProgressDialog;
+
+        public DeleteFilesTask(DocumentInfo... docs) {
+            mDocs = docs;
+            mProgressDialog = new ProgressDialog(getActivity());
+            mProgressDialog.setMessage(getString(R.string.delete_in_progress));
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setCanceledOnTouchOutside(false);
+
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            ArrayList<DocumentInfo> docs = new ArrayList<DocumentInfo>();
+            Collections.addAll(docs, mDocs);
+            boolean result = onDeleteDocumentsImpl(docs);
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            mProgressDialog.dismiss();
+
+            if (result == false) {
+                Toast.makeText(getActivity(), R.string.toast_failed_delete, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), R.string.toast_success_delete, Toast.LENGTH_SHORT).show();
+            }
+
+            // Reload files in the current folder
+            getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+            updateDisplayState();
+        }
+    }
+
     private static class ThumbnailAsyncTask extends AsyncTask<Uri, Void, Bitmap>
             implements Preemptable {
         private final Uri mUri;
@@ -1136,10 +1275,12 @@ public class DirectoryFragment extends Fragment {
                             context, mThumbSize);
                     thumbs.put(mUri, result);
                 }
+            } catch (OperationCanceledException e) {
+                // Do nothing
+            } catch (RemoteException e) {
+                Log.w(TAG, "Failed to load thumbnail for " + mUri + ": " + e);
             } catch (Exception e) {
-                if (!(e instanceof OperationCanceledException)) {
-                    Log.w(TAG, "Failed to load thumbnail for " + mUri + ": " + e);
-                }
+                Log.w(TAG, "Failed to load thumbnail for " + mUri + ": " + e);
             } finally {
                 ContentProviderClient.releaseQuietly(client);
             }
@@ -1232,5 +1373,9 @@ public class DirectoryFragment extends Fragment {
         }
 
         return MimePredicate.mimeMatches(state.acceptMimes, docMimeType);
+    }
+
+    public Executor getCurrentExecutor() {
+        return ((DocumentsActivity) getActivity()).getCurrentExecutor();
     }
 }
