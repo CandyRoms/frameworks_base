@@ -22,11 +22,15 @@ import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraAccessException;
 import android.hardware.input.InputManager;
 import android.media.AudioManager;
 import android.media.session.MediaSessionLegacyHelper;
 import android.media.ToneGenerator;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -37,6 +41,7 @@ import android.provider.Settings;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.InputDevice;
+import android.view.IWindowManager;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.WindowManagerGlobal;
@@ -49,6 +54,8 @@ public class Action {
 
     private static final int MSG_INJECT_KEY_DOWN = 1066;
     private static final int MSG_INJECT_KEY_UP = 1067;
+
+    private static boolean sTorchEnabled = false;
 
     public static void processAction(Context context, String action, boolean isLongpress) {
         processActionWithOptions(context, action, isLongpress, true);
@@ -75,6 +82,18 @@ public class Action {
                 return; // ouch
             }
 
+            final IWindowManager windowManagerService = IWindowManager.Stub.asInterface(
+                    ServiceManager.getService(Context.WINDOW_SERVICE));
+           if (windowManagerService == null) {
+               return; // ouch
+           }
+
+            boolean isKeyguardSecure = false;
+            try {
+                isKeyguardSecure = windowManagerService.isKeyguardSecure();
+            } catch (RemoteException e) {
+            }
+
             // process the actions
             if (action.equals(ActionConstants.ACTION_HOME)) {
                 triggerVirtualKeypress(KeyEvent.KEYCODE_HOME, isLongpress);
@@ -84,6 +103,59 @@ public class Action {
                 return;
             } else if (action.equals(ActionConstants.ACTION_SEARCH)) {
                 triggerVirtualKeypress(KeyEvent.KEYCODE_SEARCH, isLongpress);
+                return;
+            } else if (action.equals(ActionConstants.ACTION_KILL)) {
+                if (isKeyguardShowing) return;
+                try {
+                    barService.toggleKillApp();
+                } catch (RemoteException e) {}
+                return;
+            } else if (action.equals(ActionConstants.ACTION_NOTIFICATIONS)) {
+                if (isKeyguardShowing && isKeyguardSecure) {
+                    return;
+                }
+                try {
+                    barService.expandNotificationsPanel();
+                } catch (RemoteException e) {
+                }
+                return;
+            } else if (action.equals(ActionConstants.ACTION_SETTINGS_PANEL)) {
+                if (isKeyguardShowing && isKeyguardSecure) {
+                    return;
+                }
+                try {
+                    barService.expandSettingsPanel();
+                } catch (RemoteException e) {}
+            } else if (action.equals(ActionConstants.ACTION_LAST_APP)) {
+                if (isKeyguardShowing) {
+                    return;
+                }
+                try {
+                    barService.toggleLastApp();
+                } catch (RemoteException e) {
+                }
+                return;
+            } else if (action.equals(ActionConstants.ACTION_TORCH)) {
+                try {
+                    CameraManager cameraManager = (CameraManager)
+                            context.getSystemService(Context.CAMERA_SERVICE);
+                    for (final String cameraId : cameraManager.getCameraIdList()) {
+                        CameraCharacteristics characteristics =
+                            cameraManager.getCameraCharacteristics(cameraId);
+                        int orient = characteristics.get(CameraCharacteristics.LENS_FACING);
+                        if (orient == CameraCharacteristics.LENS_FACING_BACK) {
+                            cameraManager.setTorchMode(cameraId, !sTorchEnabled);
+                            sTorchEnabled = !sTorchEnabled;
+                        }
+                    }
+                } catch (CameraAccessException e) {
+                }
+                return;
+            } else if (action.equals(ActionConstants.ACTION_POWER_MENU)) {
+                try {
+                    windowManagerService.toggleGlobalMenu();
+                } catch (RemoteException e) {
+                }
                 return;
             } else if (action.equals(ActionConstants.ACTION_MENU)
                     || action.equals(ActionConstants.ACTION_MENU_BIG)) {
@@ -113,14 +185,47 @@ public class Action {
                         new Intent("android.settings.SHOW_INPUT_METHOD_PICKER"),
                         new UserHandle(UserHandle.USER_CURRENT));
                 return;
+            } else if (action.equals(ActionConstants.ACTION_KILL)) {
+                if (isKeyguardShowing) {
+                    return;
+                }
+                try {
+                    barService.toggleKillApp();
+                } catch (RemoteException e) {
+                }
+                return;
+            } else if (action.equals(ActionConstants.ACTION_LAST_APP)) {
+                if (isKeyguardShowing) {
+                    return;
+                }
+                try {
+                    barService.toggleLastApp();
+                } catch (RemoteException e) {
+                }
+                return;
+            } else if (action.equals(ActionConstants.ACTION_SCREENSHOT)) {
+                try {
+                    barService.toggleScreenshot();
+                } catch (RemoteException e) {
+                }
+                return;
+            } else if (action.equals(ActionConstants.ACTION_RECENTS)) {
+                if (isKeyguardShowing) {
+                    return;
+                }
+                try {
+                    barService.toggleRecentApps();
+                } catch (RemoteException e) {
+                }
+                return;
             } else if (action.equals(ActionConstants.ACTION_ASSIST)
                     || action.equals(ActionConstants.ACTION_KEYGUARD_SEARCH)) {
-                /* Intent intent = ((SearchManager) context.getSystemService(Context.SEARCH_SERVICE))
+                /*Intent intent = ((SearchManager) context.getSystemService(Context.SEARCH_SERVICE))
                   .getAssistIntent(context, true, UserHandle.USER_CURRENT);
                 if (intent == null) {
                     intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"));
                 }
-                startActivity(context, intent, barService, isKeyguardShowing); */
+                startActivity(context, intent, barService, isKeyguardShowing);*/
                 return;
             } else if (action.equals(ActionConstants.ACTION_VOICE_SEARCH)) {
                 // launch the search activity
@@ -136,7 +241,7 @@ public class Action {
                     }
                     startActivity(context, intent, barService, isKeyguardShowing);
                 } catch (ActivityNotFoundException e) {
-                    Log.e("SlimActions:", "No activity to handle assist long press action.", e);
+                    Log.e("Action:", "No activity to handle assist long press action.", e);
                 }
                 return;
             } else if (action.equals(ActionConstants.ACTION_VIB)) {
@@ -219,13 +324,22 @@ public class Action {
                     powerManager.wakeUp(SystemClock.uptimeMillis());
                 }
                 return;
+            } else if (action.equals(ActionConstants.ACTION_SCREENSHOT)) {
+                try {
+                    barService.toggleScreenshot();
+                } catch (RemoteException e) {}
+                return;
+            } else if (action.equals(ActionConstants.ACTION_NOW_ON_TAP)) {
+                try {
+                    barService.startAssist(new Bundle());
+                } catch (RemoteException e) {}
             } else {
                 // we must have a custom uri
                 Intent intent = null;
                 try {
                     intent = Intent.parseUri(action, 0);
                 } catch (URISyntaxException e) {
-                    Log.e("SlimActions:", "URISyntaxException: [" + action + "]");
+                    Log.e("Action:", "URISyntaxException: [" + action + "]");
                     return;
                 }
                 startActivity(context, intent, barService, isKeyguardShowing);
@@ -244,6 +358,11 @@ public class Action {
             return true;
         }
         return false;
+    }
+
+    public static boolean isNavBarDefault(Context context) {
+        return context.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar);
     }
 
     private static void startActivity(Context context, Intent intent,

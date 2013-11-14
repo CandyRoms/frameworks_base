@@ -358,9 +358,9 @@ public class KeyguardStatusView extends GridLayout implements
         mWeatherConditionImage.setImageDrawable(null);
         Drawable weatherIcon = mWeatherConditionDrawable;
         if (iconNameValue == 0 || colorizeAllIcons) {
-            Bitmap coloredWeatherIcon =
-                    ImageHelper.getColoredBitmap(weatherIcon, iconColor);
-            mWeatherConditionImage.setImageBitmap(coloredWeatherIcon);
+            Drawable coloredWeatherIcon =
+                    ImageHelper.getColoredDrawable(weatherIcon, iconColor);
+            mWeatherConditionImage.setImageDrawable(coloredWeatherIcon);
         } else {
             mWeatherConditionImage.setImageDrawable(weatherIcon);
         }

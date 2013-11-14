@@ -16,6 +16,7 @@
 
 package com.android.internal.statusbar;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.content.Intent;
 
@@ -82,5 +83,8 @@ oneway interface IStatusBar
 
     void setAutoRotate(boolean enabled);
     void showCustomIntentAfterKeyguard(inout Intent intent);
+    void toggleScreenshot();
+    void toggleLastApp();
+    void toggleKillApp();
 }
 

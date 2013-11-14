@@ -16,6 +16,7 @@
 
 package com.android.internal.util.slim;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -35,7 +36,47 @@ import java.util.ArrayList;
 
 public class ActionHelper {
 
+    private static final String SYSTEM_METADATA_NAME = "android";
     private static final String SYSTEMUI_METADATA_NAME = "com.android.systemui";
+    private static final String SETTINGS_METADATA_NAME = "com.android.settings";
+
+    // get and set the navbar configs from provider and return propper arraylist objects
+    // @ActionConfig
+    public static ArrayList<ActionConfig> getNavBarConfig(Context context) {
+        return (ConfigSplitHelper.getActionConfigValues(context,
+            getNavBarProvider(context), null, null, false));
+    }
+
+    // get @ActionConfig with description if needed and other then an app description
+    public static ArrayList<ActionConfig> getNavBarConfigWithDescription(
+            Context context, String values, String entries) {
+        return (ConfigSplitHelper.getActionConfigValues(context,
+            getNavBarProvider(context), values, entries, false));
+    }
+
+    private static String getNavBarProvider(Context context) {
+        String config = Settings.System.getStringForUser(
+                    context.getContentResolver(),
+                    Settings.System.NAVIGATION_BAR_CONFIG,
+                    UserHandle.USER_CURRENT);
+        if (config == null) {
+            config = ActionConstants.NAVIGATION_CONFIG_DEFAULT;
+        }
+        return config;
+    }
+
+    public static void setNavBarConfig(Context context,
+            ArrayList<ActionConfig> actionConfig, boolean reset) {
+        String config;
+        if (reset) {
+            config = ActionConstants.NAVIGATION_CONFIG_DEFAULT;
+        } else {
+            config = ConfigSplitHelper.setActionConfig(actionConfig, false);
+        }
+        Settings.System.putString(context.getContentResolver(),
+                    Settings.System.NAVIGATION_BAR_CONFIG,
+                    config);
+    }
 
     // get and set the lockcreen shortcut configs from provider and return propper arraylist objects
     // @ActionConfig
@@ -61,76 +102,6 @@ public class ActionHelper {
         }
         Settings.System.putString(context.getContentResolver(),
                     Settings.System.LOCKSCREEN_SHORTCUTS, config);
-    }
-
-    // General methods to retrieve the correct icon for the respective action.
-    public static Drawable getButtonIconImage(Context context,
-            String clickAction, String customIcon) {
-        int resId = -1;
-        Drawable d = null;
-        PackageManager pm = context.getPackageManager();
-        if (pm == null) {
-            return null;
-        }
-
-        Resources systemUiResources;
-        try {
-            systemUiResources = pm.getResourcesForApplication(SYSTEMUI_METADATA_NAME);
-        } catch (Exception e) {
-            Log.e("ButtonsHelper:", "can't access systemui resources",e);
-            return null;
-        }
-
-        if (!clickAction.startsWith("**")) {
-            try {
-                String extraIconPath = clickAction.replaceAll(".*?hasExtraIcon=", "");
-                if (extraIconPath != null && !extraIconPath.isEmpty()) {
-                    File f = new File(Uri.parse(extraIconPath).getPath());
-                    if (f.exists()) {
-                        d = new BitmapDrawable(context.getResources(),
-                                f.getAbsolutePath());
-                    }
-                }
-                if (d == null) {
-                    d = pm.getActivityIcon(Intent.parseUri(clickAction, 0));
-                }
-            } catch (NameNotFoundException e) {
-                resId = systemUiResources.getIdentifier(
-                    SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_null", null, null);
-                if (resId > 0) {
-                    d = systemUiResources.getDrawable(resId);
-                    return d;
-                }
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (customIcon != null && customIcon.startsWith(ActionConstants.SYSTEM_ICON_IDENTIFIER)) {
-            resId = systemUiResources.getIdentifier(customIcon.substring(
-                        ActionConstants.SYSTEM_ICON_IDENTIFIER.length()), "drawable", "android");
-            if (resId > 0) {
-                return systemUiResources.getDrawable(resId);
-            }
-        } else if (customIcon != null && !customIcon.equals(ActionConstants.ICON_EMPTY)) {
-            File f = new File(Uri.parse(customIcon).getPath());
-            if (f.exists()) {
-                return new BitmapDrawable(context.getResources(),
-                    ImageHelper.getRoundedCornerBitmap(
-                        new BitmapDrawable(context.getResources(),
-                        f.getAbsolutePath()).getBitmap()));
-            } else {
-                Log.e("ActionHelper:", "can't access custom icon image");
-                return null;
-            }
-        } else if (clickAction.startsWith("**")) {
-            resId = getActionSystemIcon(systemUiResources, clickAction);
-
-            if (resId > 0) {
-                return systemUiResources.getDrawable(resId);
-            }
-        }
-        return d;
     }
 
     // General methods to retrieve the correct icon for the respective action.
@@ -228,7 +199,7 @@ public class ActionHelper {
                         SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_menu", null, null);
         } else if (clickAction.equals(ActionConstants.ACTION_MENU_BIG)) {
             resId = systemUiResources.getIdentifier(
-                        SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_menu_big", null, null);
+                        SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_menu", null, null);
         } else if (clickAction.equals(ActionConstants.ACTION_IME)) {
             resId = systemUiResources.getIdentifier(
                         SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_ime_switcher", null, null);
@@ -247,11 +218,28 @@ public class ActionHelper {
         } else if (clickAction.equals(ActionConstants.ACTION_VIB_SILENT)) {
             resId = systemUiResources.getIdentifier(
                         SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_ring_vib_silent", null, null);
+        } else if (clickAction.equals(ActionConstants.ACTION_KILL)) {
+            resId = systemUiResources.getIdentifier(
+                        SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_killtask", null, null);
+        } else if (clickAction.equals(ActionConstants.ACTION_LAST_APP)) {
+            resId = systemUiResources.getIdentifier(
+                        SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_lastapp", null, null);
+        } else if (clickAction.equals(ActionConstants.ACTION_NOTIFICATIONS)) {
+            resId = systemUiResources.getIdentifier(
+                        SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_notifications", null, null);
+        } else if (clickAction.equals(ActionConstants.ACTION_SETTINGS_PANEL)) {
+            resId = systemUiResources.getIdentifier(
+                        SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_qs", null, null);
+        } else if (clickAction.equals(ActionConstants.ACTION_SCREENSHOT)) {
+            resId = systemUiResources.getIdentifier(
+                        SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_screenshot", null, null);
+        } else if (clickAction.equals(ActionConstants.ACTION_TORCH)) {
+            resId = systemUiResources.getIdentifier(
+                        SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_torch", null, null);
         } else {
             resId = systemUiResources.getIdentifier(
                         SYSTEMUI_METADATA_NAME + ":drawable/ic_sysbar_null", null, null);
         }
         return resId;
     }
-
 }
