@@ -4046,6 +4046,13 @@ public final class Settings {
         public static final String HEADSET_CONNECT_PLAYER = "headset_connect_player";
 
         /**
+         * Whether to mute annoying notifications
+         * @hide
+         */
+        public static final String MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD =
+                "mute_annoying_notifications_threshold";
+
+        /**
         * Whether to show battery light when DND mode is active
         * @hide
         */
