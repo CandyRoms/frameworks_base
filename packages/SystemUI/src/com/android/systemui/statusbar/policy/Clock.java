@@ -323,6 +323,15 @@ public class Clock extends TextView implements DemoMode, Tunable, CommandQueue.C
                 handler.post(() -> updateClock());
                 if (mClockAutoHide) autoHideHandler.post(() -> updateClockVisibility());
             }
+            if (action.equals(Intent.ACTION_SCREEN_ON)) {
+                mScreenOn = true;
+            } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
+                mScreenOn = false;
+            }
+
+            if (mScreenOn) {
+                handler.post(() -> updateClock());
+            }
         }
     };
 
