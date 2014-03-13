@@ -1872,6 +1872,37 @@ public final class Settings {
             }
         }
 
+         /** @hide */
+         public static boolean getBoolean(ContentResolver cr, String name, boolean def) {
+             return getBooleanForUser(cr, name, def, UserHandle.myUserId());
+         }
+ 
+         /** @hide */
+         public static boolean getBooleanForUser(ContentResolver cr, String name, boolean def,
+                                                 int userHandle) {
+             final String v = getStringForUser(cr, name, userHandle);
+             try {
+                 if (v != null) {
+                     return "1".equals(v);
+                 } else {
+                     return def;
+                 }
+             } catch (NumberFormatException e) {
+                 return def;
+             }
+         }
+ 
+         /** @hide */
+         public static boolean putBoolean(ContentResolver cr, String name, boolean value) {
+             return putBooleanForUser(cr, name, value, UserHandle.myUserId());
+         }
+ 
+         /** @hide */
+         public static boolean putBooleanForUser(ContentResolver cr, String name, boolean value,
+                                                 int userHandle) {
+             return putStringForUser(cr, name, value ? "1" : "0", userHandle);
+         }
+
         /**
          * Convenience function for updating a single settings value as a long
          * integer. This will either create a new entry in the table if the
@@ -4030,6 +4061,36 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_CLOCK_DATE_DISPLAY = "statusbar_clock_date_display";
+
+        /**
+         * If On-The-Go should be displayed at the power menu.
+         *
+         * @hide
+         */
+        public static final String POWER_MENU_ONTHEGO_ENABLED = "power_menu_onthego_enabled";
+
+        /**
+         * The alpha value of the On-The-Go overlay.
+         *
+         * @hide
+         */
+        public static final String ON_THE_GO_ALPHA = "on_the_go_alpha";
+
+        /**
+         * The camera instance to use.
+         * 0 = Rear Camera
+         * 1 = Front Camera
+         *
+         * @hide
+         */
+        public static final String ON_THE_GO_CAMERA = "on_the_go_camera";
+
+        /**
+         * Whether the service should restart itself or not.
+         *
+         * @hide
+         */
+        public static final String ON_THE_GO_SERVICE_RESTART = "on_the_go_service_restart";
 
         /**
          * Sets the date string style
