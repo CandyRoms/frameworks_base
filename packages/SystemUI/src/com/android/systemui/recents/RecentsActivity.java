@@ -87,6 +87,8 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
     // Runnable to be executed after we paused ourselves
     Runnable mAfterPauseRunnable;
 
+    protected boolean mBackPressed;
+
     /**
      * A common Runnable to finish Recents either by calling finish() (with a custom animation) or
      * launching Home with some ActivityOptions.  Generally we always launch home when we exit
@@ -587,7 +589,12 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
 
         // Dismiss Recents to the focused Task or Home
         dismissRecentsToFocusedTaskOrHome(true);
-
+        mBackPressed = true;
+        try {
+            dismissRecentsToFocusedTaskOrHome(true);
+        } finally {
+            mBackPressed = false;
+        }
         mRecentsView.endFABanimation();
     }
 
