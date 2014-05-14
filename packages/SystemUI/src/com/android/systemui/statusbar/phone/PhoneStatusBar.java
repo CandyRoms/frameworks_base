@@ -986,6 +986,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     R.id.header_debug_info);
             mNotificationPanelDebugText.setVisibility(View.VISIBLE);
         }
+        
+        addAppCircleSidebar();
 
         try {
             boolean showNav = mWindowManagerService.hasNavigationBar();
@@ -1590,8 +1592,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 shadeEntry.notifyFullScreenIntentLaunched();
                 MetricsLogger.count(mContext, "note_fullscreen", 1);
             } catch (PendingIntent.CanceledException e) {
-            }
-        }
+			}
+		}
+            // usual case: status bar visible & not immersive
         addNotificationViews(shadeEntry, ranking);
         // Recalculate the position of the sliding windows and the titles.
         setAreThereNotifications();
