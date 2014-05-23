@@ -153,7 +153,11 @@ public class NotificationManagerService extends SystemService {
     public static final boolean ENABLE_CHILD_NOTIFICATIONS = Build.IS_DEBUGGABLE
             && SystemProperties.getBoolean("debug.child_notifs", false);
 
+    private static final String SYSTEM_FOLDER = "/data/system"; // should be used for main notification sysytem only
+
     static final int MAX_PACKAGE_NOTIFICATIONS = 50;
+
+    private static final int DEFAULT_RESULT = 0;
 
     // message codes
     static final int MESSAGE_TIMEOUT = 2;
@@ -269,14 +273,18 @@ public class NotificationManagerService extends SystemService {
     private Archive mArchive;
 
     // Persistent storage for notification policy
-    private AtomicFile mPolicyFile;
+    private AtomicFile mPolicyFile, mFloatingModePolicyFile;
 
     // Temporary holder for <blocked-packages> config coming from old policy files.
     private HashSet<String> mBlockedPackages = new HashSet<String>();
+    private HashSet<String> mFloatingModeBlacklist = new HashSet<String>();
 
     private static final int DB_VERSION = 1;
 
     private static final String TAG_NOTIFICATION_POLICY = "notification-policy";
+    private static final String FLOATING_MODE_POLICY = "floating_mode_policy.xml";
+
+    private static final String TAG_BODY = "notification-policy";
     private static final String ATTR_VERSION = "version";
 
     // Obsolete:  converted if present, but not resaved to disk.
@@ -388,6 +396,42 @@ public class NotificationManagerService extends SystemService {
         }
     }
 
+    private int readPolicy(AtomicFile file, String lookUpTag, HashSet<String> db) {
+        int result = DEFAULT_RESULT;
+        FileInputStream infile = null;
+        try {
+            infile = file.openRead();
+            final XmlPullParser parser = Xml.newPullParser();
+            parser.setInput(infile, null);
+
+            int type;
+            String tag;
+            int version = DB_VERSION;
+            while ((type = parser.next()) != END_DOCUMENT) {
+                tag = parser.getName();
+                if (type == START_TAG) {
+                    if (TAG_BODY.equals(tag)) {
+                        version = Integer.parseInt(parser.getAttributeValue(null, ATTR_VERSION));
+                    } else if (lookUpTag.equals(tag)) {
+                        while ((type = parser.next()) != END_DOCUMENT) {
+                            tag = parser.getName();
+                            if (TAG_PACKAGE.equals(tag)) {
+                                db.add(parser.getAttributeValue(null, ATTR_NAME));
+                            } else if (lookUpTag.equals(tag) && type == END_TAG) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Unable to read
+        } finally {
+            IoUtils.closeQuietly(infile);
+        }
+        return result;
+    }
+
     private void loadPolicyFile() {
         if (DBG) Slog.d(TAG, "loadPolicyFile");
         synchronized(mPolicyFile) {
@@ -407,6 +451,16 @@ public class NotificationManagerService extends SystemService {
                 Log.wtf(TAG, "Unable to parse notification policy", e);
             } finally {
                 IoUtils.closeQuietly(infile);
+            }
+        }
+    }
+
+    private void loadFloatingModeBlockDb() {
+        synchronized(mFloatingModeBlacklist) {
+            if (mFloatingModePolicyFile == null) {
+                mFloatingModePolicyFile = new AtomicFile(new File(SYSTEM_FOLDER, FLOATING_MODE_POLICY));
+                mFloatingModeBlacklist.clear();
+                readPolicy(mFloatingModePolicyFile, TAG_BLOCKED_PKGS, mFloatingModeBlacklist);
             }
         }
     }
@@ -448,6 +502,40 @@ public class NotificationManagerService extends SystemService {
         mRankingHelper.writeXml(out, forBackup);
         out.endTag(null, TAG_NOTIFICATION_POLICY);
         out.endDocument();
+    }
+
+    private void writeFloatingModeBlockDb() {
+        synchronized(mFloatingModeBlacklist) {
+            FileOutputStream outfile = null;
+            try {
+                outfile = mFloatingModePolicyFile.startWrite();
+
+                XmlSerializer out = new FastXmlSerializer();
+                out.setOutput(outfile, "utf-8");
+
+                out.startDocument(null, true);
+
+                out.startTag(null, TAG_BODY); {
+                    out.attribute(null, ATTR_VERSION, String.valueOf(DB_VERSION));
+                    out.startTag(null, TAG_BLOCKED_PKGS); {
+                        // write all known network policies
+                        for (String pkg : mFloatingModeBlacklist) {
+                            out.startTag(null, TAG_PACKAGE); {
+                                out.attribute(null, ATTR_NAME, pkg);
+                            } out.endTag(null, TAG_PACKAGE);
+                        }
+                    } out.endTag(null, TAG_BLOCKED_PKGS);
+                } out.endTag(null, TAG_BODY);
+
+                out.endDocument();
+
+                mFloatingModePolicyFile.finishWrite(outfile);
+            } catch (IOException e) {
+                if (outfile != null) {
+                    mFloatingModePolicyFile.failWrite(outfile);
+                }
+            }
+        }
     }
 
     /** Use this when you actually want to post a notification or toast.
@@ -1104,6 +1192,7 @@ public class NotificationManagerService extends SystemService {
      */
     private void importOldBlockDb() {
         loadPolicyFile();
+        loadFloatingModeBlockDb();
 
         PackageManager pm = getContext().getPackageManager();
         for (String pkg : mBlockedPackages) {
@@ -1150,6 +1239,7 @@ public class NotificationManagerService extends SystemService {
             cancelAllNotificationsInt(MY_UID, MY_PID, pkg, 0, 0, true, UserHandle.getUserId(uid),
                     REASON_PACKAGE_BANNED, null);
         }
+        writeFloatingModeBlockDb();
     }
 
     private void updateListenerHintsLocked() {
@@ -1180,6 +1270,21 @@ public class NotificationManagerService extends SystemService {
     private final IBinder mService = new INotificationManager.Stub() {
         // Toasts
         // ============================================================================
+
+        @Override
+        public void setFloatingModeBlacklistStatus(String pkg, boolean status) {
+            if (status) {
+                mFloatingModeBlacklist.add(pkg);
+            } else {
+                mFloatingModeBlacklist.remove(pkg);
+            }
+            writeFloatingModeBlockDb();
+        }
+
+        @Override
+        public boolean isPackageAllowedForFloatingMode(String pkg) {
+            return !mFloatingModeBlacklist.contains(pkg);
+        }
 
         @Override
         public void enqueueToast(String pkg, ITransientNotification callback, int duration)

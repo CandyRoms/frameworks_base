@@ -812,7 +812,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                 new UserHandle(t.key.userId));
     }
 
-//    @Override
     public void onTaskFloatClicked(Task t) {
         Intent baseIntent = t.key.baseIntent;
         // Hide and go home
