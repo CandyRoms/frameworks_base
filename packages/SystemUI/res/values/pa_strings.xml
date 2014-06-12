@@ -21,4 +21,6 @@
     <!-- Title shown in recents popup for showing app in floating mode -->
     <string name="recent_float_mode_title">Floating mode</string>
 
+    <!-- Title shown when app provides no interface -->
+    <string name="status_bar_floating_no_interface">App provides no interface</string>
 </resources>

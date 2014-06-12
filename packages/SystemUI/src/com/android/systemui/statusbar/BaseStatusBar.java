@@ -1110,7 +1110,13 @@ public abstract class BaseStatusBar extends SystemUI implements
             floatButton.setVisibility(View.VISIBLE);
             floatButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    launchFloating(contentIntent);
+                                if (contentIntent == null) {
+                                    String text = mContext.getResources().getString(R.string.status_bar_floating_no_interface);
+                                    int duration = Toast.LENGTH_SHORT;
+                                    Toast.makeText(mContext, text, duration).show();
+                                } else {
+                                    launchFloating(contentIntent);
+                                }
                 }
             });
 
