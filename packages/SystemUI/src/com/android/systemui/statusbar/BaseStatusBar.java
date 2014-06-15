@@ -22,6 +22,7 @@ import android.animation.TimeInterpolator;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
 import android.app.INotificationManager;
@@ -292,6 +293,8 @@ public abstract class BaseStatusBar extends SystemUI implements
             updatePieControls(!pieEnabled);
         }
     };
+
+    private ActivityManager mActivityManager;
 
     @Override  // NotificationData.Environment
     public boolean isDeviceProvisioned() {
@@ -638,6 +641,8 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         mAccessibilityManager = (AccessibilityManager)
                 mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
+
+        mActivityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
 
         mDreamManager = IDreamManager.Stub.asInterface(
                 ServiceManager.checkService(DreamService.DREAM_SERVICE));
@@ -1019,6 +1024,22 @@ public abstract class BaseStatusBar extends SystemUI implements
         intent.putExtra("notification_id", notificationId);
         intent.putExtra("notification_tag", notificationTag);
         startNotificationGutsIntent(intent, appUid);
+    }
+
+    public String getForegroundPackageName() {
+        List<RunningTaskInfo> taskInfo = mActivityManager.getRunningTasks(1);
+        ComponentName componentInfo = taskInfo.get(0).topActivity;
+        return componentInfo.getPackageName();
+    }
+
+    public boolean isUserOnLauncher() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        ResolveInfo resolveInfo = mContext.getPackageManager().resolveActivity(
+                                              intent, PackageManager.MATCH_DEFAULT_ONLY);
+        String currentHomePackage = resolveInfo.activityInfo.packageName;
+
+        return getForegroundPackageName().equals(currentHomePackage);
     }
 
     private void launchFloating(PendingIntent pIntent) {
@@ -1880,7 +1901,7 @@ public abstract class BaseStatusBar extends SystemUI implements
                         } catch (android.os.RemoteException ex) {
                            // System is dead
                         }
-                        if (floating) {
+                        if (floating && !isUserOnLauncher()) {
                             launchFloating(intent);
                         } else {
                             String text = mContext.getResources().getString(R.string.floating_mode_blacklisted_app);
