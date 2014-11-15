@@ -3394,6 +3394,12 @@ public final class Settings {
         public static final String PEOPLE_LOOKUP_PROVIDER = "people_lookup_provider";
 
         /**
+         * Whether newly installed apps should run with privacy guard by default
+         * @hide
+         */
+        public static final String PRIVACY_GUARD_DEFAULT = "privacy_guard_default";
+
+        /**
          * The reverse lookup provider
          * @hide
          */
@@ -8348,6 +8354,7 @@ public final class Settings {
          * The order in which the bookmark should be displayed
          * <P>Type: INTEGER</P>
          */
+
         public static final String ORDERING = "ordering";
 
         private static final String[] sIntentProjection = { INTENT };

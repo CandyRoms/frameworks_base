@@ -113,6 +113,9 @@
     <string name="global_action_screenshot">Screenshot</string>
     <string name="global_action_search">Search</string>
     <string name="global_action_voicesearch">Voice Search</string>
+    
+    <!-- Slimseekbar -->
+    <string name="default_string">Default</string>
 
      <!-- AOKP custom system animations -->
      <string name="animation_fade">Fade</string>
@@ -141,5 +144,19 @@
     <string name="permlab_preventpower">override power key</string>
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permdesc_preventpower">Allows an app to override the power key.</string>
+
+    <!-- [CHAR LIMIT=NONE] Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permlab_resetBatteryStats">reset battery statistics</string>
+    <!-- [CHAR LIMIT=NONE] Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_resetBatteryStats">Allows an application to reset the current low-level battery use data.</string>
+
+    <!-- Title of an application permission, listed so the user can choose whether they want the application to do this. -->
+    <string name="permlab_setKeyguardWallpaper">set keyguard wallpaper</string>
+    <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <string name="permdesc_setKeyguardWallpaper">Allows an app to change the lock screen wallpaper.</string>
+
+    <!-- Battery fully charged notification -->
+    <string name="notify_battery_fully_charged_title">Battery fully charged</string>
+    <string name="notify_battery_fully_charged_text">Disconnect your device from the charger to improve battery longevity.</string>
 
 </resources>
