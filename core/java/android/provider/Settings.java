@@ -3862,6 +3862,12 @@ public final class Settings {
          */
         public static final String POWER_MENU_ANIMATIONS = "power_menu_animations";
 
+        /*
+         *  Enable statusbar double tap gesture on to put device to sleep
+         * @hide
+         */
+        public static final String DOUBLE_TAP_SLEEP_GESTURE = "double_tap_sleep_gesture";
+
         /**
          * Boolean value whether to link ringtone and notification volume
          *
