@@ -4295,50 +4295,6 @@ public final class Settings {
          /** @hide */
         public static final Validator STATUSBAR_CLOCK_DATE_FORMAT_VALIDATOR = ANY_STRING_VALIDATOR;
 
-
-        public static final Set<String> PRIVATE_SETTINGS = new ArraySet<>();
-        static {
-            PRIVATE_SETTINGS.add(WIFI_USE_STATIC_IP);
-            PRIVATE_SETTINGS.add(END_BUTTON_BEHAVIOR);
-            PRIVATE_SETTINGS.add(ADVANCED_SETTINGS);
-            PRIVATE_SETTINGS.add(SCREEN_AUTO_BRIGHTNESS_ADJ);
-            PRIVATE_SETTINGS.add(VIBRATE_INPUT_DEVICES);
-            PRIVATE_SETTINGS.add(VOLUME_MASTER);
-            PRIVATE_SETTINGS.add(MASTER_MONO);
-            PRIVATE_SETTINGS.add(NOTIFICATIONS_USE_RING_VOLUME);
-            PRIVATE_SETTINGS.add(VIBRATE_IN_SILENT);
-            PRIVATE_SETTINGS.add(MEDIA_BUTTON_RECEIVER);
-            PRIVATE_SETTINGS.add(HIDE_ROTATION_LOCK_TOGGLE_FOR_ACCESSIBILITY);
-            PRIVATE_SETTINGS.add(DTMF_TONE_TYPE_WHEN_DIALING);
-            PRIVATE_SETTINGS.add(HEARING_AID);
-            PRIVATE_SETTINGS.add(TTY_MODE);
-            PRIVATE_SETTINGS.add(NOTIFICATION_LIGHT_PULSE);
-            PRIVATE_SETTINGS.add(POINTER_LOCATION);
-            PRIVATE_SETTINGS.add(SHOW_TOUCHES);
-            PRIVATE_SETTINGS.add(WINDOW_ORIENTATION_LISTENER_LOG);
-            PRIVATE_SETTINGS.add(POWER_SOUNDS_ENABLED);
-            PRIVATE_SETTINGS.add(DOCK_SOUNDS_ENABLED);
-            PRIVATE_SETTINGS.add(LOCKSCREEN_SOUNDS_ENABLED);
-            PRIVATE_SETTINGS.add(LOCKSCREEN_DISABLED);
-            PRIVATE_SETTINGS.add(LOW_BATTERY_SOUND);
-            PRIVATE_SETTINGS.add(DESK_DOCK_SOUND);
-            PRIVATE_SETTINGS.add(DESK_UNDOCK_SOUND);
-            PRIVATE_SETTINGS.add(CAR_DOCK_SOUND);
-            PRIVATE_SETTINGS.add(CAR_UNDOCK_SOUND);
-            PRIVATE_SETTINGS.add(LOCK_SOUND);
-            PRIVATE_SETTINGS.add(UNLOCK_SOUND);
-            PRIVATE_SETTINGS.add(SIP_RECEIVE_CALLS);
-            PRIVATE_SETTINGS.add(SIP_CALL_OPTIONS);
-            PRIVATE_SETTINGS.add(SIP_ALWAYS);
-            PRIVATE_SETTINGS.add(SIP_ADDRESS_ONLY);
-            PRIVATE_SETTINGS.add(SIP_ASK_ME_EACH_TIME);
-            PRIVATE_SETTINGS.add(POINTER_SPEED);
-            PRIVATE_SETTINGS.add(LOCK_TO_APP_ENABLED);
-            PRIVATE_SETTINGS.add(EGG_MODE);
-            PRIVATE_SETTINGS.add(SHOW_BATTERY_PERCENT);
-            PRIVATE_SETTINGS.add(DISPLAY_COLOR_MODE);
-        }
-
         /**
          * @hide
          */
@@ -4496,6 +4452,12 @@ public final class Settings {
 
         /** @hide */
         private static final Validator ONE_HAND_MODE_ENABLED_VALIDATOR = BOOLEAN_VALIDATOR;
+
+        /**
+         * Swap volume buttons on rotation
+         * @hide
+         */
+        public static final String SWAP_VOLUME_KEYS_ON_ROTATION = "swap_volume_keys_on_rotation";
 
         /**
          *  Enable statusbar double tap gesture on to put device to sleep
@@ -5045,8 +5007,6 @@ public final class Settings {
         public static final String HEADS_UP_NOTIFICATION_SNOOZE = "heads_up_notification_snooze";
 
         /**
-=======
->>>>>>> parent of 57505b74fc5... Gesture Anywhere [1/3]
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
