@@ -23,4 +23,11 @@
     <integer name="recents_animate_task_bar_enter_delay">275</integer>
     <!-- The min animation duration for animating the task bar out. -->
     <integer name="recents_animate_task_bar_exit_duration">125</integer>
+
+<!-- These resources are around just to allow their values to be customized
+     for different hardware and product builds. -->
+
+    <!-- Doze: alternate schedule -->
+    <string name="doze_pulse_schedule_alternate" translatable="false">1s</string>
+
 </resources>
