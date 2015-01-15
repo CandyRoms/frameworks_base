@@ -56,6 +56,8 @@
     <java-symbol type="drawable" name="ic_lock_user" />
     <java-symbol type="drawable" name="ic_lock_assist" />
     <java-symbol type="drawable" name="ic_lock_voice" />
+    <java-symbol type="drawable" name="ic_lock_screenrecord" />
+    <java-symbol type="string" name="global_action_screenrecord" />
 
     <!-- ADB notification -->
     <java-symbol type="string" name="adb_net_active_notification_title" />
