@@ -19,3 +19,4 @@
 package android.bluetooth;
 
 parcelable BluetoothHidDeviceAppConfiguration;
+
