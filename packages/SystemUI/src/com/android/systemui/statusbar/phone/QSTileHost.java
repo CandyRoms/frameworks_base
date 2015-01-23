@@ -34,6 +34,7 @@ import com.android.internal.util.cm.QSConstants;
 import com.android.internal.util.cm.QSUtils;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
+import com.android.systemui.qs.tiles.AdbOverNetworkTile;
 import com.android.systemui.qs.tiles.AirplaneModeTile;
 import com.android.systemui.qs.tiles.AmbientDisplayTile;
 import com.android.systemui.qs.tiles.BatterySaverTile;
@@ -292,6 +293,8 @@ public class QSTileHost implements QSTile.Host {
                 return new CastTile(this);
             case QSConstants.TILE_HOTSPOT:
                 return new HotspotTile(this);
+            case QSConstants.TILE_ADB_NETWORK:
+                return new AdbOverNetworkTile(this);
             case QSConstants.TILE_COMPASS:
                 return new CompassTile(this);
             case QSConstants.TILE_NFC:
