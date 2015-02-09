@@ -150,6 +150,8 @@ id="degrees">%1$.0f</xliff:g>\u00b0 <xliff:g id="direction">%2$s</xliff:g></stri
     <string name="quick_settings_ambient_display_label">Ambient display</string>
     <string name="quick_settings_sync_label">Sync</string>
     <string name="quick_settings_battery_saver_label">Battery saver</string>
+    <string name="quick_settings_expanded_desktop">Expanded</string>
+    <string name="quick_settings_expanded_desktop_off">Normal</string>
     <string name="quick_settings_screen_off">Screen off</string>
     <string name="quick_settings_screenshot">Screenshot</string>
     
