@@ -144,5 +144,6 @@ id="degrees">%1$.0f</xliff:g>\u00b0 <xliff:g id="direction">%2$s</xliff:g></stri
     <string name="quick_settings_screen_timeout_detail_title">Screen timeout</string>
     <string name="quick_settings_sync_label">Sync</string>
     <string name="quick_settings_battery_saver_label">Battery saver</string>
+    <string name="quick_settings_screen_off">Screen off</string>
 
 </resources>
