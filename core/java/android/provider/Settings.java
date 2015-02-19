@@ -3734,6 +3734,12 @@ public final class Settings {
         public static final String LOCK_SCREEN_SHOW_WEATHER_LOCATION = "lock_screen_show_weather_location";
 
         /**
+         * Alternative recent apps integration using OmniSwitch
+         * @hide
+         */
+        public static final String RECENTS_USE_OMNISWITCH = "recents_use_omniswitch";
+        
+        /**
          * Weather condition icon on the lock screen
          * 0: monochrome
          * 1: colored
