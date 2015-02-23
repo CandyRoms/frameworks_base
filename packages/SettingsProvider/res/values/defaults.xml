@@ -293,4 +293,11 @@
 
     <!-- Defaults for Settings.System.DEV_FORCE_SHOW_NAVBAR. -->
     <integer name="def_force_disable_navkeys">0</integer>
+
+    <!-- Default for Settings.System.QS_QUICK_PULLDOWN.
+         0. Off
+         1. Right
+         2. Left -->
+    <integer name="def_qs_quick_pulldown">0</integer>
+
 </resources>
