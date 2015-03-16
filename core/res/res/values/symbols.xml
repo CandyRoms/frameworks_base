@@ -2396,7 +2396,4 @@
   <!-- Gesture Sensor -->
   <java-symbol type="bool" name="config_enableGestureService" />
 
-  <!-- Package Manager -->
-  <java-symbol type="array" name="config_disabledComponents" />
-
 </resources>
