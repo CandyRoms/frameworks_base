@@ -62,6 +62,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 >
+
+                <com.android.systemui.statusbar.policy.ClockLeft
+                    android:id="@+id/left_clock"
+                    android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:paddingEnd="4dip"
+                    android:visibility="gone"
+                    android:singleLine="true"
+                    />
+
                 <com.android.keyguard.CarrierText
                     android:id="@+id/status_carrier_text"
                     android:layout_width="wrap_content"
