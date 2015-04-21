@@ -265,6 +265,10 @@ public interface MetricsConstants {
     public static final int FUELGAUGE_INACTIVE_APPS = 238;
     // Candy
     public static final int CANDY_QS = 239;
+    public static final int THEMES = 240;
+    public static final int HEADSUP = 241;
+    public static final int CANDY = 242;
+    public static final int KERNEL = 243;
 
     // These constants must match those in the analytic pipeline, do not edit.
     // Add temporary values to the top of MetricsLogger instead.
