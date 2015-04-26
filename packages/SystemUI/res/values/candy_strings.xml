@@ -34,17 +34,22 @@ the screen). [CHAR LIMIT=NONE] -->
 the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_network_adb_on">ADB over network on.</string>
 
-    <!-- Announcement made when network adb changes to off (not shown on the screen). [CHAR 
-LIMIT=NONE] -->
-    <string name="accessibility_quick_settings_network_adb_changed_off">ADB over network turned 
-off.</string>
-    <!-- Announcement made when network adb changes to on (not shown on the screen). [CHAR 
-LIMIT=NONE] -->
-    <string name="accessibility_quick_settings_network_adb_changed_on">ADB over network turned 
-on.</string>
+    <!-- Announcement made when network adb changes to off (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_network_adb_changed_off">ADB over network turned off.</string>
+    <!-- Announcement made when network adb changes to on (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_network_adb_changed_on">ADB over network turned on.</string>
 
-    <!-- Content description of the compass tile in quick settings when off (not shown on the 
-screen). [CHAR LIMIT=NONE] -->
+    <!-- Content description of the ambient display tile in quick settings when off (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_ambient_display_off">Ambient display off.</string>
+    <!-- Content description of the ambient display tile in quick settings when on (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_ambient_display_on">Ambient display on.</string>
+
+    <!-- Announcement made when ambient display changes to off (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_ambient_display_changed_off">Ambient display turned off.</string>
+    <!-- Announcement made when ambient display changes to on (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_ambient_display_changed_on">Ambient display turned on.</string>
+
+    <!-- Content description of the compass tile in quick settings when off (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_compass_off">Compass off.</string>
     <!-- Content description of the compass tile in quick settings when on (not shown on the 
 screen). [CHAR LIMIT=NONE] -->
@@ -142,6 +147,7 @@ LIMIT=NONE] -->
 id="degrees">%1$.0f</xliff:g>\u00b0 <xliff:g id="direction">%2$s</xliff:g></string>
     <string name="quick_settings_compass_init">Initializing\u2026</string>
     <string name="quick_settings_screen_timeout_detail_title">Screen timeout</string>
+    <string name="quick_settings_ambient_display_label">Ambient display</string>
     <string name="quick_settings_sync_label">Sync</string>
     <string name="quick_settings_battery_saver_label">Battery saver</string>
     <string name="quick_settings_screen_off">Screen off</string>
