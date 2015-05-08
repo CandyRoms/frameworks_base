@@ -4182,6 +4182,175 @@ public final class Settings {
          */
         public static final String DOUBLE_TAP_SLEEP_NAVBAR = "double_tap_sleep_navbar";
 
+         /**
+         * Config for advanced candy pie 3.0
+         *
+         * @hide
+         */
+        public static final String CANDY_PIE_CONFIG = "candy_pie_config";
+
+       /**
+        * CANDY Pie control panel. Meet him on the spot.
+        * 0 = off
+        * 1 = on
+        * Changes aspect depends on status bar visibility.
+        * @hide
+        */
+        public static final String CANDY_PIE_STATE = "candy_pie_state";
+
+        /**
+         * Pie size fraction, default is 1.0f (normal)
+         * @hide
+         */
+        public static final String CANDY_PIE_SIZE = "candy_pie_size";
+
+        /**
+         * Locations of the CANDY Pie in the screen.
+         * (1<<0) = LEFT
+         * (1<<1) = BOTTOM
+         * (1<<2) = RIGHT
+         * (1<<3) = TOP
+         * Default: LEFT
+         * @hide
+         */
+        public static final String CANDY_PIE_GRAVITY = "candy_pie_gravity";
+
+        /**
+         * Pie gap angle, should default to 2
+         * @hide
+         */
+        public static final String CANDY_PIE_GAP = "candy_pie_gap";
+
+        /**
+         * Pie empty angle, should default to 12
+         * @hide
+         */
+        public static final String CANDY_PIE_ANGLE = "candy_pie_angle";
+
+        /**
+         * Whether to use a separate delay for "slide to unlock" and security
+         * lock
+         * Pie status report
+         * 0 = Bare
+         * 1 = Quick
+         * 2 = Default
+         * 3 = Slow
+         * @hide
+         */
+        public static final String CANDY_PIE_MODE = "candy_pie_mode";
+
+        /**
+         * CANDY Pie menu, should default to 1 (yes, show)
+         * @hide
+         */
+        public static final String CANDY_PIE_MENU = "candy_pie_menu";
+
+        /**
+         * CANDY Pie last app, should default to 0 (no, show only when needed)
+         * @hide
+         */
+        public static final String CANDY_PIE_LAST_APP = "candy_pie_last_app";
+
+        /**
+         * CANDY Pie kill task, default to 0 (off)
+         * @hide
+         */
+        public static final String CANDY_PIE_KILL_TASK = "candy_pie_kill_task";
+
+        /**
+         * CANDY Pie action notifications, default to off
+         * @hide
+         */
+        public static final String CANDY_PIE_NOTIFICATIONS = "candy_pie_notifications";
+
+        /**
+         * Pie quick settings panel
+         * @hide
+         */
+        public static final String CANDY_PIE_SETTINGS_PANEL = "candy_pie_settings_panel";
+
+        /**
+         * CANDY Pie power, should default to 0 (no, show only when needed)
+         * @hide
+         */
+        public static final String CANDY_PIE_POWER = "candy_pie_power";
+
+        /**
+         * Pie screenshot
+         * @hide
+         */
+        public static final String CANDY_PIE_SCREENSHOT = "candy_pie_screenshot";
+
+        /**
+         * Pie toggles torch
+         * @hide
+         */
+        public static final String CANDY_PIE_TORCH = "candy_pie_torch";
+
+        /**
+         * Pie power menu
+         * @hide
+         */
+        public static final String CANDY_PIE_POWER_MENU = "candy_pie_power_menu";
+
+        /**
+         * Pie expanded desktop
+         * @hide
+         */
+        public static final String CANDY_PIE_EXPANDED_DESKTOP = "candy_pie_expanded_desktop";
+
+       // PIE COLORS EVERYWHERE! //
+
+        /**
+         * @hide
+         */
+        public static final String CANDY_PIE_ENABLE_COLOR = "candy_pie_enable_color";
+
+        /**
+         * @hide
+         */
+        public static final String CANDY_PIE_JUICE = "candy_pie_juice";
+
+        /**
+         * @hide
+         */
+        public static final String CANDY_PIE_BUTTON_COLOR = "candy_pie_button_color";
+
+        /**
+         * @hide
+         */
+        public static final String CANDY_PIE_SNAP_BACKGROUND = "candy_pie_snap_background";
+
+        /**
+         * @hide
+         */
+        public static final String CANDY_PIE_BACKGROUND = "candy_pie_background";
+
+        /**
+         * @hide
+         */
+        public static final String CANDY_PIE_SELECT = "candy_pie_select";
+
+        /**
+         * @hide
+         */
+        public static final String CANDY_PIE_OUTLINES = "candy_pie_outlines";
+
+        /**
+         * @hide
+         */
+        public static final String CANDY_PIE_STATUS_CLOCK = "candy_pie_status_clock";
+
+        /**
+         * @hide
+         */
+        public static final String CANDY_PIE_STATUS = "candy_pie_status";
+
+        /**
+         * @hide
+         */
+        public static final String CANDY_PIE_CHEVRON = "candy_pie_chevron";
+
         /**
          * Boolean value whether to link ringtone and notification volume
          *
@@ -10163,3 +10332,4 @@ public final class Settings {
         return packages[0];
     }
 }
+
