@@ -678,6 +678,8 @@ public class WindowManagerService extends IWindowManager.Stub
                 Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE);
         private final Uri mAnimationDurationScaleUri =
                 Settings.Global.getUriFor(Settings.Global.ANIMATOR_DURATION_SCALE);
+        private final Uri mDisableAnimationsUri =
+                Settings.System.getUriFor(Settings.System.DISABLE_TRANSITION_ANIMATIONS);
 
         public SettingsObserver() {
             super(new Handler());
@@ -690,6 +692,8 @@ public class WindowManagerService extends IWindowManager.Stub
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(mAnimationDurationScaleUri, false, this,
                     UserHandle.USER_ALL);
+            resolver.registerContentObserver(mDisableAnimationsUri, false, this,
+                    UserHandle.USER_ALL);
         }
 
         @Override
@@ -700,6 +704,12 @@ public class WindowManagerService extends IWindowManager.Stub
 
             if (mDisplayInversionEnabledUri.equals(uri)) {
                 updateCircularDisplayMaskIfNeeded();
+            } else if (mDisableAnimationsUri.equals(uri))  {
+                mAnimationsForceDisabled = Settings.System.getInt(
+                    mContext.getContentResolver(), Settings.System.DISABLE_TRANSITION_ANIMATIONS, 0) != 0;
+                synchronized (mWindowMap) {
+                    dispatchNewAnimatorScaleLocked(null);
+                }
             } else {
                 @UpdateAnimationScaleMode
                 final int mode;
@@ -728,7 +738,8 @@ public class WindowManagerService extends IWindowManager.Stub
     private float mWindowAnimationScaleSetting = 0.5f;
     private float mTransitionAnimationScaleSetting = 0.5f;
     private float mAnimatorDurationScaleSetting = 0.5f;
-    private boolean mAnimationsDisabled = false;
+    boolean mAnimationsDisabled = false;
+    private boolean mAnimationsForceDisabled = false;
 
     final InputManagerService mInputManager;
     final DisplayManagerInternal mDisplayManagerInternal;
@@ -3171,11 +3182,15 @@ public class WindowManagerService extends IWindowManager.Stub
     }
 
     public float getWindowAnimationScaleLocked() {
-        return mAnimationsDisabled ? 0 : mWindowAnimationScaleSetting;
+        if (mAnimationsDisabled || mAnimationsForceDisabled)
+            return 0;
+        return mWindowAnimationScaleSetting;
     }
 
     public float getTransitionAnimationScaleLocked() {
-        return mAnimationsDisabled ? 0 : mTransitionAnimationScaleSetting;
+        if (mAnimationsDisabled || mAnimationsForceDisabled)
+            return 0;
+        return mTransitionAnimationScaleSetting;
     }
 
     @Override
@@ -3197,7 +3212,9 @@ public class WindowManagerService extends IWindowManager.Stub
     @Override
     public float getCurrentAnimatorScale() {
         synchronized(mWindowMap) {
-            return mAnimationsDisabled ? 0 : mAnimatorDurationScaleSetting;
+            if (mAnimationsDisabled || mAnimationsForceDisabled)
+                return 0;
+            return mAnimatorDurationScaleSetting;
         }
     }
 
