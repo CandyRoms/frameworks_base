@@ -39,7 +39,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ScreenTimeoutTile extends QSTile<ScreenTimeoutTile.TimeoutState> {
-    private static final Intent SETTINGS_INTENT = new Intent("android.settings.DISPLAY_SETTINGS");
+
+    private static final Intent SETTINGS_INTENT = new Intent(Settings.ACTION_DISPLAY_SETTINGS);
     private static final String TIMEOUT_ENTRIES_NAME = "screen_timeout_entries";
     private static final String TIMEOUT_VALUES_NAME = "screen_timeout_values";
     private static final String SETTINGS_PACKAGE_NAME = "com.android.settings";
@@ -243,7 +244,15 @@ public class ScreenTimeoutTile extends QSTile<ScreenTimeoutTile.TimeoutState> {
 
         state.visible = true;
         state.label = makeTimeoutSummaryString(newTimeout);
+        state.contentDescription = mContext.getString(
+                R.string.accessibility_quick_settings_screen_timeout, state.label);
         state.previousTimeout = newTimeout;
+    }
+
+    @Override
+    protected String composeChangeAnnouncement() {
+        return mContext.getString(R.string.accessibility_quick_settings_screen_timeout_changed,
+                mState.label);
     }
 
     private class RadioAdapter extends ArrayAdapter<String> {

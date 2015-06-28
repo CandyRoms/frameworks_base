@@ -27,12 +27,66 @@
     <string name="systemui_tuner_statusbar_title">Statusbar Items</string>
     <string name="systemui_tuner_qs_title">Quick Settings</string>
 
+    <!-- Content description of the network adb tile in quick settings when off (not shown on 
+the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_network_adb_off">ADB over network off.</string>
+    <!-- Content description of the network adb tile in quick settings when on (not shown on 
+the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_network_adb_on">ADB over network on.</string>
+
+    <!-- Announcement made when network adb changes to off (not shown on the screen). [CHAR 
+LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_network_adb_changed_off">ADB over network turned 
+off.</string>
+    <!-- Announcement made when network adb changes to on (not shown on the screen). [CHAR 
+LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_network_adb_changed_on">ADB over network turned 
+on.</string>
+
+    <!-- Content description of the compass tile in quick settings when off (not shown on the 
+screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_compass_off">Compass off.</string>
+    <!-- Content description of the compass tile in quick settings when on (not shown on the 
+screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_compass_on">Compass on.</string>
+
+    <!-- Announcement made when compass changes to off (not shown on the screen). [CHAR 
+LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_compass_changed_off">Compass turned 
+off.</string>
+    <!-- Announcement made when compass changes to on (not shown on the screen). [CHAR 
+LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_compass_changed_on">Compass turned on.</string>
+
     <!-- Content description of the location tile in quick settings when on, battery saving mode (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_location_battery_saving">Location reporting: battery saving mode.</string>
     <!-- Content description of the location tile in quick settings when on, sensors only mode (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_location_gps_only">Location reporting: sensors only mode.</string>
     <!-- Content description of the location tile in quick settings when on, high accuracy mode (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_location_high_accuracy">Location reporting: high accuracy mode.</string>
+
+    <!-- Announcement made when the location tile changes to battery saving (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_location_changed_battery_saving">Location reporting changed to battery saving mode.</string>
+    <!-- Announcement made when the location tile changes to sensors only (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_location_changed_gps_only">Location reporting changed to sensors only mode.</string>
+    <!-- Announcement made when the location tile changes to high accuracy (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_location_changed_high_accuracy">Location reporting changed to high accuracy mode.</string>
+
+    <!-- Content description of the NFC tile in quick settings when off (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_nfc_off">NFC off.</string>
+    <!-- Content description of the NFC tile in quick settings when on (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_nfc_on">NFC on.</string>
+
+    <!-- Announcement made when NFC changes to off (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_nfc_changed_off">NFC turned off.</string>
+    <!-- Announcement made when NFC changes to on (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_nfc_changed_on">NFC turned on.</string>
+
+    <!-- Content description of the screen timeout tile in quick settings (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_screen_timeout">Screen timeout: <xliff:g id="timeout" example="30 seconds">%s</xliff:g>.</string>
+
+    <!-- Announcement made when the screen timeout tile changes (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_screen_timeout_changed">Screen timeout changed to <xliff:g id="timeout" example="30 seconds">%s</xliff:g>.</string>
 
     <!-- Content description of the sync tile in quick settings when off (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_sync_off">Sync off.</string>
