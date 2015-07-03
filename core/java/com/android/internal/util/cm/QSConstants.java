@@ -47,6 +47,7 @@ public class QSConstants {
     public static final String TILE_CANDY = "candy_settings";
     public static final String TILE_THEMES = "toggleThemes"; 
     public static final String TILE_KERNEL_ADIUTOR = "kernel_adiutor";
+    public static final String TILE_PIE = "pie";
 
     // Order matters
     protected static final ArrayList<String> TILES_DEFAULT = new ArrayList<String>();
@@ -84,5 +85,6 @@ public class QSConstants {
         TILES_AVAILABLE.add(TILE_CANDY);
  	TILES_AVAILABLE.add(TILE_THEMES);
         TILES_AVAILABLE.add(TILE_KERNEL_ADIUTOR);
+        TILES_AVAILABLE.add(TILE_PIE);
     }
 }
