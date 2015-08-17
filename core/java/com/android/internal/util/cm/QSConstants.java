@@ -48,6 +48,7 @@ public class QSConstants {
     public static final String TILE_THEMES = "toggleThemes"; 
     public static final String TILE_KERNEL_ADIUTOR = "kernel_adiutor";
     public static final String TILE_PIE = "pie";
+    public static final String TILE_VOLUME = "volume_panel";
 
     // Order matters
     protected static final ArrayList<String> TILES_DEFAULT = new ArrayList<String>();
@@ -83,8 +84,9 @@ public class QSConstants {
         TILES_AVAILABLE.add(TILE_SCREENSHOT);
         TILES_AVAILABLE.add(TILE_HEADS_UP);
         TILES_AVAILABLE.add(TILE_CANDY);
- 	TILES_AVAILABLE.add(TILE_THEMES);
+        TILES_AVAILABLE.add(TILE_THEMES);
         TILES_AVAILABLE.add(TILE_KERNEL_ADIUTOR);
         TILES_AVAILABLE.add(TILE_PIE);
+        TILES_AVAILABLE.add(TILE_VOLUME);
     }
 }

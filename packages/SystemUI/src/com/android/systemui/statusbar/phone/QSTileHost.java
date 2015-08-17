@@ -58,6 +58,7 @@ import com.android.systemui.qs.tiles.ScreenOffTile;
 import com.android.systemui.qs.tiles.ScreenshotTile;
 import com.android.systemui.qs.tiles.ScreenTimeoutTile;
 import com.android.systemui.qs.tiles.SyncTile;
+import com.android.systemui.qs.tiles.VolumeTile;
 import com.android.systemui.qs.tiles.WifiTile;
 import com.android.systemui.qs.tiles.CandyTile;
 import com.android.systemui.qs.tiles.ThemesTile;
@@ -323,13 +324,15 @@ public class QSTileHost implements QSTile.Host {
             case QSConstants.TILE_HEADS_UP:
                 return new HeadsUpTile(this);
             case QSConstants.TILE_CANDY:
-		return new CandyTile(this);
+		        return new CandyTile(this);
             case QSConstants.TILE_THEMES:
                 return new ThemesTile(this);
             case QSConstants.TILE_KERNEL_ADIUTOR:
                 return new KernelAdiutorTile(this);
             case QSConstants.TILE_PIE:
                 return new PieTile(this);
+            case QSConstants.TILE_VOLUME:		
+                return new VolumeTile(this);
             default:
                 throw new IllegalArgumentException("Bad tile spec: " + tileSpec);
         }
@@ -390,4 +393,5 @@ public class QSTileHost implements QSTile.Host {
         }
     }
 }
+
 

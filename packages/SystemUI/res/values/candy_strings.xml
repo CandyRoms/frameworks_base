@@ -57,16 +57,12 @@ the screen). [CHAR LIMIT=NONE] -->
 
     <!-- Content description of the compass tile in quick settings when off (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_compass_off">Compass off.</string>
-    <!-- Content description of the compass tile in quick settings when on (not shown on the 
-screen). [CHAR LIMIT=NONE] -->
+    <!-- Content description of the compass tile in quick settings when on (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_compass_on">Compass on.</string>
 
-    <!-- Announcement made when compass changes to off (not shown on the screen). [CHAR 
-LIMIT=NONE] -->
-    <string name="accessibility_quick_settings_compass_changed_off">Compass turned 
-off.</string>
-    <!-- Announcement made when compass changes to on (not shown on the screen). [CHAR 
-LIMIT=NONE] -->
+    <!-- Announcement made when compass changes to off (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_compass_changed_off">Compass turned off.</string>
+    <!-- Announcement made when compass changes to on (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_compass_changed_on">Compass turned on.</string>
 
     <!-- Content description of the location tile in quick settings when on, battery saving mode (not shown on the screen). [CHAR LIMIT=NONE] -->
@@ -137,6 +133,8 @@ LIMIT=NONE] -->
     <string name="accessibility_quick_settings_heads_up_changed_off">Heads up turned off.</string>
     <!-- Announcement made when heads up changes to on (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_heads_up_changed_on">Heads up turned on.</string>
+    <!-- Content description of the volume panel tile in quick settings (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_volume_panel">Volume panel.</string>
 
     <!-- QuickSettings: Location detail panel title [CHAR LIMIT=NONE] -->
     <string name="quick_settings_location_detail_title">Location</string>
@@ -159,8 +157,7 @@ LIMIT=NONE] -->
     <string name="quick_settings_nfc_label">NFC</string>
     <string name="quick_settings_brightness">Brightness</string>
     <string name="quick_settings_compass_label">Compass</string>
-    <string name="quick_settings_compass_value" translatable="false"><xliff:g 
-id="degrees">%1$.0f</xliff:g>\u00b0 <xliff:g id="direction">%2$s</xliff:g></string>
+    <string name="quick_settings_compass_value" translatable="false"><xliff:g id="degrees">%1$.0f</xliff:g>\u00b0 <xliff:g id="direction">%2$s</xliff:g></string>
     <string name="quick_settings_compass_init">Initializing\u2026</string>
 
     <!-- Pie tile -->
@@ -178,7 +175,10 @@ id="degrees">%1$.0f</xliff:g>\u00b0 <xliff:g id="direction">%2$s</xliff:g></stri
     <string name="quick_settings_heads_up_label">Heads up</string>
     <string name="quick_settings_candy_on">Candy Interface</string>
     <string name="quick_settings_themes">Themes</string>
-    <string name="quick_settings_kernel_adiutor">Kernel Adiutor</string>    
+    <string name="quick_settings_kernel_adiutor">Kernel Adiutor</string>
+
+    <!-- Volume QS Tile -->
+    <string name="quick_settings_volume_panel_label">Volume panel</string>
 
     <!-- Weather string format in expanded statusbar header -->
     <string name="status_bar_expanded_header_weather_format"><xliff:g id="temp">%1$s</xliff:g> - <xliff:g id="condition">%2$s</xliff:g></string>
