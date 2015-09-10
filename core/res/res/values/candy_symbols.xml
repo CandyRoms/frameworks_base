@@ -248,7 +248,9 @@
     <java-symbol type="id" name="dexopt_message_detail" />
     <java-symbol type="id" name="dexopt_progress" />
 
-     <!-- Wifi AP Disabled from Subscription change -->
+    <!-- Wifi AP Disabled from Subscription change -->
     <java-symbol type="string" name="subscription_change_disabled_wifi_ap" />
 
+    <!-- WiFi turn off notification -->
+    <java-symbol type="string" name="notify_turn_wifi_off_title" />
 </resources>
