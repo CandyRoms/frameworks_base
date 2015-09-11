@@ -165,4 +165,7 @@
 
     <!-- label for item that takes On-The-Go in the phone options dialog -->
     <string name="global_action_onthego">On-The-Go Mode</string>
+
+    <!-- Wifi Hotspot disabled due to subscription change -->
+    <string name="subscription_change_disabled_wifi_ap">Disabled WiFi hotspot due to SIM subscription change</string>
 </resources>
