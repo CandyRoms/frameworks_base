@@ -32,4 +32,7 @@
     <!-- whether to show emergency button in lock screen -->
     <bool name="config_showEmergencyButton">true</bool>
 
+    <!-- Guide user to wipe data after fail to unlock for the max times -->
+    <integer name="config_max_unlock_countdown_times">0</integer>
+
 </resources>
