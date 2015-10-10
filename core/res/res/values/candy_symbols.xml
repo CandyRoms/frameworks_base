@@ -37,4 +37,24 @@
     <java-symbol type="string" name="privacy_guard_dialog_title" />
     <java-symbol type="string" name="privacy_guard_dialog_summary" />
 
+    <!-- Reboot - Advanced Reboot -->
+    <java-symbol type="string" name="reboot_confirm" />
+    <java-symbol type="string" name="reboot_title" />
+    <java-symbol type="string" name="reboot_progress" />
+    <java-symbol type="string" name="global_action_reboot" />
+    <java-symbol type="drawable" name="ic_lock_power_reboot" />
+    <java-symbol type="array" name="shutdown_reboot_options" />
+    <java-symbol type="array" name="shutdown_reboot_actions" />
+    <java-symbol type="bool" name="config_advanced_reboot" />
+
+  <!-- Power menu -->
+  <java-symbol type="drawable" name="ic_lock_screenshot" />
+  <java-symbol type="string" name="global_action_screenshot" />
+  <java-symbol type="string" name="global_action_search" />
+  <java-symbol type="string" name="global_action_voicesearch" />
+  <java-symbol type="drawable" name="ic_lock_settings" />
+  <java-symbol type="drawable" name="ic_lock_user" />
+  <java-symbol type="drawable" name="ic_lock_assist" />
+  <java-symbol type="drawable" name="ic_lock_voice" />
+
 </resources>
