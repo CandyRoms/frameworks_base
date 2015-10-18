@@ -47,8 +47,9 @@ class NetPluginDelegate {
 
     private static boolean extensionFailed;
 
-    static void getTetherStats(NetworkStats uidStats, NetworkStats devStats,
+    public static void getTetherStats(NetworkStats uidStats, NetworkStats devStats,
             NetworkStats xtStats) {
+        if (LOGV) Slog.v(TAG, "getTetherStats() E");
         if (!loadTetherExtJar()) {
             return;
         }
@@ -62,7 +63,8 @@ class NetPluginDelegate {
         }
     }
 
-    static void setQuota(String iface, long quota) {
+    public static void setQuota(String iface, long quota) {
+        if (LOGV) Slog.v(TAG, "setQuota(" + iface + ", " + quota + ") E");
         if (!loadTetherExtJar()) {
             return;
         }
