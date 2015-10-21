@@ -656,7 +656,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             "com.cyanogenmod.lockclock.preference.Preferences");
         mActivityStarter.startActivity(intent, true /* dismissShade */);
     }
-
     public void setQSPanel(QSPanel qsp) {
         mQSPanel = qsp;
         if (mQSPanel != null) {
