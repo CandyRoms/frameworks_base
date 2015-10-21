@@ -3465,12 +3465,6 @@ public final class Settings {
          */
         public static final String STATUSBAR_CLOCK_AM_PM_STYLE = "statusbar_clock_am_pm_style";
 
-        /** 
-         * Status bar battery %
-         * @hide
-         */
-        public static final String STATUS_BAR_SHOW_BATTERY_PERCENT = "status_bar_show_battery_percent";
-
         /**
          * Style of clock
          * 0 - Right Clock
@@ -3509,6 +3503,18 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_CLOCK_DATE_FORMAT = "statusbar_clock_date_format";
+
+        /** 
+         * Status bar battery %
+         * @hide
+         */
+        public static final String STATUS_BAR_SHOW_BATTERY_PERCENT = "status_bar_show_battery_percent";
+
+         /**
+         * Boolean value on whether to show weather in the statusbar
+         * @hide
+         */
+        public static final String STATUS_BAR_SHOW_WEATHER = "status_bar_show_weather";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
