@@ -156,4 +156,7 @@ id="degrees">%1$.0f</xliff:g>\u00b0 <xliff:g id="direction">%2$s</xliff:g></stri
     <!-- Weather string format in expanded statusbar header -->
     <string name="status_bar_expanded_header_weather_format"><xliff:g id="temp">%1$s</xliff:g> - <xliff:g id="condition">%2$s</xliff:g></string>
 
+    <!-- Battery level for expanded quick settings [CHAR LIMIT=2] -->
+    <string name="battery_level_template"><xliff:g id="level" example="45">%d</xliff:g>%%</string>
+
 </resources>
