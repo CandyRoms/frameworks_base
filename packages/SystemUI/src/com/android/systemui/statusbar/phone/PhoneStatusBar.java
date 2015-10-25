@@ -106,6 +106,7 @@ import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
 import com.android.keyguard.ViewMediatorCallback;
 import com.android.systemui.BatteryMeterView;
+import com.android.systemui.BatteryMeterView.BatteryMeterMode;
 import com.android.systemui.BatteryLevelTextView;
 import com.android.systemui.DemoMode;
 import com.android.systemui.EventLogConstants;
@@ -266,6 +267,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     BluetoothControllerImpl mBluetoothController;
     SecurityControllerImpl mSecurityController;
     BatteryController mBatteryController;
+    private BatteryMeterView mBatteryView;
+    private BatteryLevelTextView mBatteryTextView;
     LocationControllerImpl mLocationController;
     NetworkControllerImpl mNetworkController;
     HotspotControllerImpl mHotspotController;
@@ -407,6 +410,69 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mNavigationBarView.setDisabledFlags(mDisabled1);
         mNavigationBarView.setBar(this);
         addNavigationBar();
+    }
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            //resolver.registerContentObserver(Settings.System.getUriFor(
+            //        Settings.System.STATUS_BAR_BATTERY_STYLE), false, this);
+            //resolver.registerContentObserver(Settings.System.getUriFor(
+            //        Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT), false, this);
+            update();
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            update();
+        }
+
+        public void update() {
+            ContentResolver resolver = mContext.getContentResolver();
+/*
+            boolean showInsidePercent = Settings.System.getIntForUser(resolver,
+                    Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT, 0, mCurrentUserId) == 1;
+
+            //boolean showNextPercent = Settings.System.getIntForUser(resolver,
+            //        Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT, 0, mCurrentUserId) == 2;
+
+            int batteryStyle = Settings.System.getIntForUser(resolver,
+                    Settings.System.STATUS_BAR_BATTERY_STYLE, 0, mCurrentUserId);
+            BatteryMeterMode meterMode = BatteryMeterMode.BATTERY_METER_ICON_PORTRAIT;
+            switch (batteryStyle) {
+                case 2:
+                    meterMode = BatteryMeterMode.BATTERY_METER_CIRCLE;
+                    break;
+
+                case 4:
+                    meterMode = BatteryMeterMode.BATTERY_METER_GONE;
+                    //showNextPercent = false;
+                    break;
+
+                case 5:
+                    meterMode = BatteryMeterMode.BATTERY_METER_ICON_LANDSCAPE;
+                    break;
+
+                case 6:
+                    meterMode = BatteryMeterMode.BATTERY_METER_TEXT;
+                    showInsidePercent = false;
+                    //showNextPercent = true;
+                    break;
+
+                default:
+                    break;
+            }
+
+            // Update Battery
+            mBatteryView.setMode(meterMode);
+            mBatteryView.setShowPercent(showInsidePercent);
+            //mBatteryTextView.setShowPercent(showNextPercent);
+*/
+        }
     }
 
     // ensure quick settings is disabled until the current user makes it through the setup wizard
@@ -682,6 +748,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         } catch (RemoteException ex) {
             // no window manager? good luck with that
         }
+
+        SettingsObserver observer = new SettingsObserver(mHandler);
+        observer.observe();
 
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext, mCastController, mHotspotController,
@@ -1000,10 +1069,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mUserInfoController.reloadUserInfo();
 
         mHeader.setBatteryController(mBatteryController);
-        ((BatteryMeterView) mStatusBarView.findViewById(R.id.battery)).setBatteryController(
-                mBatteryController);
-        ((BatteryLevelTextView) mStatusBarView.findViewById(R.id.battery_level_text))
-                .setBatteryController(mBatteryController);
+        mBatteryView = (BatteryMeterView) mStatusBarView.findViewById(R.id.battery);
+        mBatteryView.setBatteryController(mBatteryController);
+        mBatteryTextView = (BatteryLevelTextView) mStatusBarView.findViewById(R.id.battery_level_text);
+        mBatteryTextView.setBatteryController(mBatteryController);
         mKeyguardStatusBar.setBatteryController(mBatteryController);
         mHeader.setNextAlarmController(mNextAlarmController);
         mHeader.setWeatherController(mWeatherController);
