@@ -18,15 +18,12 @@
 package com.android.systemui;
 
 import android.animation.ArgbEvaluator;
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.database.ContentObserver;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -36,11 +33,9 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -208,13 +203,6 @@ public class BatteryMeterView extends View implements DemoMode,
         }
     };
 
-    private ContentObserver mObserver = new ContentObserver(new Handler()) {
-        public void onChange(boolean selfChange, Uri uri) {
-            loadShowBatterySetting();
-            postInvalidate();
-        }
-    };
-
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -229,10 +217,6 @@ public class BatteryMeterView extends View implements DemoMode,
         }
         mBatteryController.addStateChangedCallback(this);
         mAttached = true;
-        getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
-                STATUS_BAR_BATTERY_STYLE), false, mObserver);
-        getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
-                STATUS_BAR_SHOW_BATTERY_PERCENT), false, mObserver);
     }
 
     @Override
@@ -242,40 +226,6 @@ public class BatteryMeterView extends View implements DemoMode,
         mAttached = false;
         getContext().unregisterReceiver(mTracker);
         mBatteryController.removeStateChangedCallback(this);
-    }
-
-    private void loadShowBatterySetting() {
-        ContentResolver resolver = mContext.getContentResolver();
-        int currentUserId = ActivityManager.getCurrentUser();
-
-        boolean showInsidePercent = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT, 0, currentUserId) == 1;
-
-        int batteryStyle = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_BATTERY_STYLE, 0, currentUserId);
-        BatteryMeterMode meterMode = BatteryMeterMode.BATTERY_METER_ICON_PORTRAIT;
-        switch (batteryStyle) {
-            case 2:
-                meterMode = BatteryMeterMode.BATTERY_METER_CIRCLE;
-                break;
-            case 4:
-                meterMode = BatteryMeterMode.BATTERY_METER_GONE;
-                showInsidePercent = false;
-                break;
-            case 5:
-                meterMode = BatteryMeterMode.BATTERY_METER_ICON_LANDSCAPE;
-                break;
-            case 6:
-                meterMode = BatteryMeterMode.BATTERY_METER_TEXT;
-                showInsidePercent = false;
-                break;
-            default:
-                break;
-        }
-
-        setMode(meterMode);
-        mShowPercent = showInsidePercent;
-        invalidateIfVisible();
     }
 
     public BatteryMeterView(Context context) {
@@ -316,9 +266,6 @@ public class BatteryMeterView extends View implements DemoMode,
                 R.fraction.battery_subpixel_smoothing_left, 1, 1);
         mSubpixelSmoothingRight = context.getResources().getFraction(
                 R.fraction.battery_subpixel_smoothing_right, 1, 1);
-
-        loadShowBatterySetting();
-        mBatteryMeterDrawable = createBatteryMeterDrawable(mMeterMode);
     }
 
     protected BatteryMeterDrawable createBatteryMeterDrawable(BatteryMeterMode mode) {
@@ -367,6 +314,35 @@ public class BatteryMeterView extends View implements DemoMode,
     public void onPowerSaveChanged() {
         mPowerSaveEnabled = mBatteryController.isPowerSave();
         invalidate();
+    }
+
+    @Override
+    public void onBatteryStyleChanged(int style, int percentMode) {
+        boolean showInsidePercent = percentMode == BatteryController.PERCENTAGE_MODE_INSIDE;
+        BatteryMeterMode meterMode = BatteryMeterMode.BATTERY_METER_ICON_PORTRAIT;
+
+        switch (style) {
+            case BatteryController.STYLE_CIRCLE:
+                meterMode = BatteryMeterMode.BATTERY_METER_CIRCLE;
+                break;
+            case BatteryController.STYLE_GONE:
+                meterMode = BatteryMeterMode.BATTERY_METER_GONE;
+                showInsidePercent = false;
+                break;
+            case BatteryController.STYLE_ICON_LANDSCAPE:
+                meterMode = BatteryMeterMode.BATTERY_METER_ICON_LANDSCAPE;
+                break;
+            case BatteryController.STYLE_TEXT:
+                meterMode = BatteryMeterMode.BATTERY_METER_TEXT;
+                showInsidePercent = false;
+                break;
+            default:
+                break;
+        }
+
+        setMode(meterMode);
+        mShowPercent = showInsidePercent;
+        invalidateIfVisible();
     }
 
     @Override
@@ -568,6 +544,13 @@ public class BatteryMeterView extends View implements DemoMode,
             mBoltPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             mBoltPaint.setColor(res.getColor(R.color.batterymeter_bolt_color));
             mBoltPoints = loadBoltPoints(res);
+
+        mDarkModeBackgroundColor =
+                context.getColor(R.color.dark_mode_icon_color_dual_tone_background);
+        mDarkModeFillColor = context.getColor(R.color.dark_mode_icon_color_dual_tone_fill);
+        mLightModeBackgroundColor =
+                context.getColor(R.color.light_mode_icon_color_dual_tone_background);
+        mLightModeFillColor = context.getColor(R.color.light_mode_icon_color_dual_tone_fill);
         }
 
         @Override
@@ -864,6 +847,13 @@ public class BatteryMeterView extends View implements DemoMode,
             mBoltPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             mBoltPaint.setColor(res.getColor(R.color.batterymeter_bolt_color));
             mBoltPoints = loadBoltPoints(res);
+
+        mDarkModeBackgroundColor =
+                context.getColor(R.color.dark_mode_icon_color_dual_tone_background);
+        mDarkModeFillColor = context.getColor(R.color.dark_mode_icon_color_dual_tone_fill);
+        mLightModeBackgroundColor =
+                context.getColor(R.color.light_mode_icon_color_dual_tone_background);
+        mLightModeFillColor = context.getColor(R.color.light_mode_icon_color_dual_tone_fill);
         }
 
         @Override
