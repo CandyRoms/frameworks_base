@@ -16,26 +16,23 @@
 
 package com.android.systemui;
 
+import com.android.systemui.statusbar.policy.BatteryController;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.TextView;
 
-import com.android.systemui.statusbar.policy.BatteryController;
+import java.text.NumberFormat;
 
 public class BatteryLevelTextView extends TextView implements
         BatteryController.BatteryStateChangeCallback{
-
-    private static final String STATUS_BAR_BATTERY_STYLE = "status_bar_battery_style";
-    private static final String STATUS_BAR_SHOW_BATTERY_PERCENT = "status_bar_show_battery_percent";
-
     private BatteryController mBatteryController;
     private boolean mBatteryCharging;
     private boolean mForceShow;
     private boolean mAttached;
     private int mRequestedVisibility;
-
     private int mStyle;
     private int mPercentMode;
 
@@ -69,11 +66,12 @@ public class BatteryLevelTextView extends TextView implements
         // Respect font size setting.
         setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimensionPixelSize(R.dimen.battery_level_text_size));
-     }
+    }
 
     @Override
     public void onBatteryLevelChanged(int level, boolean pluggedIn, boolean charging) {
-        setText(getResources().getString(R.string.battery_level_template, level));
+        String percentage = NumberFormat.getPercentInstance().format((double) level / 100.0);
+        setText(percentage);
         if (mBatteryCharging != charging) {
             mBatteryCharging = charging;
             updateVisibility();
@@ -123,7 +121,6 @@ public class BatteryLevelTextView extends TextView implements
         }
 
         if (showNextPercent || mForceShow) {
-        if (mShow || mForceShow) {
             super.setVisibility(mRequestedVisibility);
         } else {
             super.setVisibility(GONE);
