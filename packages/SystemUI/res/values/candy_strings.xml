@@ -165,4 +165,7 @@ id="degrees">%1$.0f</xliff:g>\u00b0 <xliff:g id="direction">%2$s</xliff:g></stri
     <string name="lockscreen_choose_action_title">Choose action</string>
     <string name="lockscreen_none_target">None</string>
     
+    <!-- Screenshot Delete Toast -->
+    <string name="delete_screenshot_toast">Screenshot Deleted</string>
+
 </resources>
