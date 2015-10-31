@@ -253,7 +253,7 @@
         <item name="numColumns">3</item>
     </style>
 
-    <style name="Theme.AlertDialogHost" parent="android:Theme.DeviceDefault">
+    <style name="Theme.AlertDialogHost" parent="android:Theme.Material.DayNight">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
