@@ -18,6 +18,10 @@
 -->
 <resources>
 
+<!-- Power menu -->
+  <java-symbol type="string" name="system_error_vendorprint" />
+
+
  <java-symbol type="array" name="config_blockPackagesSensorDrain" />
 </resources>
 
