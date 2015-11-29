@@ -50,6 +50,7 @@ public class QSConstants {
     public static final String TILE_PIE = "pie";
     public static final String TILE_VOLUME = "volume_panel";
     public static final String TILE_SCREEN_RECORD = "screen_record";
+    public static final String TILE_MUSIC = "music";
 
     // Order matters
     protected static final ArrayList<String> TILES_DEFAULT = new ArrayList<String>();
@@ -89,6 +90,7 @@ public class QSConstants {
         TILES_AVAILABLE.add(TILE_KERNEL_ADIUTOR);
         TILES_AVAILABLE.add(TILE_PIE);
         TILES_AVAILABLE.add(TILE_VOLUME);
-	TILES_AVAILABLE.add(TILE_SCREEN_RECORD);
+	    TILES_AVAILABLE.add(TILE_SCREEN_RECORD);
+        TILES_AVAILABLE.add(TILE_MUSIC);
     }
 }
