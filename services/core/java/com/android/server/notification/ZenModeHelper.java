@@ -40,8 +40,9 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.os.UserHandle;
-import android.provider.Settings.System;
+import android.provider.Settings;
 import android.provider.Settings.Global;
+import android.provider.Settings.System;
 import android.service.notification.IConditionListener;
 import android.service.notification.ZenModeConfig;
 import android.service.notification.ZenModeConfig.EventInfo;
@@ -91,6 +92,7 @@ public class ZenModeHelper {
     private AudioManagerInternal mAudioManager;
     private boolean mEffectsSuppressed;
     private boolean mAllowLights;
+    private boolean mVolumeDownZen;
     private int mPreviousZenMode = -1;
 
     public ZenModeHelper(Context context, Looper looper, ConditionProviders conditionProviders) {
@@ -690,7 +692,10 @@ public class ZenModeHelper {
 
         @Override
         public void onVolumeDownInSilent(VolumePolicy policy) {
-            if (policy.doNotDisturbWhenVolumeDownInSilent) {
+            mVolumeDownZen = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.VOLUME_DOWN_ZEN, 0, UserHandle.USER_CURRENT) == 1;
+
+            if (policy.doNotDisturbWhenVolumeDownInSilent && mVolumeDownZen) {
                 int newZen = -1;
                 if (mZenMode != Global.ZEN_MODE_NO_INTERRUPTIONS
                         && mZenMode != Global.ZEN_MODE_ALARMS) {
