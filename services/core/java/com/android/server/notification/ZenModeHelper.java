@@ -93,6 +93,7 @@ public class ZenModeHelper {
     private boolean mEffectsSuppressed;
     private boolean mAllowLights;
     private boolean mVolumeDownZen;
+    private boolean mVolumeUpZen;
     private int mPreviousZenMode = -1;
 
     public ZenModeHelper(Context context, Looper looper, ConditionProviders conditionProviders) {
@@ -687,7 +688,14 @@ public class ZenModeHelper {
 
         @Override
         public boolean canVolumeUpExitSilent() {
-            return mZenMode == Global.ZEN_MODE_OFF || mZenMode == Global.ZEN_MODE_IMPORTANT_INTERRUPTIONS;
+            mVolumeUpZen = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.VOLUME_UP_LEAVE_ZEN, 0, UserHandle.USER_CURRENT) == 1;
+
+            if (mVolumeUpZen) {
+                return true;
+            } else {
+                return mZenMode == Global.ZEN_MODE_OFF || mZenMode == Global.ZEN_MODE_IMPORTANT_INTERRUPTIONS;
+            }
         }
 
         @Override
