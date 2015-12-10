@@ -18,4 +18,6 @@
     <color name="secondary_text_default_material_dark">#FFFFFF</color>
     <!-- Notification action button -->
     <color name="notification_action_color_filter">#9F9F9F</color>
+    <!-- background of the picture in the big material notification template -->
+    <color name="notification_mtrl_big_picture_bg">#CC111111</color>
 </resources>
