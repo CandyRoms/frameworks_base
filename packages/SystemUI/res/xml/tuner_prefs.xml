@@ -17,13 +17,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/system_ui_tuner">
 
-    <Preference
-        android:key="qs_tuner"
-        android:title="@string/quick_settings" />
-
-    <PreferenceScreen
-        android:title="@string/status_bar" >
-
         <com.android.systemui.tuner.StatusBarSwitch
             android:key="cast"
             android:title="@string/quick_settings_cast_title" />
@@ -63,7 +56,4 @@
         <com.android.systemui.tuner.StatusBarSwitch
             android:key="airplane"
             android:title="@string/status_bar_airplane" />
-
-    </PreferenceScreen>
-
 </PreferenceScreen>
