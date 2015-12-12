@@ -190,14 +190,6 @@
                   android:excludeFromRecents="true">
         </activity>
 
-        <activity android:name=".tuner.QsActivity"
-                  android:enabled="true"
-                  android:theme="@android:style/Theme.Material.Settings"
-                  android:label="@string/systemui_tuner_qs_title"
-                  android:process=":tuner"
-                  android:exported="true">
-        </activity>
-
         <activity android:name=".tuner.TunerActivity"
                   android:enabled="true"
                   android:theme="@android:style/Theme.Material.Settings"
