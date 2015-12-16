@@ -21,5 +21,6 @@
     <dimen name="floating_action_button_width">56dp</dimen>
     <dimen name="floating_action_button_translation_z">6dp</dimen>
     <dimen name="floating_action_button_margin_side">78dp</dimen>
-    <dimen name="floating_action_button_margin_bottom">68dp</dimen>
+    <dimen name="floating_action_button_margin_bottom">48dp</dimen>
+    <dimen name="floating_action_button_margin_top">24dp</dimen>
 </resources>
