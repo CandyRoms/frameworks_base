@@ -41,4 +41,15 @@
     <dimen name="phone_width">320dp</dimen>
     <dimen name="phone_height">420dp</dimen>
 
+   <!-- Slim recent -->
+    <dimen name="recent_width">230dp</dimen>
+    <dimen name="slim_recents_elevation">25dp</dimen>
+    <dimen name="recent_app_icon_size">38dp</dimen>
+    <dimen name="recent_favorite_icon_size">18dp</dimen>
+    <dimen name="recent_thumbnail_width">198dp</dimen>
+    <dimen name="recent_thumbnail_height">100dp</dimen>
+    <dimen name="recent_header_width">120dp</dimen>
+    <dimen name="recent_text_size">15dp</dimen>
+    <dimen name="recent_thumbnail_bottom_padding">3dp</dimen>
+    
 </resources>
