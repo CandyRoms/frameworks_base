@@ -21,6 +21,8 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.SystemProperties;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,22 +49,14 @@ public class StatusBarWindowManager {
     private WindowManager.LayoutParams mLp;
     private WindowManager.LayoutParams mLpChanged;
     private int mBarHeight;
-    private final boolean mKeyguardScreenRotation;
     private final float mScreenBrightnessDoze;
     private final State mCurrentState = new State();
 
     public StatusBarWindowManager(Context context) {
         mContext = context;
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        mKeyguardScreenRotation = shouldEnableKeyguardScreenRotation();
         mScreenBrightnessDoze = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_screenBrightnessDoze) / 255f;
-    }
-
-    private boolean shouldEnableKeyguardScreenRotation() {
-        Resources res = mContext.getResources();
-        return SystemProperties.getBoolean("lockscreen.rot_override", false)
-                || res.getBoolean(R.bool.config_enableLockScreenRotation);
     }
 
     /**
@@ -110,6 +104,14 @@ public class StatusBarWindowManager {
 
     private void adjustScreenOrientation(State state) {
         if (state.isKeyguardShowingAndNotOccluded()) {
+            boolean enableLockScreenRotation = Settings.System.getIntForUser(
+                    mContext.getContentResolver(), Settings.System.LOCKSCREEN_ROTATION,
+                    0, UserHandle.USER_CURRENT) != 0;
+            boolean enableAccelerometerRotation = Settings.System.getIntForUser(
+                    mContext.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 
+                    0, UserHandle.USER_CURRENT) != 0;
+            boolean mKeyguardScreenRotation = SystemProperties.getBoolean("lockscreen.rot_override",false)
+                   || (enableLockScreenRotation && enableAccelerometerRotation);
             if (mKeyguardScreenRotation) {
                 mLpChanged.screenOrientation = ActivityInfo.SCREEN_ORIENTATION_USER;
             } else {
