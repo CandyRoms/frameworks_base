@@ -32,4 +32,9 @@
 
     <!-- Screen record notification error title -->
     <string name="screenrecord_notif_error">Unable to record screen</string>
+
+    <!-- Screenrecord QS Tile -->
+    <string name="quick_settings_screenrecord_label">Screenrecord</string>
+    <string name="quick_settings_screenrecord_on">Recording ...</string>
+
 </resources>
