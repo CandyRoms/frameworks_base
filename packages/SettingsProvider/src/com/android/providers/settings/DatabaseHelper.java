@@ -93,11 +93,13 @@ class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_SYSTEM = "system";
     private static final String TABLE_SECURE = "secure";
     private static final String TABLE_GLOBAL = "global";
+    private static final String TABLE_CANDY = "candy";
 
     static {
         mValidTables.add(TABLE_SYSTEM);
         mValidTables.add(TABLE_SECURE);
         mValidTables.add(TABLE_GLOBAL);
+        mValidTables.add(TABLE_CANDY);
 
         // These are old.
         mValidTables.add("bluetooth_devices");
@@ -175,6 +177,15 @@ class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE INDEX globalIndex1 ON global (name);");
     }
 
+    private void createCandyTable(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE candy (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "name TEXT UNIQUE ON CONFLICT REPLACE," +
+                "value TEXT" +
+                ");");
+        db.execSQL("CREATE INDEX candyIndex1 ON candy (name);");
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE system (" +
@@ -190,6 +201,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
         if (mUserHandle == UserHandle.USER_OWNER) {
             createGlobalTable(db);
         }
+
+        createCandyTable(db);
 
         db.execSQL("CREATE TABLE bluetooth_devices (" +
                     "_id INTEGER PRIMARY KEY," +
@@ -1961,6 +1974,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP INDEX IF EXISTS systemIndex1");
         db.execSQL("DROP TABLE IF EXISTS secure");
         db.execSQL("DROP INDEX IF EXISTS secureIndex1");
+        db.execSQL("DROP TABLE IF EXISTS candy");
+        db.execSQL("DROP INDEX IF EXISTS candyIndex1");
         db.execSQL("DROP TABLE IF EXISTS gservices");
         db.execSQL("DROP INDEX IF EXISTS gservicesIndex1");
         db.execSQL("DROP TABLE IF EXISTS bluetooth_devices");
@@ -2347,6 +2362,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
         if (mUserHandle == UserHandle.USER_OWNER) {
             loadGlobalSettings(db);
         }
+        loadCandySettings(db);
     }
 
     private void loadSystemSettings(SQLiteDatabase db) {
@@ -2720,6 +2736,16 @@ class DatabaseHelper extends SQLiteOpenHelper {
              *
              * See: SettingsProvider.UpgradeController#onUpgradeLocked
              */
+        } finally {
+            if (stmt != null) stmt.close();
+        }
+    }
+
+    private void loadCandySettings(SQLiteDatabase db) {
+        SQLiteStatement stmt = null;
+        try {
+            stmt = db.compileStatement("INSERT OR IGNORE INTO candy(name,value)"
+                    + " VALUES(?,?);");
         } finally {
             if (stmt != null) stmt.close();
         }

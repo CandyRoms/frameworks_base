@@ -173,7 +173,7 @@ import android.os.storage.StorageEventListener;
 import android.os.storage.StorageManager;
 import android.os.storage.VolumeInfo;
 import android.os.storage.VolumeRecord;
-import android.provider.Settings.PAC;
+import android.provider.Settings.Candy;
 import android.security.KeyStore;
 import android.security.SystemKeyStore;
 import android.system.ErrnoException;
@@ -1445,9 +1445,9 @@ public class PackageManagerService extends IPackageManager.Stub {
                                 }
                             }
                             if (!update && !isSystemApp(res.pkg)) {
-                                boolean privacyGuard = PAC.getIntForUser(
+                                boolean privacyGuard = Candy.getIntForUser(
                                         mContext.getContentResolver(),
-                                        android.provider.Settings.PAC.PRIVACY_GUARD_DEFAULT,
+                                        android.provider.Settings.Candy.PRIVACY_GUARD_DEFAULT,
                                         0, UserHandle.USER_CURRENT) == 1;
                                 if (privacyGuard) {
                                     mAppOps.setPrivacyGuardSettingForPackage(

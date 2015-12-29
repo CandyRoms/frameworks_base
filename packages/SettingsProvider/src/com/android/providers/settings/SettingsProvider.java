@@ -116,6 +116,7 @@ public class SettingsProvider extends ContentProvider {
     private static final String TABLE_SYSTEM = "system";
     private static final String TABLE_SECURE = "secure";
     private static final String TABLE_GLOBAL = "global";
+    private static final String TABLE_CANDY = "candy";
 
     // Old tables no longer exist.
     private static final String TABLE_FAVORITES = "favorites";
@@ -245,6 +246,11 @@ public class SettingsProvider extends ContentProvider {
                 return packageValueForCallResult(setting);
             }
 
+            case Settings.CALL_METHOD_GET_CANDY: {
+                Setting setting = getCandySetting(name, requestingUserId);
+                return packageValueForCallResult(setting);
+            }
+
             case Settings.CALL_METHOD_PUT_GLOBAL: {
                 String value = getSettingValue(args);
                 insertGlobalSetting(name, value, requestingUserId);
@@ -260,6 +266,12 @@ public class SettingsProvider extends ContentProvider {
             case Settings.CALL_METHOD_PUT_SYSTEM: {
                 String value = getSettingValue(args);
                 insertSystemSetting(name, value, requestingUserId);
+                break;
+            }
+
+            case Settings.CALL_METHOD_PUT_CANDY: {
+                String value = getSettingValue(args);
+                insertCandySetting(name, value, requestingUserId);
                 break;
             }
 
@@ -326,6 +338,16 @@ public class SettingsProvider extends ContentProvider {
                 }
             }
 
+            case TABLE_CANDY: {
+                final int userId = UserHandle.getCallingUserId();
+                if (args.name != null) {
+                    Setting setting = getCandySetting(args.name, userId);
+                    return packageSettingForQuery(setting, normalizedProjection);
+                } else {
+                    return getAllCandySettings(userId, projection);
+                }
+            }
+
             default: {
                 throw new IllegalArgumentException("Invalid Uri path:" + uri);
             }
@@ -368,6 +390,12 @@ public class SettingsProvider extends ContentProvider {
             case TABLE_SYSTEM: {
                 if (insertSystemSetting(name, value, UserHandle.getCallingUserId())) {
                     return Uri.withAppendedPath(Settings.System.CONTENT_URI, name);
+                }
+            } break;
+
+            case TABLE_CANDY: {
+                if (insertCandySetting(name, value, UserHandle.getCallingUserId())) {
+                    return Uri.withAppendedPath(Settings.Candy.CONTENT_URI, name);
                 }
             } break;
 
@@ -430,6 +458,11 @@ public class SettingsProvider extends ContentProvider {
                 return deleteSystemSetting(args.name, userId) ? 1 : 0;
             }
 
+            case TABLE_CANDY: {
+                final int userId = UserHandle.getCallingUserId();
+                return deleteCandySetting(args.name, userId) ? 1 : 0;
+            }
+
             default: {
                 throw new IllegalArgumentException("Bad Uri path:" + uri);
             }
@@ -469,6 +502,11 @@ public class SettingsProvider extends ContentProvider {
             case TABLE_SYSTEM: {
                 final int userId = UserHandle.getCallingUserId();
                 return updateSystemSetting(args.name, value, userId) ? 1 : 0;
+            }
+
+            case TABLE_CANDY: {
+                final int userId = UserHandle.getCallingUserId();
+                return updateCandySetting(args.name, value, userId) ? 1 : 0;
             }
 
             default: {
@@ -516,6 +554,11 @@ public class SettingsProvider extends ContentProvider {
         pw.println("SYSTEM SETTINGS (user " + userId + ")");
         Cursor systemCursor = getAllSystemSettings(userId, ALL_COLUMNS);
         dumpSettings(systemCursor, pw);
+        pw.println();
+
+        pw.println("CANDY SETTINGS (user " + userId + ")");
+        Cursor candyCursor = getAllCandySettings(userId, ALL_COLUMNS);
+        dumpSettings(candyCursor, pw);
         pw.println();
     }
 
@@ -949,6 +992,134 @@ public class SettingsProvider extends ContentProvider {
         }
     }
 
+    private Cursor getAllCandySettings(int userId, String[] projection) {
+        if (DEBUG) {
+            Slog.v(LOG_TAG, "getAllCandySettings(" + userId + ")");
+        }
+
+        // Resolve the userId on whose behalf the call is made.
+        final int callingUserId = resolveCallingUserIdEnforcingPermissionsLocked(userId);
+
+        synchronized (mLock) {
+            List<String> names = mSettingsRegistry.getSettingsNamesLocked(
+                    SettingsRegistry.SETTINGS_TYPE_CANDY, callingUserId);
+
+            final int nameCount = names.size();
+
+            String[] normalizedProjection = normalizeProjection(projection);
+            MatrixCursor result = new MatrixCursor(normalizedProjection, nameCount);
+
+            for (int i = 0; i < nameCount; i++) {
+                String name = names.get(i);
+
+                // Determine the owning user as some profile settings are cloned from the parent.
+                final int owningUserId = resolveOwningUserIdForCandySettingLocked(callingUserId,
+                        name);
+
+                Setting setting = mSettingsRegistry.getSettingLocked(
+                        SettingsRegistry.SETTINGS_TYPE_CANDY, owningUserId, name);
+                appendSettingToCursor(result, setting);
+            }
+
+            return result;
+        }
+    }
+
+    private Setting getCandySetting(String name, int requestingUserId) {
+        if (DEBUG) {
+            Slog.v(LOG_TAG, "getCandySetting(" + name + ", " + requestingUserId + ")");
+        }
+
+        // Resolve the userId on whose behalf the call is made.
+        final int callingUserId = resolveCallingUserIdEnforcingPermissionsLocked(requestingUserId);
+
+        // Determine the owning user as some profile settings are cloned from the parent.
+        final int owningUserId = resolveOwningUserIdForSystemSettingLocked(callingUserId, name);
+
+        // Get the value.
+        synchronized (mLock) {
+            return mSettingsRegistry.getSettingLocked(SettingsRegistry.SETTINGS_TYPE_CANDY,
+                    owningUserId, name);
+        }
+    }
+
+    private boolean insertCandySetting(String name, String value, int requestingUserId) {
+        if (DEBUG) {
+            Slog.v(LOG_TAG, "insertCandySetting(" + name + ", " + value + ", "
+                    + requestingUserId + ")");
+        }
+
+        return mutateCandySetting(name, value, requestingUserId, MUTATION_OPERATION_INSERT);
+    }
+
+    private boolean deleteCandySetting(String name, int requestingUserId) {
+        if (DEBUG) {
+            Slog.v(LOG_TAG, "deleteCandySetting(" + name + ", " + requestingUserId + ")");
+        }
+
+        return mutateCandySetting(name, null, requestingUserId, MUTATION_OPERATION_DELETE);
+    }
+
+    private boolean updateCandySetting(String name, String value, int requestingUserId) {
+        if (DEBUG) {
+            Slog.v(LOG_TAG, "updateCandySetting(" + name + ", " + value + ", "
+                    + requestingUserId + ")");
+        }
+
+        return mutateCandySetting(name, value, requestingUserId, MUTATION_OPERATION_UPDATE);
+    }
+
+    private boolean mutateCandySetting(String name, String value, int runAsUserId,
+            int operation) {
+        if (!hasWriteSecureSettingsPermission()) {
+            // If the caller doesn't hold WRITE_SECURE_SETTINGS, we verify whether this
+            // operation is allowed for the calling package through appops.
+            if (!Settings.checkAndNoteWriteSettingsOperation(getContext(),
+                    Binder.getCallingUid(), getCallingPackage(), true)) {
+                return false;
+            }
+        }
+
+        // Enforce what the calling package can mutate the system settings.
+        enforceRestrictedSystemSettingsMutationForCallingPackage(operation, name);
+
+        // Resolve the userId on whose behalf the call is made.
+        final int callingUserId = resolveCallingUserIdEnforcingPermissionsLocked(runAsUserId);
+
+        // Determine the owning user as some profile settings are cloned from the parent.
+        final int owningUserId = resolveOwningUserIdForSystemSettingLocked(callingUserId, name);
+
+        // Only the owning user id can change the setting.
+        if (owningUserId != callingUserId) {
+            return false;
+        }
+
+        // Mutate the value.
+        synchronized (mLock) {
+            switch (operation) {
+                case MUTATION_OPERATION_INSERT: {
+                    return mSettingsRegistry
+                            .insertSettingLocked(SettingsRegistry.SETTINGS_TYPE_CANDY,
+                                    owningUserId, name, value, getCallingPackage());
+                }
+
+                case MUTATION_OPERATION_DELETE: {
+                    return mSettingsRegistry.deleteSettingLocked(
+                            SettingsRegistry.SETTINGS_TYPE_CANDY,
+                            owningUserId, name);
+                }
+
+                case MUTATION_OPERATION_UPDATE: {
+                    return mSettingsRegistry
+                            .updateSettingLocked(SettingsRegistry.SETTINGS_TYPE_CANDY,
+                                    owningUserId, name, value, getCallingPackage());
+                }
+            }
+
+            return false;
+        }
+    }
+
     private boolean hasWriteSecureSettingsPermission() {
         // Write secure settings is a more protected permission. If caller has it we are good.
         if (getContext().checkCallingOrSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
@@ -994,6 +1165,10 @@ public class SettingsProvider extends ContentProvider {
     }
 
     private int resolveOwningUserIdForSystemSettingLocked(int userId, String setting) {
+        return resolveOwningUserIdLocked(userId, sSystemCloneToManagedSettings, setting);
+    }
+
+    private int resolveOwningUserIdForCandySettingLocked(int userId, String setting) {
         return resolveOwningUserIdLocked(userId, sSystemCloneToManagedSettings, setting);
     }
 
@@ -1370,6 +1545,7 @@ public class SettingsProvider extends ContentProvider {
         private static final int SETTINGS_TYPE_GLOBAL = 0;
         private static final int SETTINGS_TYPE_SYSTEM = 1;
         private static final int SETTINGS_TYPE_SECURE = 2;
+        private static final int SETTINGS_TYPE_CANDY    = 3;
 
         private static final int SETTINGS_TYPE_MASK = 0xF0000000;
         private static final int SETTINGS_TYPE_SHIFT = 28;
@@ -1377,6 +1553,7 @@ public class SettingsProvider extends ContentProvider {
         private static final String SETTINGS_FILE_GLOBAL = "settings_global.xml";
         private static final String SETTINGS_FILE_SYSTEM = "settings_system.xml";
         private static final String SETTINGS_FILE_SECURE = "settings_secure.xml";
+        private static final String SETTINGS_FILE_CANDY    = "settings_candy.xml";
 
         private final SparseArray<SettingsState> mSettingsStates = new SparseArray<>();
 
@@ -1422,6 +1599,10 @@ public class SettingsProvider extends ContentProvider {
             // Ensure system settings loaded.
             final int systemKey = makeKey(SETTINGS_TYPE_SYSTEM, userId);
             ensureSettingsStateLocked(systemKey);
+
+            // Ensure candy settings loaded.
+            final int candyKey = makeKey(SETTINGS_TYPE_CANDY, userId);
+            ensureSettingsStateLocked(candyKey);
 
             // Upgrade the settings to the latest version.
             UpgradeController upgrader = new UpgradeController(userId);
@@ -1469,6 +1650,23 @@ public class SettingsProvider extends ContentProvider {
                         @Override
                         public void run() {
                             mSettingsStates.remove(secureKey);
+                        }
+                    });
+                }
+            }
+
+            // Nuke candy settings.
+            final int candyKey = makeKey(SETTINGS_TYPE_CANDY, userId);
+            final SettingsState candySettingsState = mSettingsStates.get(candyKey);
+            if (candySettingsState != null) {
+                if (permanently) {
+                    mSettingsStates.remove(systemKey);
+                    candySettingsState.destroyLocked(null);
+                } else {
+                    candySettingsState.destroyLocked(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSettingsStates.remove(systemKey);
                         }
                     });
                 }
@@ -1619,6 +1817,13 @@ public class SettingsProvider extends ContentProvider {
             migrateLegacySettingsLocked(systemSettings, database, TABLE_SYSTEM);
             systemSettings.persistSyncLocked();
 
+            // Move over the candy settings.
+            final int candyKey = makeKey(SETTINGS_TYPE_CANDY, userId);
+            ensureSettingsStateLocked(candyKey);
+            SettingsState candySettings = mSettingsStates.get(candyKey);
+            migrateLegacySettingsLocked(candySettings, database, TABLE_CANDY);
+            candySettings.persistSyncLocked();
+
             // Drop the database as now all is moved and persisted.
             if (DROP_DATABASE_ON_MIGRATION) {
                 dbHelper.dropDatabase();
@@ -1716,6 +1921,9 @@ public class SettingsProvider extends ContentProvider {
             } else if (isSystemSettingsKey(key)) {
                 property = Settings.System.SYS_PROP_SETTING_VERSION;
                 backedUpDataChanged = true;
+            } else if (isCandySettingsKey(key)) {
+                property = Settings.Candy.SYS_PROP_SETTING_VERSION;
+                backedUpDataChanged = true;
             }
 
             if (property != null) {
@@ -1786,6 +1994,10 @@ public class SettingsProvider extends ContentProvider {
             return getTypeFromKey(key) == SETTINGS_TYPE_SECURE;
         }
 
+        private boolean isCandySettingsKey(int key) {
+            return getTypeFromKey(key) == SETTINGS_TYPE_CANDY;
+        }
+
         private File getSettingsFile(int key) {
             if (isGlobalSettingsKey(key)) {
                 final int userId = getUserIdFromKey(key);
@@ -1799,6 +2011,10 @@ public class SettingsProvider extends ContentProvider {
                 final int userId = getUserIdFromKey(key);
                 return new File(Environment.getUserSystemDirectory(userId),
                         SETTINGS_FILE_SECURE);
+            } else if (isCandySettingsKey(key)) {
+                final int userId = getUserIdFromKey(key);
+                return new File(Environment.getUserSystemDirectory(userId),
+                        SETTINGS_FILE_CANDY);
             } else {
                 throw new IllegalArgumentException("Invalid settings key:" + key);
             }
@@ -1814,6 +2030,9 @@ public class SettingsProvider extends ContentProvider {
             } else if (isSystemSettingsKey(key)) {
                 return (name != null) ? Uri.withAppendedPath(Settings.System.CONTENT_URI, name)
                         : Settings.System.CONTENT_URI;
+            } else if (isCandySettingsKey(key)) {
+                return (name != null) ? Uri.withAppendedPath(Settings.Candy.CONTENT_URI, name)
+                        : Settings.Candy.CONTENT_URI;
             } else {
                 throw new IllegalArgumentException("Invalid settings key:" + key);
             }
@@ -1822,7 +2041,8 @@ public class SettingsProvider extends ContentProvider {
         private int getMaxBytesPerPackageForType(int type) {
             switch (type) {
                 case SETTINGS_TYPE_GLOBAL:
-                case SETTINGS_TYPE_SECURE: {
+                case SETTINGS_TYPE_SECURE:
+                case SETTINGS_TYPE_CANDY: {
                     return SettingsState.MAX_BYTES_PER_APP_PACKAGE_UNLIMITED;
                 }
 
@@ -1916,6 +2136,11 @@ public class SettingsProvider extends ContentProvider {
                 SettingsState systemSettings = getSettingsLocked(
                         SettingsRegistry.SETTINGS_TYPE_SYSTEM, mUserId);
                 systemSettings.setVersionLocked(newVersion);
+
+                // Set the system settings version.
+                SettingsState candySettings = getSettingsLocked(
+                        SettingsRegistry.SETTINGS_TYPE_CANDY, mUserId);
+                candySettings.setVersionLocked(newVersion);
             }
 
             private SettingsState getGlobalSettingsLocked() {
@@ -1928,6 +2153,10 @@ public class SettingsProvider extends ContentProvider {
 
             private SettingsState getSystemSettingsLocked(int userId) {
                 return getSettingsLocked(SETTINGS_TYPE_SYSTEM, userId);
+            }
+
+            private SettingsState getCandySettingsLocked(int userId) {
+                return getSettingsLocked(SETTINGS_TYPE_CANDY, userId);
             }
 
             private void loadCustomizedVolumeLevels(SettingsState systemSettings) {
