@@ -153,6 +153,7 @@ import com.android.systemui.statusbar.policy.NextAlarmController;
 import com.android.systemui.statusbar.policy.PreviewInflater;
 import com.android.systemui.statusbar.policy.RotationLockControllerImpl;
 import com.android.systemui.statusbar.policy.SecurityControllerImpl;
+import com.android.systemui.statusbar.policy.SuControllerImpl;
 import com.android.systemui.statusbar.policy.UserInfoController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.statusbar.policy.ZenModeController;
@@ -279,6 +280,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     BrightnessMirrorController mBrightnessMirrorController;
     AccessibilityController mAccessibilityController;
     FingerprintUnlockController mFingerprintUnlockController;
+    SuControllerImpl mSuController;
 
     int mNaturalBarHeight = -1;
 
@@ -680,7 +682,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext, mCastController, mHotspotController,
-                mUserInfoController, mBluetoothController);
+                mUserInfoController, mBluetoothController, mSuController);
         mIconPolicy.setCurrentUserSetup(mUserSetup);
         mSettingsObserver.onChange(false); // set up
 
@@ -909,6 +911,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mZenModeController = mVolumeComponent.getZenController();
         }
         mCastController = new CastControllerImpl(mContext);
+        mSuController = new SuControllerImpl(mContext);
         final SignalClusterView signalCluster =
                 (SignalClusterView) mStatusBarView.findViewById(R.id.signal_cluster);
         final SignalClusterView signalClusterKeyguard =
