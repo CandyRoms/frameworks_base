@@ -103,7 +103,7 @@ public class CommandQueue extends IStatusBar.Stub {
     private static final int MSG_DISPATCH_NAVIGATION_EDITOR_RESULTS = 53 << MSG_SHIFT;
     private static final int MSG_TOGGLE_NAVIGATION_BAR         = 54 << MSG_SHIFT;
     private static final int MSG_HANDLE_SYSTEM_NAVIGATION_KEY  = 55 << MSG_SHIFT;
-
+    private static final int MSG_SET_AUTOROTATE_STATUS         = 56 << MSG_SHIFT;
 
     public static final int FLAG_EXCLUDE_NONE = 0;
     public static final int FLAG_EXCLUDE_SEARCH_PANEL = 1 << 0;
@@ -189,6 +189,7 @@ public class CommandQueue extends IStatusBar.Stub {
 
         default void handleSystemNavigationKey(int key) {}
         default void toggleNavigationBar(boolean enable) { }
+        default void setAutoRotate(boolean enabled) { }
     }
 
     @VisibleForTesting
@@ -642,6 +643,15 @@ public class CommandQueue extends IStatusBar.Stub {
         }
     }
 
+    @Override
+    public void setAutoRotate(boolean enabled) {
+        synchronized (mLock) {
+            mHandler.removeMessages(MSG_SET_AUTOROTATE_STATUS);
+            mHandler.obtainMessage(MSG_SET_AUTOROTATE_STATUS,
+                enabled ? 1 : 0, 0, null).sendToTarget();
+        }
+    }
+
     private final class H extends Handler {
         private H(Looper l) {
             super(l);
@@ -932,6 +942,11 @@ public class CommandQueue extends IStatusBar.Stub {
                 case MSG_HANDLE_SYSTEM_NAVIGATION_KEY:
                     for (int i = 0; i < mCallbacks.size(); i++) {
                         mCallbacks.get(i).handleSystemNavigationKey(msg.arg1);
+                    }
+                    break;
+                case MSG_SET_AUTOROTATE_STATUS:
+                    for (int i = 0; i < mCallbacks.size(); i++) {
+                        mCallbacks.get(i).setAutoRotate(msg.arg1 != 0);
                     }
                     break;
             }
