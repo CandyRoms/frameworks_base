@@ -85,6 +85,7 @@ import android.view.MotionEvent;
 import android.view.ThreadedRenderer;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
