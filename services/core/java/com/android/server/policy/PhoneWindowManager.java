@@ -858,7 +858,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     UserHandle.USER_ALL);
            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.VOLUME_ROCKER_MUSIC_CONTROLS), false, this,
-                    UserHandle.USER_ALL
+                    UserHandle.USER_ALL);
             updateSettings();
         }
 
