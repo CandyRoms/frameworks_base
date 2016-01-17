@@ -193,4 +193,7 @@
     <java-symbol type="drawable" name="ic_shortcut_action_auto_rotate" />
     <java-symbol type="drawable" name="ic_shortcut_action_volume_panel" />
 
+    <!-- First-Boot-Logo -->
+    <java-symbol type="drawable" name="candy" />
+
 </resources>
