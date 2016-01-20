@@ -29,6 +29,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuff.Mode;
@@ -101,6 +102,8 @@ public class NavigationBarView extends LinearLayout {
     private static final int KEY_IME_SWITCHER = 2;
     private static final int KEY_IME_LEFT = 3;
     private static final int KEY_IME_RIGHT = 4;
+    private static final int KEY_EMPTY_LEFT = 5;
+    private static final int KEY_EMPTY_RIGHT = 6;
 
     private final static int HIDE_IME_ARROW = 0;
     private final static int SHOW_IME_ARROW = 1;
@@ -112,8 +115,6 @@ public class NavigationBarView extends LinearLayout {
 
     private boolean mImeArrowVisibility;
     private boolean mIsImeArrowVisible = false;
-
-    private GestureDetector mDoubleTapGesture;
 
     final Display mDisplay;
     View mCurrentView = null;
@@ -160,6 +161,10 @@ public class NavigationBarView extends LinearLayout {
     private boolean mIsLayoutRtl;
     private boolean mLayoutTransitionsEnabled = true;
     private boolean mWakeAndUnlocking;
+
+    private GestureDetector mDoubleTapGesture;
+
+    private SettingsObserver mSettingsObserver;
 
     private class NavTransitionListener implements TransitionListener {
         private boolean mBackTransitioning;
@@ -266,6 +271,7 @@ public class NavigationBarView extends LinearLayout {
                 return true;
             }
         });
+        mSettingsObserver = new SettingsObserver(new Handler());
     }
 
     @Override
@@ -275,6 +281,13 @@ public class NavigationBarView extends LinearLayout {
         if (root != null) {
             root.setDrawDuringWindowsAnimating(true);
         }
+        mSettingsObserver.observe();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mSettingsObserver.unobserve();
     }
 
     public BarTransitions getBarTransitions() {
@@ -326,6 +339,14 @@ public class NavigationBarView extends LinearLayout {
 
     public View getRecentsButton() {
         return mCurrentView.findViewById(R.id.recent_apps);
+    }
+
+    public View getLeftEmptyButton() {
+        return mCurrentView.findViewById(R.id.empty_left);
+    }
+
+    public View getRightEmptyButton() {
+        return mCurrentView.findViewById(R.id.empty_right);
     }
 
     public View getLeftMenuButton() {
@@ -427,6 +448,10 @@ public class NavigationBarView extends LinearLayout {
             addButton(navButtonLayout, leftImeArrow, landscape);
             addLightsOutButton(lightsOut, leftImeArrow, landscape, true);
 
+            KeyButtonView leftEmpty = generateMenuKey(landscape, KEY_EMPTY_LEFT);
+            addButton(navButtonLayout, leftEmpty, landscape);
+            addLightsOutButton(lightsOut, leftEmpty, landscape, true);
+
             mAppIsBinded = false;
             ActionConfig actionConfig;
 
@@ -464,6 +489,10 @@ public class NavigationBarView extends LinearLayout {
             View imeSwitcher = generateMenuKey(landscape, KEY_IME_SWITCHER);
             addButton(navButtonLayout, imeSwitcher, landscape);
             addLightsOutButton(lightsOut, imeSwitcher, landscape, true);
+
+            KeyButtonView rightEmpty = generateMenuKey(landscape, KEY_EMPTY_RIGHT);
+            addButton(navButtonLayout, rightEmpty, landscape);
+            addLightsOutButton(lightsOut, rightEmpty, landscape, true);
         }
         setMenuVisibility(mShowMenu, true);
     }
@@ -550,7 +579,7 @@ public class NavigationBarView extends LinearLayout {
             } else {
                 v.setId(R.id.menu);
             }
-            v.setVisibility(View.INVISIBLE);
+            v.setVisibility(View.GONE);
             v.setContentDescription(getResources().getString(R.string.accessibility_menu));
             d = mContext.getResources().getDrawable(R.drawable.ic_sysbar_menu);
         } else if (keyId == KEY_IME_LEFT) {
@@ -570,6 +599,12 @@ public class NavigationBarView extends LinearLayout {
             v.setId(R.id.ime_switcher);
             v.setVisibility(View.GONE);
             d = mContext.getResources().getDrawable(R.drawable.ic_ime_switcher_default);
+        } else if (keyId == KEY_EMPTY_LEFT) {
+            v.setId(R.id.empty_left);
+            v.setVisibility(View.INVISIBLE);
+        } else if (keyId == KEY_EMPTY_RIGHT) {
+            v.setId(R.id.empty_right);
+            v.setVisibility(View.INVISIBLE);
         }
 
         if (d != null) {
@@ -675,6 +710,9 @@ public class NavigationBarView extends LinearLayout {
         mIsImeArrowVisible = (backAlt && mImeArrowVisibility);
         getLeftImeArrowButton().setVisibility(mIsImeArrowVisible ? View.VISIBLE : View.GONE);
         getRightImeArrowButton().setVisibility(mIsImeArrowVisible ? View.VISIBLE : View.GONE);
+        mIsImeButtonVisible = ((hints & StatusBarManager.NAVIGATION_HINT_IME_SHOWN) != 0
+                    && !mImeArrowVisibility);
+        mIsImeArrowVisible = (backAlt && mImeArrowVisibility);
 
         setDisabledFlags(mDisabledFlags, true);
     }
@@ -732,11 +770,13 @@ public class NavigationBarView extends LinearLayout {
         }
 
         if (disableHome) {
-            getLeftMenuButton().setVisibility(View.INVISIBLE);
-            getRightMenuButton().setVisibility(View.INVISIBLE);
-            getImeSwitchButton().setVisibility(View.GONE);
+            getLeftEmptyButton().setVisibility(View.INVISIBLE);
+            getRightEmptyButton().setVisibility(View.INVISIBLE);
+            getLeftMenuButton().setVisibility(View.GONE);
+            getRightMenuButton().setVisibility(View.GONE);
             getLeftImeArrowButton().setVisibility(View.GONE);
             getRightImeArrowButton().setVisibility(View.GONE);
+            getImeSwitchButton().setVisibility(View.GONE);
         } else {
             setMenuVisibility(mShowMenu, true);
         }
@@ -827,25 +867,125 @@ public class NavigationBarView extends LinearLayout {
             return;
         }
 
+        View leftEmptyKeyView = getLeftEmptyButton();
+        View rightEmptyKeyView = getRightEmptyButton();
+
         View leftMenuKeyView = getLeftMenuButton();
         View rightMenuKeyView = getRightMenuButton();
+        View leftArrowKeyView = getLeftImeArrowButton();
+        View rightArrowKeyView = getRightImeArrowButton();
+
+        View imeSwitchKeyView = getImeSwitchButton();
+
+        int leftEmptyKeyViewVisibility, rightEmptyKeyViewVisibility,
+                leftMenuKeyViewVisibility, rightMenuKeyViewVisibility,
+                leftArrowKeyViewVisibility, rightArrowKeyViewVisibility,
+                imeSwitchKeyViewVisibility;
 
         // Only show Menu if IME switcher and IME arrowsnot shown.
-        boolean showLeftMenuButton = (((mMenuVisibility == MENU_VISIBILITY_ALWAYS || show)
-                && (mMenuSetting == SHOW_LEFT_MENU || mMenuSetting == SHOW_BOTH_MENU)
-                && (mMenuVisibility != MENU_VISIBILITY_NEVER))
-                || mOverrideMenuKeys)
-                && !mIsImeArrowVisible;
-        boolean showRightMenuButton = (((mMenuVisibility == MENU_VISIBILITY_ALWAYS || show)
-                && (mMenuSetting == SHOW_RIGHT_MENU || mMenuSetting == SHOW_BOTH_MENU)
-                && (mMenuVisibility != MENU_VISIBILITY_NEVER))
-                || mOverrideMenuKeys)
-                && !(mIsImeButtonVisible || mIsImeArrowVisible);
+        boolean showLeftMenuButton =
+                (    (mMenuVisibility == MENU_VISIBILITY_ALWAYS || show)
+                  && (mMenuSetting == SHOW_LEFT_MENU || mMenuSetting == SHOW_BOTH_MENU)
+                  && (mMenuVisibility != MENU_VISIBILITY_NEVER)
+                );
 
-        leftMenuKeyView.setVisibility(showLeftMenuButton ? View.VISIBLE
-                : (mIsImeArrowVisible ? View.GONE : View.INVISIBLE));
-        rightMenuKeyView.setVisibility(showRightMenuButton ? View.VISIBLE
-                : ((mIsImeButtonVisible || mIsImeArrowVisible) ? View.GONE : View.INVISIBLE));
+        boolean showRightMenuButton =
+                (    (mMenuVisibility == MENU_VISIBILITY_ALWAYS || show)
+                  && (mMenuSetting == SHOW_RIGHT_MENU || mMenuSetting == SHOW_BOTH_MENU)
+                  && (mMenuVisibility != MENU_VISIBILITY_NEVER)
+                );
+
+        if(mIsImeArrowVisible) {
+            leftEmptyKeyViewVisibility  = View.GONE;
+            rightEmptyKeyViewVisibility = View.GONE;
+            leftMenuKeyViewVisibility   = View.GONE;
+            leftArrowKeyViewVisibility  = View.VISIBLE;
+            rightMenuKeyViewVisibility  = View.GONE;
+            rightArrowKeyViewVisibility = View.VISIBLE;
+            imeSwitchKeyViewVisibility  = View.GONE;
+        } else if (mOverrideMenuKeys) {
+            leftEmptyKeyViewVisibility  = View.GONE;
+            rightEmptyKeyViewVisibility = View.GONE;
+            leftMenuKeyViewVisibility   = View.VISIBLE;
+            leftArrowKeyViewVisibility  = View.GONE;
+            rightMenuKeyViewVisibility  = View.VISIBLE;
+            rightArrowKeyViewVisibility = View.GONE;
+            imeSwitchKeyViewVisibility  = View.GONE;
+        } else {
+            if (showLeftMenuButton) {
+                leftEmptyKeyViewVisibility  = View.GONE;
+                leftMenuKeyViewVisibility   = View.VISIBLE;
+                leftArrowKeyViewVisibility  = View.GONE;
+            } else {
+                leftEmptyKeyViewVisibility  = View.INVISIBLE;
+                leftMenuKeyViewVisibility   = View.GONE;
+                leftArrowKeyViewVisibility  = View.GONE;
+            }
+            if (showRightMenuButton) {
+                rightEmptyKeyViewVisibility = View.GONE;
+                rightMenuKeyViewVisibility  = View.VISIBLE;
+                rightArrowKeyViewVisibility = View.GONE;
+                imeSwitchKeyViewVisibility  = View.GONE;
+            } else {
+                if (mIsImeButtonVisible) {
+                    rightEmptyKeyViewVisibility = View.GONE;
+                    rightMenuKeyViewVisibility  = View.GONE;
+                    rightArrowKeyViewVisibility = View.GONE;
+                    imeSwitchKeyViewVisibility  = View.VISIBLE;
+                } else {
+                    rightEmptyKeyViewVisibility = View.INVISIBLE;
+                    rightMenuKeyViewVisibility  = View.GONE;
+                    rightArrowKeyViewVisibility = View.GONE;
+                    imeSwitchKeyViewVisibility  = View.GONE;
+                }
+            }
+        }
+
+        // First remove what needs to be gone
+        if (leftEmptyKeyViewVisibility == View.GONE) {
+            leftEmptyKeyView.setVisibility(leftEmptyKeyViewVisibility);
+        }
+        if (rightEmptyKeyViewVisibility == View.GONE) {
+            rightEmptyKeyView.setVisibility(rightEmptyKeyViewVisibility);
+        }
+        if (leftMenuKeyViewVisibility == View.GONE) {
+            leftMenuKeyView.setVisibility(leftMenuKeyViewVisibility);
+        }
+        if (leftArrowKeyViewVisibility == View.GONE) {
+            leftArrowKeyView.setVisibility(leftArrowKeyViewVisibility);
+        }
+        if (rightMenuKeyViewVisibility == View.GONE) {
+            rightMenuKeyView.setVisibility(rightMenuKeyViewVisibility);
+        }
+        if (rightArrowKeyViewVisibility == View.GONE) {
+            rightArrowKeyView.setVisibility(rightArrowKeyViewVisibility);
+        }
+        if (imeSwitchKeyViewVisibility == View.GONE) {
+            imeSwitchKeyView.setVisibility(imeSwitchKeyViewVisibility);
+        }
+
+        // Second 'activate' what needs not to be gone
+        if (leftEmptyKeyViewVisibility != View.GONE) {
+            leftEmptyKeyView.setVisibility(leftEmptyKeyViewVisibility);
+        }
+        if (rightEmptyKeyViewVisibility != View.GONE) {
+            rightEmptyKeyView.setVisibility(rightEmptyKeyViewVisibility);
+        }
+        if (leftMenuKeyViewVisibility != View.GONE) {
+            leftMenuKeyView.setVisibility(leftMenuKeyViewVisibility);
+        }
+        if (leftArrowKeyViewVisibility != View.GONE) {
+            leftArrowKeyView.setVisibility(leftArrowKeyViewVisibility);
+        }
+        if (rightMenuKeyViewVisibility != View.GONE) {
+            rightMenuKeyView.setVisibility(rightMenuKeyViewVisibility);
+        }
+        if (rightArrowKeyViewVisibility != View.GONE) {
+            rightArrowKeyView.setVisibility(rightArrowKeyViewVisibility);
+        }
+        if (imeSwitchKeyViewVisibility != View.GONE) {
+            imeSwitchKeyView.setVisibility(imeSwitchKeyViewVisibility);
+        }
         mShowMenu = show;
     }
 
@@ -1135,11 +1275,42 @@ public class NavigationBarView extends LinearLayout {
 
         updateBackButtonDrawables(backIcon, backIconLand, shouldColor);
 
+        mImeArrowVisibility = (Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_IME_ARROWS, HIDE_IME_ARROW,
+                UserHandle.USER_CURRENT) == SHOW_IME_ARROW);
+
         // construct the navigationbar
         if (recreate) {
             makeBar();
         }
+    }
 
+    private class SettingsObserver extends ContentObserver {
+
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            mContext.getContentResolver().registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUS_BAR_IME_ARROWS),
+                    false, this);
+
+            onChange(false);
+        }
+
+        void unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            mImeArrowVisibility =
+                    (Settings.System.getIntForUser(mContext.getContentResolver(),
+                            Settings.System.STATUS_BAR_IME_ARROWS, HIDE_IME_ARROW,
+                            UserHandle.USER_CURRENT) == SHOW_IME_ARROW);
+            setNavigationIconHints(mNavigationIconHints, true);
+        }
     }
 
     private void updateBackButtonDrawables(
