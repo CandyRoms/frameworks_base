@@ -84,6 +84,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     private boolean mExpanded;
     private boolean mListening;
 
+    private View mHeaderView;
     private ViewGroup mSystemIconsContainer;
     private ViewGroup mWeatherContainer;
     private View mSystemIconsSuperContainer;
@@ -160,6 +161,9 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     private Drawable mCurrentBackground;
     private float mLastHeight;
 
+    // QS header alpha
+    private int mQSHeaderAlpha;
+
     public StatusBarHeaderView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -167,6 +171,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mHeaderView = findViewById(R.id.header);
         mSystemIconsSuperContainer = findViewById(R.id.system_icons_super_container);
         mSystemIconsContainer = (ViewGroup) findViewById(R.id.system_icons_container);
         mSystemIconsSuperContainer.setOnClickListener(this);
@@ -210,6 +215,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         updateVisibilities();
         updateClockScale();
         updateAvatarScale();
+        setQSHeaderAlpha();
         addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right,
@@ -988,8 +994,9 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_BATTERY_STYLE), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT), false, this,
-                    UserHandle.USER_ALL);
+                    Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT), false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_TRANSPARENT_HEADER), false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -1028,6 +1035,10 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             mShowBatteryTextExpanded = showExpandedBatteryPercentage;
             mShowWeather = Settings.System.getIntForUser(
                     resolver, Settings.System.STATUS_BAR_SHOW_WEATHER, 1, currentUserId) == 1;
+
+            mQSHeaderAlpha = Settings.System.getInt(
+                    resolver, Settings.System.QS_TRANSPARENT_HEADER, 255);
+            setQSHeaderAlpha();
             updateVisibilities();
             requestCaptureValues();
         }
@@ -1079,5 +1090,14 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                 mBackgroundImage.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void setQSHeaderAlpha() {
+        if (mHeaderView != null) {
+            mHeaderView.getBackground().setAlpha(mQSHeaderAlpha);
+        }
+        if (mBackgroundImage != null) {
+            mBackgroundImage.setAlpha(mQSHeaderAlpha);
+        }
     }
 }
