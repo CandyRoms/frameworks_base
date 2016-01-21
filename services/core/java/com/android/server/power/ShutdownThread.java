@@ -265,6 +265,8 @@ public final class ShutdownThread extends Thread {
                 attrs.gravity = Gravity.TOP|Gravity.CENTER_HORIZONTAL;
             }
 
+            attrs.alpha = setRebootDialogAlpha(context);
+
             sConfirmDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
             sConfirmDialog.show();
         } else {
@@ -284,11 +286,20 @@ public final class ShutdownThread extends Thread {
         }
     }
 
+    private static float setRebootDialogAlpha(Context context) {
+        int mRebootDialogAlpha = Settings.System.getInt(
+                context.getContentResolver(),
+                Settings.System.TRANSPARENT_POWER_MENU, 100);
+        double dAlpha = mRebootDialogAlpha / 100.0;
+        float alpha = (float) dAlpha;
+        return alpha;
+    }
+
     private static int getPowermenuAnimations(Context context) {
         return Settings.System.getInt(context.getContentResolver(),
                 Settings.System.POWER_MENU_ANIMATIONS, 0);
     }
-
+    
     private static class CloseDialogReceiver extends BroadcastReceiver
             implements DialogInterface.OnDismissListener {
         private Context mContext;
@@ -418,6 +429,8 @@ public final class ShutdownThread extends Thread {
             attrs.gravity = Gravity.TOP|Gravity.CENTER_HORIZONTAL;
         }
 
+        attrs.alpha = setRebootDialogAlpha(context);
+        
         pd.show();
 
         sInstance.mProgressDialog = pd;
