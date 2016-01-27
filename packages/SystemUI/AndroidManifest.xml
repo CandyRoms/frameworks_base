@@ -146,6 +146,9 @@
     <!-- Kill app permission -->
     <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES" />
 
+    <!-- Kill app permission -->
+    <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES" />
+
     <application
         android:name=".SystemUIApplication"
         android:persistent="true"
@@ -248,6 +251,7 @@
         <activity
             android:name="com.android.systemui.shortcuts.Screenshot"
             android:label="@string/shortcut_screenshot"
+            android:icon="@drawable/ic_sysbar_screenshot"
             android:theme="@android:style/Theme.NoDisplay"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance" >

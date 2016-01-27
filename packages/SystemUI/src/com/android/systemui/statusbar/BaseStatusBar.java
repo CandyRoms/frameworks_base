@@ -142,9 +142,9 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected static final int MSG_CANCEL_PRELOAD_RECENT_APPS = 1023;
     protected static final int MSG_SHOW_NEXT_AFFILIATED_TASK = 1024;
     protected static final int MSG_SHOW_PREV_AFFILIATED_TASK = 1025;
-    protected static final int MSG_TOGGLE_LAST_APP = 1032;
-    protected static final int MSG_TOGGLE_KILL_APP = 1033;
-    protected static final int MSG_TOGGLE_SCREENSHOT = 1034;
+    protected static final int MSG_TOGGLE_LAST_APP = 1026;
+    protected static final int MSG_TOGGLE_KILL_APP = 1027;
+    protected static final int MSG_TOGGLE_SCREENSHOT = 1028;
 
     protected static final boolean ENABLE_HEADS_UP = true;
     // scores above this threshold should be displayed in heads up mode.
