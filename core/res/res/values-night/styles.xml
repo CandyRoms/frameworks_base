@@ -13,7 +13,12 @@
 <!-- DayNight Theme -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-				<!-- Notification text colors -->
+    <!-- Notification text colors -->
+    <style name="TextAppearance.Material.Notification">
+        <item name="textColor">@color/secondary_text_material_dark</item>
+        <item name="textSize">@dimen/notification_text_size</item>
+    </style>
+
     <style name="TextAppearance.Material.Notification.Title">
         <item name="textColor">@color/primary_text_material_dark</item>
         <item name="textSize">@dimen/notification_title_text_size</item>
