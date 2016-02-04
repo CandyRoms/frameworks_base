@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
     <!-- Status bar -->
     <string name="status_bar_icons_title">Status bar icons</string>
 
@@ -9,8 +10,8 @@
     <!-- App kill -->
     <string name="task_helper_app_killed">%1$s force stopped</string>
     <string name="empty_app_killed">App</string>
-
-  <!-- Alert slide extras -->
+ 
+   <!-- Alert slide extras -->
     <string name="volume_ringer_priority_only">Priority</string>
     <string name="volume_ringer_alarms_only">Alarms</string>
     <string name="volume_ringer_dnd">DnD</string>
@@ -25,4 +26,9 @@
     <string name="tristate_rotation_0">Portrait</string>
     <string name="tristate_rotation_90">Landscape (90°)</string>
     <string name="tristate_rotation_270">Landscape (270°)</string>
+ 
+    <!-- Caffeine QS tile -->
+    <string name="quick_settings_caffeine_label">Caffeine</string>
+    <string name="accessibility_quick_settings_caffeine_off">Caffeine off.</string>
+    <string name="accessibility_quick_settings_caffeine_on">Caffeine on.</string>
 </resources>
