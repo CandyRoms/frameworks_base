@@ -53,6 +53,9 @@
     <color name="status_bar_clock_color">#FFFFFFFF</color>
     <color name="qs_user_detail_icon_muted">#FFFFFFFF</color> <!-- not so muted after all -->
 
+    <!-- SystemUI QS panel primary text color -->
+    <color name="system_qs_text_color">#FFFFFF</color>
+
     <!-- Tint color for the content on the notification overflow card. -->
     <color name="keyguard_overflow_content_color">#ff686868</color>
 

@@ -15,8 +15,12 @@
     <!-- Notification Header and Quick settings panel -->
     <color name="system_primary_color">#000000</color>
     <color name="system_secondary_color">#212121</color>
-    <color name="system_accent_color">#ff80CBC4</color>
+    <color name="system_accent_color">#ff80CBC4</color>  
     <color name="qs_detail_transition">#000000</color>
+				
+    <!-- SystemUI QS panel primary text color -->
+    <color name="system_qs_text_color">#FFFFFF</color>
+    <color name="qs_detail_button_white">#B3FFFFFF</color><!-- 70% white -->
 
     <!-- The "inside" of a notification, reached via longpress -->
     <color name="notification_guts_bg_color">@color/system_secondary_color</color>
