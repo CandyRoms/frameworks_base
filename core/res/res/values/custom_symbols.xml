@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-     Copyright (C) 2015 BrokenROM Project
+     Copyright (C) 2016 CandyRoms
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -57,5 +57,9 @@
 
   <!-- Hardware key rebinding -->
   <java-symbol type="integer" name="config_deviceHardwareKeys" />
+
+  <!-- Hardware key rebinding -->
+  <java-symbol type="string" name="config_deviceHardwareKeysFilePath" />
+  <java-symbol type="string" name="config_deviceHardwareKeyLightsFilePath" />
 
 </resources>

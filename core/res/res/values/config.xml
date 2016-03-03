@@ -1001,6 +1001,14 @@
          config to 7. -->
     <integer name="config_deviceHardwareKeys">64</integer>
 
+    <!-- Control path for disabling the capacitive hardware keys, if they exist.
+         For example: "/proc/touchpanel/keypad_enable"  -->
+    <string name="config_deviceHardwareKeysFilePath" translatable="false">@null</string>
+
+    <!-- Max Brightness path for the capacitive hardware key lights.
+         For example: "/sys/class/leds/button-backlight/max_brightness"  -->
+    <string name="config_deviceHardwareKeyLightsFilePath" translatable="false">@null</string>
+
     <!-- Minimum screen brightness setting allowed by the power manager.
          The user is forbidden from setting the brightness below this level. -->
     <integer name="config_screenBrightnessSettingMinimum">10</integer>
