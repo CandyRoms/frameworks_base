@@ -915,8 +915,11 @@
     <!-- Default value for led color when battery is low on charge -->
     <integer name="config_notificationsBatteryLowARGB">0xFFFF0000</integer>
 
-    <!-- Default value for led color when battery is medium charged -->
+    <!-- Default value for led color when battery is charging slow or normally -->
     <integer name="config_notificationsBatteryMediumARGB">0xFFFFFF00</integer>
+
+    <!-- Default value for led color when battery is charging fast -->
+    <integer name="config_notificationsBatteryMediumFastARGB">0xFF0000FF</integer>
 
     <!-- Default value for led color when battery is fully charged -->
     <integer name="config_notificationsBatteryFullARGB">0xFF00FF00</integer>
