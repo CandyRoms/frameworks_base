@@ -16,7 +16,7 @@
 
 package com.android.internal.util.slim;
 
-public class ActionConstants {
+public class SlimActionConstants {
 
     // key must fit with the values arrays from Settings to use
     // SlimActions.java actions
