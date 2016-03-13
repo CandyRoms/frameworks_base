@@ -62,4 +62,7 @@
   <java-symbol type="string" name="config_deviceHardwareKeysFilePath" />
   <java-symbol type="string" name="config_deviceHardwareKeyLightsFilePath" />
 
+  <!-- BatteryLED fast charge -->
+  <java-symbol type="integer" name="config_chargingFastThreshold" />
+
 </resources>

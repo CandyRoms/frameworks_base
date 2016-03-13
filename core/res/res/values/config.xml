@@ -2540,4 +2540,7 @@
     <!-- Show battery fully charged notification -->
     <bool name="config_showBatteryFullyChargedNotification">false</bool>
 
+    <!-- BatteryLED fast charge -->
+    <integer name="config_chargingFastThreshold">1500000</integer>
+
 </resources>
