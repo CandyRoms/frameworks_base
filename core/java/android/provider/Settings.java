@@ -3908,6 +3908,18 @@ public final class Settings {
 
         /**
          * Alternative recent apps integration using OmniSwitch
+         * USB data automatic unlock
+         */
+        public static final String USB_DATA_AUTO_UNLOCK = "usb_data_auto_unlock";
+
+        /**
+         * Settings to backup. This is here so that it's in the same place as the settings
+         * keys and easy to update.
+         *
+         * NOTE: Settings are backed up and restored in the order they appear
+         *       in this array. If you have one setting depending on another,
+         *       make sure that they are ordered appropriately.
+         *
          * @hide
          */
         public static final String RECENTS_USE_OMNISWITCH = "recents_use_omniswitch";
