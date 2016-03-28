@@ -765,6 +765,7 @@ public class MobileSignalController extends SignalController<
             }
             mServiceState = state;
             updateNetworkName(mLastShowSpn, mLastSpn, mLastDataSpn, mLastShowPlmn, mLastPlmn);
+            mDataNetType = state.getDataNetworkType();
             updateTelephony();
         }
 
