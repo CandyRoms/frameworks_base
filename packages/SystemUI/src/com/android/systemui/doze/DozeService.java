@@ -79,7 +79,6 @@ public class DozeService extends DreamService {
 
     private DozeHost mHost;
     private SensorManager mSensors;
-    private TriggerSensor mSigMotionSensor;
     private TriggerSensor mPickupSensor;
     private PowerManager mPowerManager;
     private PowerManager.WakeLock mWakeLock;
@@ -117,7 +116,6 @@ public class DozeService extends DreamService {
         pw.print("  mWakeLock: held="); pw.println(mWakeLock.isHeld());
         pw.print("  mHost: "); pw.println(mHost);
         pw.print("  mBroadcastReceiverRegistered: "); pw.println(mBroadcastReceiverRegistered);
-        pw.print("  mSigMotionSensor: "); pw.println(mSigMotionSensor);
         pw.print("  mPickupSensor:"); pw.println(mPickupSensor);
         pw.print("  mDisplayStateSupported: "); pw.println(mDisplayStateSupported);
         pw.print("  mNotificationLightOn: "); pw.println(mNotificationLightOn);
@@ -142,9 +140,6 @@ public class DozeService extends DreamService {
         setWindowless(true);
 
         mSensors = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-        mSigMotionSensor = new TriggerSensor(Sensor.TYPE_SIGNIFICANT_MOTION,
-                mDozeParameters.getPulseOnSigMotion(), mDozeParameters.getVibrateOnSigMotion(),
-                DozeLog.PULSE_REASON_SENSOR_SIGMOTION);
         mPickupSensor = new TriggerSensor(Sensor.TYPE_PICK_UP_GESTURE,
                 mDozeParameters.getPulseOnPickup(), mDozeParameters.getVibrateOnPickup(),
                 DozeLog.PULSE_REASON_SENSOR_PICKUP);
@@ -320,9 +315,6 @@ public class DozeService extends DreamService {
         if (DEBUG) Log.d(mTag, "listenForPulseSignals: " + listen);
         if (mDozeTriggerPickup) {
             mPickupSensor.setListening(listen);
-        }
-        if (mDozeTriggerSigmotion) {
-            mSigMotionSensor.setListening(listen);
         }
         listenForBroadcasts(listen);
         if (mDozeTriggerNotification) {

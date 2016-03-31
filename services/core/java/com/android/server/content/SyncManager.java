@@ -2604,24 +2604,7 @@ public class SyncManager {
                         }
                         continue;
                     }
-                    if (!isOperationValidLocked(op)) {
-                        operationIterator.remove();
-                        mSyncStorageEngine.deleteFromPending(op.pendingOperation);
-                        continue;
-                    }
-                    // If the next run time is in the future, even given the flexible scheduling,
-                    // return the time.
-                    if (op.effectiveRunTime - op.flexTime > now) {
-                        if (nextReadyToRunTime > op.effectiveRunTime) {
-                            nextReadyToRunTime = op.effectiveRunTime;
-                        }
-                        if (isLoggable) {
-                            Log.v(TAG, "    Not running sync operation: Sync too far in future."
-                                    + "effective: " + op.effectiveRunTime + " flex: " + op.flexTime
-                                    + " now: " + now);
-                        }
-                        continue;
-                    }
+
                     String packageName = getPackageName(op.target);
                     ApplicationInfo ai = null;
                     if (packageName != null) {
@@ -2644,6 +2627,7 @@ public class SyncManager {
                     } else {
                         op.appIdle = false;
                     }
+
                     // Add this sync to be run.
                     operations.add(op);
                 }
