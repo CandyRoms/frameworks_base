@@ -1631,7 +1631,7 @@ public final class Settings {
             }
             return list;
         }
-        
+
         /** @hide */
         public static void getMovedToGlobalSettings(Set<String> outKeySet) {
             outKeySet.addAll(MOVED_TO_GLOBAL);
@@ -3609,13 +3609,13 @@ public final class Settings {
          * @hide
          */
         public static final String VOLUME_ROCKER_WAKE = "volume_rocker_wake";
-        
+
         /**
          * Whether or not volume button music controls should be enabled to seek media tracks
          * @hide
          */
         public static final String VOLUME_ROCKER_MUSIC_CONTROLS = "volume_rocker_music_controls";
-        
+
         /**
          * IMPORTANT: If you add a new public settings you also have to add it to
          * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
@@ -3995,17 +3995,17 @@ public final class Settings {
          * @hide
          */
         public static final String DASHBOARD_COLUMNS = "dashboard_columns";
-		
+
         /**
          * Whether to display dashboard tiles in a double line layout
          * @hide
          */
         public static final String DASHBOARD_TILEVIEW_DOUBLE_LINES = "dashboard_tileview_double_lines";
 
-        /**  
+        /**
          * AOKP Custom System Animations
          * @hide
-         */  
+         */
         public static final String[] ACTIVITY_ANIMATION_CONTROLS = new String[] {
                 "activity_open",
                 "activity_close",
@@ -4018,7 +4018,7 @@ public final class Settings {
                 "wallpaper_intra_open",
                 "wallpaper_intra_close",
                 "task_open_behind",
-        };  
+        };
         public static final String ANIMATION_CONTROLS_DURATION = "animation_controls_duration";
 
         /**
@@ -4144,7 +4144,7 @@ public final class Settings {
          * @hide
          */
         public static final String LOCK_CLOCK_FONTS = "lock_clock_fonts";
-                
+
         /**
          * Display style of the status bar battery information
          * 0: Display the battery an icon in portrait mode
@@ -4576,21 +4576,21 @@ public final class Settings {
          */
         public static final String RECENT_CARD_TEXT_COLOR = "recent_card_text_color";
 
-	/**
+        /**
          * Which applications to disable heads up notifications in
          *
          * @hide
          */
         public static final String HEADS_UP_CUSTOM_VALUES = "heads_up_custom_values";
-		
-	/**
+
+        /**
          * Which applications to disable heads up notifications for
          *
          * @hide
          */
         public static final String HEADS_UP_BLACKLIST_VALUES = "heads_up_blacklist_values";
-		
-		/**
+
+        /**
          * Which applications to post all notification to heads up
          *
          * @hide
@@ -4639,6 +4639,62 @@ public final class Settings {
          * @hide
          */
         public static final String DIM_NAV_BUTTONS_TOUCH_ANYWHERE = "dim_nav_buttons_touch_anywhere";
+
+        /**
+         * Whether to apply a shadow on top of the header image
+         * value is the alpha value of the shadow image is 0 -> no shadow -> 255 black
+         * @hide
+         */
+        public static final String STATUS_BAR_CUSTOM_HEADER_SHADOW = "status_bar_custom_header_shadow";
+
+        /**
+         *  Weather to use a custom label for the carrier name on the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_CARRIER_LABEL_USE_CUSTOM = "status_bar_carrier_label_use_custom";
+
+        /**
+         *  Name of the custom carrier label on the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_CARRIER_LABEL_CUSTOM_LABEL = "status_bar_carrier_label_custom_label";
+
+        /**
+         *  Weather to show the (custom) carrier label on the status bar
+         * @hide
+         */
+         public static final String STATUS_BAR_CARRIER_LABEL_SHOW = "status_bar_carrier_label_show";
+
+        /**
+         *  Weather to show the (custom) carrier label on the status bar of the lock screen
+         * @hide
+         */
+        public static final String STATUS_BAR_CARRIER_LABEL_SHOW_ON_LOCK_SCREEN = "status_bar_carrier_label_show_on_lock_screen";
+
+        /**
+         * Wether to hide the carrier label on the status bar when the custom number of notifications is reached
+         * @hide
+         */
+        public static final String STATUS_BAR_CARRIER_LABEL_HIDE_LABEL = "status_bar_carrier_label_hide_label";
+
+        /**
+         * Hide the carrier label on the status bar when the notification icons will reach this number
+         * 1: 1 notification icon (always)
+         * 2: 2 notification icons
+         * 3: 3 notification icons
+         * 4: 4 notification icons
+         * 5: 5 notification icons
+         * 6: 6 notification icons
+         * default: 1
+         * @hide
+         */
+        public static final String STATUS_BAR_CARRIER_LABEL_NUMBER_OF_NOTIFICATION_ICONS = "status_bar_carrier_label_number_of_notification_icons";
+
+        /**
+         *  Color of the (custom) carrier label on the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_CARRIER_LABEL_COLOR = "status_bar_carrier_label_color";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -5338,7 +5394,7 @@ public final class Settings {
             }
             return list;
         }
-        
+
         /** @hide */
         public static void getMovedToGlobalSettings(Set<String> outKeySet) {
             outKeySet.addAll(MOVED_TO_GLOBAL);
@@ -9286,7 +9342,7 @@ public final class Settings {
          * @hide
          */
         public static final String LTE_SERVICE_FORCED = "lte_service_forced";
-        
+
         /**
          * Whether to enable cellular on boot.
          * The value 1 - enable, 0 - disable
@@ -10113,7 +10169,7 @@ public final class Settings {
         public static boolean putBooleanForUser(ContentResolver cr, String name, boolean value, int userHandle) {
             return putStringForUser(cr, name, value ? "1" : "0", userHandle);
         }
-        
+
         /**
          * Whether newly installed apps should run with privacy guard by default
          * @hide
