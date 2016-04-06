@@ -3825,6 +3825,18 @@ public final class Settings {
         public static final String LOCK_SCREEN_SHOW_WEATHER = "lock_screen_show_weather";
 
         /**
+         * Boolean value whether volume down in silent can enter zen mode
+         * @hide
+         */
+        public static final String VOLUME_DOWN_ZEN = "volume_down_zen";
+
+        /**
+         * Boolean value whether volume up in zen mode can exit zen mode
+         * @hide
+         */
+        public static final String VOLUME_UP_LEAVE_ZEN = "volume_up_leave_zen";
+     
+        /**
          * Whether to show the weather location on the lock screen
          * @hide
          */
@@ -4523,6 +4535,43 @@ public final class Settings {
          * @hide
          */
         public static final String STATUS_BAR_IME_ARROWS = "status_bar_ime_arrows";
+
+        /**
+         * Whether to dim the navigation bar icons after inactivity
+         * @hide
+         */
+        public static final String DIM_NAV_BUTTONS = "dim_nav_buttons";
+
+        /**
+         * Time in milliseconds to wait before dimming the nav buttons
+         * @hide
+         */
+        public static final String DIM_NAV_BUTTONS_TIMEOUT = "dim_nav_buttons_timeout";
+
+        /**
+         * Alpha value percentage to dim the nav buttons to
+         * @hide
+         */
+        public static final String DIM_NAV_BUTTONS_ALPHA = "dim_nav_buttons_alpha";
+
+        /**
+         * Whether to animate the nav button dimming
+         * @hide
+         */
+        public static final String DIM_NAV_BUTTONS_ANIMATE = "dim_nav_buttons_animate";
+
+        /**
+         * Duration of the fade animation in milliseconds
+         * @hide
+         */
+        public static final String DIM_NAV_BUTTONS_ANIMATE_DURATION = "dim_nav_buttons_animate_duration";
+
+        /**
+         * Whether to listen on the entire screen for touches to un-dim
+         * the buttons instead of just listening on the navbar
+         * @hide
+         */
+        public static final String DIM_NAV_BUTTONS_TOUCH_ANYWHERE = "dim_nav_buttons_touch_anywhere";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
