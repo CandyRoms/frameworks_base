@@ -159,4 +159,6 @@
     <string name="notify_battery_fully_charged_title">Battery fully charged</string>
     <string name="notify_battery_fully_charged_text">Disconnect your device from the charger to improve battery longevity.</string>
 
+    <!-- Vendor mismatched fingerprint warning [CHAR LIMIT=NONE] -->
+    <string name="system_error_vendorprint">It appears your vendor image may be out of date. Please flash the latest vendor image for your device.</string>
 </resources>
