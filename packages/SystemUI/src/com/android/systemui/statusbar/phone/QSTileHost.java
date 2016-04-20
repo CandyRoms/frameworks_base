@@ -48,6 +48,7 @@ import com.android.systemui.qs.tiles.DndTile;
 import com.android.systemui.qs.tiles.ExpandedDesktopTile;
 import com.android.systemui.qs.tiles.FlashlightTile;
 import com.android.systemui.qs.tiles.HeadsUpTile;
+import com.android.systemui.qs.tiles.FloatingTile;
 import com.android.systemui.qs.tiles.HotspotTile;
 import com.android.systemui.qs.tiles.IntentTile;
 import com.android.systemui.qs.tiles.LocationTile;
@@ -326,7 +327,7 @@ public class QSTileHost implements QSTile.Host {
             case QSConstants.TILE_HEADS_UP:
                 return new HeadsUpTile(this);
             case QSConstants.TILE_CANDY:
-		        return new CandyTile(this);
+		return new CandyTile(this);
             case QSConstants.TILE_THEMES:
                 return new ThemesTile(this);
             case QSConstants.TILE_KERNEL_ADIUTOR:
@@ -339,6 +340,8 @@ public class QSTileHost implements QSTile.Host {
                 return new ScreenrecordTile(this);
             case QSConstants.TILE_MUSIC:		
                 return new MusicTile(this);
+            case QSConstants.TILE_FLOATING:		
+                return new FloatingTile(this);
             default:
                 throw new IllegalArgumentException("Bad tile spec: " + tileSpec);
         }

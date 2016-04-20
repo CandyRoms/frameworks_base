@@ -47,6 +47,7 @@ public class MetricsLogger implements MetricsConstants {
     public static final int ACTION_DOUBLE_TAP_POWER_CAMERA_GESTURE = 255;
     public static final int ACTION_WIGGLE_CAMERA_GESTURE = 256;
     public static final int POWER_MENU_ONTHEGO_ENABLED = 257;
+    public static final int QS_FLOATING = 258;
 
     public static void visible(Context context, int category) throws IllegalArgumentException {
         if (Build.IS_DEBUGGABLE && category == VIEW_UNKNOWN) {

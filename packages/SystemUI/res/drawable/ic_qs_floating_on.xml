@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <path
+        android:name="Floating-Window"
+        android:fillColor="#FFFFFF"
+        android:pathData="M36,8 L12,8 C9.79,8 8,9.79 8,12 L8,36 C8,38.21 9.79,40 12,40 L36,40 C38.21,40
+40,38.21 40,36 L40,12 C40,9.79 38.21,8 36,8 L36,8 Z M36,36 L12,36 L12,12 L36,12
+L36,36 Z M12,0 L36,0 L36,4 L12,4 L12,0 Z M12,44 L36,44 L36,48 L12,48 L12,44 Z"/>
+
+</vector>
