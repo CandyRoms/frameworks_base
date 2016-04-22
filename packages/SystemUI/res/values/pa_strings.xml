@@ -28,6 +28,5 @@
     <string name="floating_mode_blacklisted_app">The current app is blacklisted, so it won\'t launch into floating mode.</string>
 
     <!-- Floating tile-->
-    <string name="qs_floating_headsup_on">Floating mode is on</string>
-    <string name="qs_floating_headsup_off">Floating mode is off</string>
+    <string name="qs_floating_headsup_label">Floating Headsup</string>
 </resources>
