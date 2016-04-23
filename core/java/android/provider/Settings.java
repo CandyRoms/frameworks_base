@@ -3850,6 +3850,14 @@ public final class Settings {
          * Whether wifi settings will connect to access point automatically
          * 0 = automatically
          * 1 = manually
+
+	 * whether to enable /disable showing charging current on lockscreen
+	 * @hide
+	 */
+	public static final String LOCK_SCREEN_SHOW_CURRENT = "lock_screen_show_current";
+    
+	/**
+         * Boolean value whether to link ringtone and notification volume
          * @hide
          */
         public static final String WIFI_AUTO_CONNECT_TYPE = "wifi_auto_connect_type";
