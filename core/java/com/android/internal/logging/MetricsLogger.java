@@ -48,6 +48,8 @@ public class MetricsLogger implements MetricsConstants {
     public static final int ACTION_WIGGLE_CAMERA_GESTURE = 256;
     public static final int POWER_MENU_ONTHEGO_ENABLED = 257;
     public static final int QS_FLOATING = 258;
+    public static final int QS_FLOATING_TOGGLE = 259;
+    public static final int QS_FLOATING_DETAILS = 260;
 
     public static void visible(Context context, int category) throws IllegalArgumentException {
         if (Build.IS_DEBUGGABLE && category == VIEW_UNKNOWN) {

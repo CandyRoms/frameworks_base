@@ -29,4 +29,5 @@
 
     <!-- Floating tile-->
     <string name="qs_floating_headsup_label">Floating Headsup</string>
+    <string name="qs_floating_description">Opens apps in floating window when peeking notification is tapped</string>
 </resources>

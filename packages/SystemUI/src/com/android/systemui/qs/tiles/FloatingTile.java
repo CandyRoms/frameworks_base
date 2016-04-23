@@ -20,6 +20,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.android.internal.logging.MetricsLogger;
 import com.android.systemui.qs.SecureSetting;
@@ -30,9 +36,12 @@ public class FloatingTile extends QSTile<QSTile.BooleanState> {
     public static final String TAG = "FloatingTile";
 
     private final SecureSetting mSetting;
+    private final FloatingDetailAdapter mDetailAdapter;
 
     public FloatingTile(Host host) {
+
         super(host);
+        mDetailAdapter = new FloatingDetailAdapter();
 
         mSetting = new SecureSetting(mContext, mHandler, Secure.FLOATING_HEADSUP) {
             @Override
@@ -40,6 +49,17 @@ public class FloatingTile extends QSTile<QSTile.BooleanState> {
                 handleRefreshState(value);
             }
         };
+    }
+
+    @Override
+    public DetailAdapter getDetailAdapter() {
+        return mDetailAdapter;
+    }
+
+    @Override
+    protected void handleUserSwitch(int newUserId) {
+        mSetting.setUserId(newUserId);
+        handleRefreshState(mSetting.getValue());
     }
 
     @Override
@@ -55,8 +75,7 @@ public class FloatingTile extends QSTile<QSTile.BooleanState> {
 
     // @Override
     protected void handleDetailClick() {
-        // TODO: Add proper detail view
-        handleClick();
+        showDetail(true);
     }
 
     @Override
@@ -90,5 +109,59 @@ public class FloatingTile extends QSTile<QSTile.BooleanState> {
     @Override
     public void setListening(boolean listening) {
         // Do nothing
+    }
+
+    private class FloatingDetailAdapter implements DetailAdapter {
+
+        private ViewGroup mMessageContainer;
+        private TextView mMessageText;
+
+        @Override
+        public int getMetricsCategory() {
+            return MetricsLogger.QS_FLOATING_DETAILS;
+        }
+
+        @Override
+        public int getTitle() {
+            return R.string.qs_floating_headsup_label;
+        }
+
+        @Override
+        public Boolean getToggleState() {
+            return mState.value;
+        }
+
+        @Override
+        public void setToggleState(boolean state) {
+            MetricsLogger.action(mContext, MetricsLogger.QS_FLOATING_TOGGLE, state);
+            if (!state) {
+                showDetail(false);
+            }
+            setEnabled(state);
+            fireToggleStateChanged(state);
+            refreshState();
+        }
+
+        @Override
+        public Intent getSettingsIntent() {
+            return null;
+        }
+
+        @Override
+        public View createDetailView(Context context, View convertView, ViewGroup parent) {
+            final LinearLayout mDetails = convertView != null ? (LinearLayout) convertView
+                    : (LinearLayout) LayoutInflater.from(context).inflate(
+                            R.layout.floating_mode_layout, parent, false);
+            if (convertView == null) {
+                mMessageContainer = (ViewGroup) mDetails.findViewById(R.id.floating_introduction);
+                mMessageText = (TextView) mDetails.findViewById(R.id.floating_introduction_message);
+                mMessageText.setText(mContext.getString(R.string.qs_floating_description));
+                mMessageContainer.setVisibility(View.VISIBLE);
+            }
+
+            setToggleState(true);
+
+            return mDetails;
+        }
     }
 }
