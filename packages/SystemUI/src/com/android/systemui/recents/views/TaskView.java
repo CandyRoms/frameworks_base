@@ -43,6 +43,7 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
     interface TaskViewCallbacks {
         public void onTaskViewAppIconClicked(TaskView tv);
         public void onTaskViewAppInfoClicked(TaskView tv);
+        public void onTaskFloatClicked(TaskView tv);
         public void onTaskViewClicked(TaskView tv, Task task, boolean lockToTask);
         public void onTaskViewDismissed(TaskView tv);
         public void onTaskViewClipStateChanged(TaskView tv);
@@ -668,6 +669,7 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
             if (mConfig.multiStackEnabled) {
                 mHeaderView.mMoveTaskButton.setOnClickListener(this);
             }
+            mHeaderView.mFloatButton.setOnClickListener(this);
             mActionButtonView.setOnClickListener(this);
             mHeaderView.mApplicationIcon.setOnLongClickListener(this);
         }
@@ -684,6 +686,7 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
             // Unbind any listeners
             mHeaderView.mApplicationIcon.setOnClickListener(null);
             mHeaderView.mDismissButton.setOnClickListener(null);
+            mHeaderView.mFloatButton.setOnClickListener(null);
             if (mConfig.multiStackEnabled) {
                 mHeaderView.mMoveTaskButton.setOnClickListener(null);
             }
@@ -728,6 +731,10 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
                         // Keep track of deletions by the dismiss button
                         MetricsLogger.histogram(getContext(), "overview_task_dismissed_source",
                                 Constants.Metrics.DismissSourceHeaderButton);
+                    } else if (v == mHeaderView.mFloatButton) {
+                        if (mCb != null) {
+                            mCb.onTaskFloatClicked(tv);
+                        }
                     } else if (v == mHeaderView.mMoveTaskButton) {
                         if (mCb != null) {
                             mCb.onTaskResize(tv);
