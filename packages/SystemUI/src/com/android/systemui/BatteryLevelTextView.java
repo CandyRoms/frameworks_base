@@ -28,6 +28,7 @@ import java.text.NumberFormat;
 
 public class BatteryLevelTextView extends TextView implements
         BatteryController.BatteryStateChangeCallback{
+
     private BatteryController mBatteryController;
     private boolean mBatteryCharging;
     private boolean mForceShow;
@@ -35,6 +36,7 @@ public class BatteryLevelTextView extends TextView implements
     private int mRequestedVisibility;
     private int mStyle;
     private int mPercentMode;
+    private int mBattColor;
 
     public BatteryLevelTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -66,7 +68,7 @@ public class BatteryLevelTextView extends TextView implements
         // Respect font size setting.
         setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimensionPixelSize(R.dimen.battery_level_text_size));
-    }
+     }
 
     @Override
     public void onBatteryLevelChanged(int level, boolean pluggedIn, boolean charging) {
@@ -84,9 +86,10 @@ public class BatteryLevelTextView extends TextView implements
     }
 
     @Override
-    public void onBatteryStyleChanged(int style, int percentMode) {
+    public void onBatteryStyleChanged(int style, int percentMode, int battColor) {
         mStyle = style;
         mPercentMode = percentMode;
+        mBattColor = battColor;
         updateVisibility();
     }
 
@@ -121,6 +124,7 @@ public class BatteryLevelTextView extends TextView implements
         }
 
         if (showNextPercent || mForceShow) {
+            setTextColor(mBattColor);
             super.setVisibility(mRequestedVisibility);
         } else {
             super.setVisibility(GONE);

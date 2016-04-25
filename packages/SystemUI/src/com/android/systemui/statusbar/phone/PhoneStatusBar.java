@@ -584,7 +584,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 || uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CARRIER_LABEL_HIDE_LABEL))
                 || uri.equals(Settings.System.getUriFor(
-		    Settings.System.STATUS_BAR_CARRIER_LABEL_NUMBER_OF_NOTIFICATION_ICONS))) {
+		            Settings.System.STATUS_BAR_CARRIER_LABEL_NUMBER_OF_NOTIFICATION_ICONS))) {
                 setCarrierLabelVisibility();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CARRIER_LABEL_SHOW_ON_LOCK_SCREEN))) {
@@ -1142,7 +1142,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 // noop
             }
             @Override
-            public void onBatteryStyleChanged(int style, int percentMode) {
+            public void onBatteryStyleChanged(int style, int percentMode, int battColor) {
                 // noop
             }
         });
@@ -1292,7 +1292,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mStatusBarHeaderMachine.updateEnablement();
         setCarrierLabelVisibility();
         setLockScreenCarrierLabelVisibility();
-
         return mStatusBarView;
     }
 
