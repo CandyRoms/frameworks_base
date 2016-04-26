@@ -27,4 +27,8 @@ public interface RankingConfig {
     int getPackageVisibilityOverride(String packageName, int uid);
 
     void setPackageVisibilityOverride(String packageName, int uid, int visibility);
+
+    boolean getPackageFloating(String packageName, int uid);
+
+    void setPackageFloating(String packagename, int uid, boolean floating);
 }
