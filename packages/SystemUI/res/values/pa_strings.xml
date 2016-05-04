@@ -25,5 +25,5 @@
     <string name="status_bar_floating_no_interface">App provides no interface</string>
 
     <!-- Blacklisted app for floating mode -->
-    <string name="floating_mode_blacklisted_app">The current app is blacklisted, so it won't launch into floating mode.</string>
+    <string name="floating_mode_blacklisted_app">The current app is blacklisted, so it won\'t launch into floating mode.</string>
 </resources>
