@@ -4782,6 +4782,57 @@ public final class Settings {
          */
         public static final String APP_CIRCLE_BAR_SHOW_TRIGGER = "app_circle_bar_show_trigger";
 
+
+        /**
+         * Show or hide clock
+         * 0 - hide
+         * 1 - show (default)
+         * @hide
+         */
+        public static final String KEYGUARD_STATUS_BAR_CLOCK = "keyguard_status_bar_clock";
+
+        /**
+         * AM/PM Style for clock options
+         * 0 - Normal AM/PM
+         * 1 - Small AM/PM
+         * 2 - No AM/PM
+         * @hide
+         */
+        public static final String KEYGUARD_STATUSBAR_CLOCK_AM_PM_STYLE = "keyguard_statusbar_clock_am_pm_style";
+
+        /**
+         * Style of clock
+         * 0 - Right Clock
+         * 1 - Center Clock
+         * 2 - Left Clock
+         * @hide
+         */
+        public static final String KEYGUARD_STATUSBAR_CLOCK_STYLE = "keyguard_statusbar_clock_style";
+
+        /**
+         * Shows custom date before clock time
+         * 0 - No Date
+         * 1 - Small Date
+         * 2 - Normal Date
+         * @hide
+         */
+        public static final String KEYGUARD_STATUSBAR_CLOCK_DATE_DISPLAY = "keyguard_statusbar_clock_date_display";
+
+        /**
+         * Sets the date string style
+         * 0 - Regular style
+         * 1 - Lowercase
+         * 2 - Uppercase
+         * @hide
+         */
+        public static final String KEYGUARD_STATUSBAR_CLOCK_DATE_STYLE = "keyguard_statusbar_clock_date_style";
+
+        /**
+         * Stores the java DateFormat string for the date
+         * @hide
+         */
+        public static final String KEYGUARD_STATUSBAR_CLOCK_DATE_FORMAT = "keyguard_statusbar_clock_date_format";
+
         /**
          * Dashboard title text size
          * @hide

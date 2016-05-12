@@ -1,0 +1,382 @@
+/*
+ * Copyright (C) 2006 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.android.systemui.statusbar.policy;
+
+import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.TypedArray;
+import android.database.ContentObserver;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.UserHandle;
+import android.provider.Settings;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.format.DateFormat;
+import android.text.style.CharacterStyle;
+import android.text.style.RelativeSizeSpan;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.TextView;
+
+import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.StatusBarIconController;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import libcore.icu.LocaleData;
+
+/**
+ * Digital clock for the status bar.
+ */
+public class KeyguardClock extends TextView {
+    protected boolean mAttached;
+    protected Calendar mCalendar;
+    protected String mKeyguardClockFormatString;
+    protected SimpleDateFormat mKeyguardClockFormat;
+    protected Locale mLocale;
+
+
+    public static final int KEYGUARD_AM_PM_STYLE_GONE    = 0;
+    public static final int KEYGUARD_AM_PM_STYLE_SMALL   = 1;
+    public static final int KEYGUARD_AM_PM_STYLE_NORMAL  = 2;
+
+    private static int KEYGUARD_AM_PM_STYLE = KEYGUARD_AM_PM_STYLE_GONE;
+
+    public static final int KEYGUARD_CLOCK_DATE_DISPLAY_GONE = 0;
+    public static final int KEYGUARD_CLOCK_DATE_DISPLAY_SMALL = 1;
+    public static final int KEYGUARD_CLOCK_DATE_DISPLAY_NORMAL = 2;
+
+    public static final int KEYGUARD_CLOCK_DATE_STYLE_REGULAR = 0;
+    public static final int KEYGUARD_CLOCK_DATE_STYLE_LOWERCASE = 1;
+    public static final int KEYGUARD_CLOCK_DATE_STYLE_UPPERCASE = 2;
+
+    public static final int KEYGUARD_STYLE_CLOCK_RIGHT   = 0;
+    public static final int KEYGUARD_STYLE_CLOCK_CENTER  = 1;
+    public static final int KEYGUARD_STYLE_CLOCK_LEFT    = 2;
+
+    protected int mKeyguardClockDateDisplay = KEYGUARD_CLOCK_DATE_DISPLAY_GONE;
+    protected int mKeyguardClockDateStyle = KEYGUARD_CLOCK_DATE_STYLE_REGULAR;
+    protected int mKeyguardClockStyle = KEYGUARD_STYLE_CLOCK_RIGHT;
+    protected boolean mShowKeyguardClock;
+    private int mKeyguardClockAndDateWidth;
+
+    private int mKeyguardAmPmStyle;
+
+    private SettingsObserver mSettingsObserver;
+    private StatusBarIconController mIconController;
+
+    protected class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.KEYGUARD_STATUS_BAR_CLOCK),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.KEYGUARD_STATUSBAR_CLOCK_AM_PM_STYLE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.KEYGUARD_STATUSBAR_CLOCK_STYLE), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.KEYGUARD_STATUSBAR_CLOCK_DATE_DISPLAY), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.KEYGUARD_STATUSBAR_CLOCK_DATE_STYLE), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.KEYGUARD_STATUSBAR_CLOCK_DATE_FORMAT), false,
+                    this, UserHandle.USER_ALL);
+            updateSettings();
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+
+    public KeyguardClock(Context context) {
+        this(context, null);
+    }
+
+    public KeyguardClock(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public KeyguardClock(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.Clock,
+                0, 0);
+        try {
+            mKeyguardAmPmStyle = a.getInt(R.styleable.Clock_amPmStyle, KEYGUARD_AM_PM_STYLE_GONE);
+        } finally {
+            a.recycle();
+        }
+    }
+
+    public void setIconController(StatusBarIconController iconController) {
+        mIconController = iconController;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (!mAttached) {
+            mAttached = true;
+            IntentFilter filter = new IntentFilter();
+
+            filter.addAction(Intent.ACTION_TIME_TICK);
+            filter.addAction(Intent.ACTION_TIME_CHANGED);
+            filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+            filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+            filter.addAction(Intent.ACTION_USER_SWITCHED);
+
+            getContext().registerReceiverAsUser(mIntentReceiver, UserHandle.ALL, filter,
+                    null, getHandler());
+        }
+
+        // NOTE: It's safe to do these after registering the receiver since the receiver always runs
+        // in the main thread, therefore the receiver can't run before this method returns.
+
+        // The time zone may have changed while the receiver wasn't registered, so update the Time
+        mCalendar = Calendar.getInstance(TimeZone.getDefault());
+
+        if (mSettingsObserver == null) {
+            mSettingsObserver = new SettingsObserver(new Handler());
+        }
+        mSettingsObserver.observe();
+        updateSettings();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mAttached) {
+            getContext().unregisterReceiver(mIntentReceiver);
+            getContext().getContentResolver().unregisterContentObserver(mSettingsObserver);
+            mAttached = false;
+        }
+    }
+
+    private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(Intent.ACTION_TIMEZONE_CHANGED)) {
+                String tz = intent.getStringExtra("time-zone");
+                mCalendar = Calendar.getInstance(TimeZone.getTimeZone(tz));
+                if (mKeyguardClockFormat != null) {
+                    mKeyguardClockFormat.setTimeZone(mCalendar.getTimeZone());
+                }
+            } else if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
+                final Locale newLocale = getResources().getConfiguration().locale;
+                if (! newLocale.equals(mLocale)) {
+                    mLocale = newLocale;
+                }
+                updateSettings();
+                return;
+            }
+            updateKeyguardClock();
+        }
+    };
+
+    final void updateKeyguardClock() {
+        mCalendar.setTimeInMillis(System.currentTimeMillis());
+        setText(getSmallTime());
+    }
+
+    private final CharSequence getSmallTime() {
+        Context context = getContext();
+        boolean is24 = DateFormat.is24HourFormat(context, ActivityManager.getCurrentUser());
+        LocaleData d = LocaleData.get(context.getResources().getConfiguration().locale);
+
+        final char MAGIC1 = '\uEF00';
+        final char MAGIC2 = '\uEF01';
+
+        SimpleDateFormat sdf;
+        String format = is24 ? d.timeFormat_Hm : d.timeFormat_hm;
+
+        if (!format.equals(mKeyguardClockFormatString)) {
+            /*
+             * Search for an unquoted "a" in the format string, so we can
+             * add dummy characters around it to let us find it again after
+             * formatting and change its size.
+             */
+            if (mKeyguardAmPmStyle != KEYGUARD_AM_PM_STYLE_NORMAL) {
+                int a = -1;
+                boolean quoted = false;
+                for (int i = 0; i < format.length(); i++) {
+                    char c = format.charAt(i);
+
+                    if (c == '\'') {
+                        quoted = !quoted;
+                    }
+                    if (!quoted && c == 'a') {
+                        a = i;
+                        break;
+                    }
+                }
+
+                if (a >= 0) {
+                    // Move a back so any whitespace before AM/PM is also in the alternate size.
+                    final int b = a;
+                    while (a > 0 && Character.isWhitespace(format.charAt(a-1))) {
+                        a--;
+                    }
+                    format = format.substring(0, a) + MAGIC1 + format.substring(a, b)
+                        + "a" + MAGIC2 + format.substring(b + 1);
+                }
+            }
+            mKeyguardClockFormat = sdf = new SimpleDateFormat(format);
+            mKeyguardClockFormatString = format;
+        } else {
+            sdf = mKeyguardClockFormat;
+        }
+
+        CharSequence dateString = null;
+
+        String result = sdf.format(mCalendar.getTime());
+
+        if (mKeyguardClockDateDisplay != KEYGUARD_CLOCK_DATE_DISPLAY_GONE) {
+            Date now = new Date();
+
+            String keyguardClockDateFormat = Settings.System.getString(getContext().getContentResolver(),
+                    Settings.System.KEYGUARD_STATUSBAR_CLOCK_DATE_FORMAT);
+
+            if (keyguardClockDateFormat == null || keyguardClockDateFormat.isEmpty()) {
+                // Set dateString to short uppercase Weekday (Default for AOKP) if empty
+                dateString = DateFormat.format("EEE", now) + " ";
+            } else {
+                dateString = DateFormat.format(keyguardClockDateFormat, now) + " ";
+            }
+            if (mKeyguardClockDateStyle == KEYGUARD_CLOCK_DATE_STYLE_LOWERCASE) {
+                // When Date style is small, convert date to lowercase
+                result = dateString.toString().toLowerCase() + result;
+            } else if (mKeyguardClockDateStyle == KEYGUARD_CLOCK_DATE_STYLE_UPPERCASE) {
+                result = dateString.toString().toUpperCase() + result;
+            } else {
+                result = dateString.toString() + result;
+            }
+        }
+
+        SpannableStringBuilder formatted = new SpannableStringBuilder(result);
+
+        if (mKeyguardAmPmStyle != KEYGUARD_AM_PM_STYLE_NORMAL) {
+            int magic1 = result.indexOf(MAGIC1);
+            int magic2 = result.indexOf(MAGIC2);
+            if (magic1 >= 0 && magic2 > magic1) {
+                if (mKeyguardAmPmStyle == KEYGUARD_AM_PM_STYLE_GONE) {
+                    formatted.delete(magic1, magic2+1);
+                } else {
+                    if (mKeyguardAmPmStyle == KEYGUARD_AM_PM_STYLE_SMALL) {
+                        CharacterStyle style = new RelativeSizeSpan(0.7f);
+                        formatted.setSpan(style, magic1, magic2,
+                                          Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+                    }
+                    formatted.delete(magic2, magic2 + 1);
+                    formatted.delete(magic1, magic1 + 1);
+                }
+            }
+        }
+        
+        if (mKeyguardClockDateDisplay != KEYGUARD_CLOCK_DATE_DISPLAY_NORMAL) {
+            if (dateString != null) {
+                int dateStringLen = dateString.length();
+                if (mKeyguardClockDateDisplay == KEYGUARD_CLOCK_DATE_DISPLAY_GONE) {
+                    formatted.delete(0, dateStringLen);
+                } else {
+                    if (mKeyguardClockDateDisplay == KEYGUARD_CLOCK_DATE_DISPLAY_SMALL) {
+                        CharacterStyle style = new RelativeSizeSpan(0.7f);
+                        formatted.setSpan(style, 0, dateStringLen,
+                                          Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+                    }
+                }
+         }
+        }
+        return formatted;
+    }
+
+    protected void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mShowKeyguardClock = Settings.System.getIntForUser(resolver,
+                Settings.System.KEYGUARD_STATUS_BAR_CLOCK, 1,
+                UserHandle.USER_CURRENT) == 1;
+
+        boolean is24hour = DateFormat.is24HourFormat(mContext);
+        int keyguardAmPmStyle = Settings.System.getIntForUser(resolver,
+                Settings.System.KEYGUARD_STATUSBAR_CLOCK_AM_PM_STYLE,
+                KEYGUARD_AM_PM_STYLE_GONE,
+                UserHandle.USER_CURRENT);
+        mKeyguardAmPmStyle = is24hour ? KEYGUARD_AM_PM_STYLE_GONE : keyguardAmPmStyle;
+        mKeyguardClockFormatString = "";
+
+        mKeyguardClockStyle = Settings.System.getIntForUser(resolver,
+                Settings.System.KEYGUARD_STATUSBAR_CLOCK_STYLE, KEYGUARD_STYLE_CLOCK_RIGHT,
+                UserHandle.USER_CURRENT);
+        mKeyguardClockDateDisplay = Settings.System.getIntForUser(resolver,
+                Settings.System.KEYGUARD_STATUSBAR_CLOCK_DATE_DISPLAY, KEYGUARD_CLOCK_DATE_DISPLAY_GONE,
+                UserHandle.USER_CURRENT);
+        mKeyguardClockDateStyle = Settings.System.getIntForUser(resolver,
+                Settings.System.KEYGUARD_STATUSBAR_CLOCK_DATE_STYLE, KEYGUARD_CLOCK_DATE_STYLE_REGULAR,
+                UserHandle.USER_CURRENT);
+
+        if (mAttached) {
+            updateKeyguardClockVisibility();
+            updateKeyguardClock();
+        }
+
+        if (mIconController != null) {
+            mIconController.setClockAndDateStatus(mKeyguardClockAndDateWidth, mKeyguardClockStyle, mShowKeyguardClock);
+        }
+
+    }
+
+    protected void updateKeyguardClockVisibility() {
+        if (mKeyguardClockStyle == KEYGUARD_STYLE_CLOCK_RIGHT && mShowKeyguardClock) {
+            setVisibility(View.VISIBLE);
+        } else {
+            setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld){
+        super.onSizeChanged(xNew, yNew, xOld, yOld);
+        mKeyguardClockAndDateWidth = xNew;
+        if (mIconController != null) {
+            mIconController.setClockAndDateStatus(mKeyguardClockAndDateWidth, mKeyguardClockStyle, mShowKeyguardClock);
+        }
+    }
+
+}
