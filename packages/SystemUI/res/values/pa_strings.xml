@@ -27,7 +27,7 @@
     <!-- Blacklisted app for floating mode -->
     <string name="floating_mode_blacklisted_app">The current app is blacklisted, so it won\'t launch into floating mode.</string>
 
-    <!-- Floating tile-->
-    <string name="qs_floating_headsup_label">Floating Headsup</string>
-    <string name="qs_floating_description">Opens apps in floating window when peeking notification is tapped</string>
+    <!-- QuickSettings: Floating heads-up tile -->
+    <string name="quick_settings_floating_label">Floating heads-up</string>
+    <string name="quick_settings_floating_description">Opens app in a floating window when a peeking notification is tapped.</string>
 </resources>
