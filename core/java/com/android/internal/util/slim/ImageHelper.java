@@ -48,11 +48,6 @@ public class ImageHelper {
             return d;
         }
 
-    public static Bitmap getColoredBitmap(Drawable d, int color) {
-        if (d == null) {
-            return null;
-        }
-
         Bitmap colorBitmap = ((BitmapDrawable) d).getBitmap();
         Bitmap grayscaleBitmap = toGrayscale(colorBitmap);
         Paint pp = new Paint();
