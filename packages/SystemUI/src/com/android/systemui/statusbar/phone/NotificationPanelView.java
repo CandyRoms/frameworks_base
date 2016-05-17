@@ -863,6 +863,7 @@ public class NotificationPanelView extends PanelView implements
                 showQsOverride = isLayoutRtl() ? (w - region < x) : (x < region);
                 break;
         }
+        showQsOverride &= mStatusBarState == StatusBarState.SHADE;
 
         return twoFingerDrag || showQsOverride || stylusButtonClickDrag || mouseButtonClickDrag;
     }
