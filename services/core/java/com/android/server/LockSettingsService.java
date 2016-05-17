@@ -450,6 +450,10 @@ public class LockSettingsService extends ILockSettings.Stub {
     }
 
 
+    public byte getLockPatternSize(int userId) {
+        return mStorage.getLockPatternSize(userId);
+    }
+
     @Override
     public void setLockPattern(String pattern, String savedCredential, int userId)
             throws RemoteException {
@@ -567,8 +571,10 @@ public class LockSettingsService extends ILockSettings.Stub {
 
                    @Override
                    public byte[] toHash(String pattern, int userId) {
+                       final byte lockPatternSize = getLockPatternSize(userId);
                        return LockPatternUtils.patternToHash(
-                               LockPatternUtils.stringToPattern(pattern));
+                               LockPatternUtils.stringToPattern(pattern, lockPatternSize),
+                               lockPatternSize);
                    }
 
                    @Override
@@ -807,7 +813,10 @@ public class LockSettingsService extends ILockSettings.Stub {
         Secure.LOCK_PATTERN_ENABLED,
         Secure.LOCK_BIOMETRIC_WEAK_FLAGS,
         Secure.LOCK_PATTERN_VISIBLE,
-        Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED
+        Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED,
+        Secure.LOCK_PATTERN_SIZE,
+        Secure.LOCK_DOTS_VISIBLE,
+        Secure.LOCK_SHOW_ERROR_PATH,
     };
 
     // Reading these settings needs the contacts permission
