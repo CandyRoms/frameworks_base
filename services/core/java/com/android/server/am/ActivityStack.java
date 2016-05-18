@@ -1387,9 +1387,9 @@ final class ActivityStack {
                         // At this point, nothing else needs to be shown
                         if (DEBUG_VISIBILITY) Slog.v(TAG_VISIBILITY, "Fullscreen: at " + r);
                         behindFullscreen = true;
-                    } else if (!isHomeStack() && r.frontOfTask && task.isOverHomeStack()) {
+                    } else if (!r.floatingWindow && !isHomeStack() && r.frontOfTask && task.isOverHomeStack()) {
                         if (DEBUG_VISIBILITY) Slog.v(TAG_VISIBILITY, "Showing home: at " + r);
-                        behindFullscreen = false;//!isHomeStack() && r.frontOfTask && task.isOverHomeStack();
+                        behindFullscreen = true;
                     }
                 } else {
                     if (DEBUG_VISIBILITY) Slog.v(TAG_VISIBILITY,
