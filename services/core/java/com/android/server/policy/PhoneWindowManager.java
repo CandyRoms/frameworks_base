@@ -3408,6 +3408,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 }
             }
 
+            if (mTopFullscreenOpaqueWindowState != null &&
+                    (mTopFullscreenOpaqueWindowState.getAttrs().privateFlags
+                            & WindowManager.LayoutParams.PRIVATE_FLAG_PREVENT_SYSTEM_KEYS) != 0
+                    && mScreenOnFully) {
+                return 0;
+            }
+
             if (virtualKey && down) {
                 mMenuPressed = true;
                 mMenuConsumed = false;
@@ -3463,6 +3470,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
             return 0;
         } else if (keyCode == KeyEvent.KEYCODE_APP_SWITCH) {
+            if (mTopFullscreenOpaqueWindowState != null &&
+               (mTopFullscreenOpaqueWindowState.getAttrs().privateFlags
+                 & WindowManager.LayoutParams.PRIVATE_FLAG_PREVENT_SYSTEM_KEYS) != 0
+                  && mScreenOnFully) {
+				return 0;
+            }
 			
             // If we have released the app switch key, and didn't do anything else
             // while it was pressed, then it is time to process the app switch action!
@@ -3477,7 +3490,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Log.i(TAG, "Ignoring APPSWITCH; event canceled.");
                     return -1;
                 }
-
+              
                 // Delay handling AppSwitch if a double-tap is possible.
                 if (!virtualKey
                         && !mDoubleTapOnAppSwitchBehavior.equals(ActionConstants.ACTION_NULL)) {
@@ -6124,7 +6137,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
             case KeyEvent.KEYCODE_POWER: {
                 if ((mTopFullscreenOpaqueWindowState.getAttrs().privateFlags
-                        & WindowManager.LayoutParams.PRIVATE_FLAG_PREVENT_POWER_KEY) != 0
+                        & WindowManager.LayoutParams.PRIVATE_FLAG_PREVENT_SYSTEM_KEYS) != 0
                         && mScreenOnFully) {
                     return result;
                 }
