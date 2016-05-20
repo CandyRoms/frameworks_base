@@ -275,6 +275,10 @@ public class TaskViewHeader extends FrameLayout {
                     .withLayer()
                     .start();
         }
+    }
+
+    /** Animates this task bar floating button when launching a task. */
+    void startLaunchFloatButtonAnimation() {
         if (mFloatButton.getVisibility() == View.VISIBLE) {
             mFloatButton.animate().cancel();
             mFloatButton.animate()

@@ -406,6 +406,8 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
         } else {
             // Hide the dismiss button
             mHeaderView.startLaunchTaskDismissAnimation();
+            // Hide the floating button
+            mHeaderView.startLaunchFloatButtonAnimation();
             // If this is another view in the task grouping and is in front of the launch task,
             // animate it away first
             if (occludesLaunchTarget) {
