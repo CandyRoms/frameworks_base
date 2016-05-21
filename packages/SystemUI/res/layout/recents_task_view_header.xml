@@ -77,7 +77,7 @@
         android:id="@+id/float_button"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginEnd="48dp"
         android:layout_gravity="end|center"
         android:padding="12dp"
         android:background="@drawable/recents_button_bg"
