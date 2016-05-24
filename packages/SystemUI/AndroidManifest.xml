@@ -448,6 +448,11 @@
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".screenshot.ScreenshotEditor"
+            android:enabled="true"
+            android:exported="true" />
+
         <activity
             android:name=".cm.LockscreenShortcutsActivity"
             android:icon="@drawable/tuner"
