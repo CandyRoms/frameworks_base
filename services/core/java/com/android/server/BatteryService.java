@@ -185,8 +185,6 @@ public final class BatteryService extends SystemService {
                 com.android.internal.R.integer.config_lowBatteryCloseWarningBump);
         mShutdownBatteryTemperature = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_shutdownBatteryTemperature);
-        mShowBatteryFullyChargedNotification = mContext.getResources().getBoolean(
-                com.android.internal.R.bool.config_showBatteryFullyChargedNotification);
 
         // Grab fastcharge threshold
 //        mChargingFastThreshold = getConfigInteger(mContext, "config_chargingFastThreshold");
@@ -998,6 +996,10 @@ public final class BatteryService extends SystemService {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
 
+            // Battery fully charged notification enabled
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.BATTERY_FULLY_CHARGED_NOTIFICATION), false, this, UserHandle.USER_ALL);
+
             // Battery light enabled
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.BATTERY_LIGHT_ENABLED), false, this, UserHandle.USER_ALL);
@@ -1033,6 +1035,9 @@ public final class BatteryService extends SystemService {
         public void update() {
             ContentResolver resolver = mContext.getContentResolver();
             Resources res = mContext.getResources();
+
+            mShowBatteryFullyChargedNotification =  Settings.System.getInt(
+		resolver, Settings.System.BATTERY_FULLY_CHARGED_NOTIFICATION, 0) == 1;
 
             // Battery light enabled
             mLightEnabled = Settings.System.getInt(resolver,
