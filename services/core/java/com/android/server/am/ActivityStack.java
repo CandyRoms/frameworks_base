@@ -1247,8 +1247,8 @@ final class ActivityStack {
                     // 2. Either:
                     // - Full Screen Activity OR
                     // - On top of Home and our stack is NOT home
-                    if (!r.finishing && r.visible && (r.fullscreen ||
-                            (!isHomeStack() && r.frontOfTask && task.isOverHomeStack()))) {
+                    if (!r.finishing && r.visible && (r.fullscreen && !r.floatingWindow ||
+                            (!r.floatingWindow && !isHomeStack() && r.frontOfTask && task.isOverHomeStack()))) {
                         return false;
                     }
                 }
