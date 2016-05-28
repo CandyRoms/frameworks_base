@@ -33,6 +33,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/alarms/ogg/Oxygen.ogg:system/media/audio/alarms/Oxygen.ogg \
     $(LOCAL_PATH)/alarms/ogg/Platinum.ogg:system/media/audio/alarms/Platinum.ogg \
     $(LOCAL_PATH)/alarms/ogg/Scandium.ogg:system/media/audio/alarms/Scandium.ogg \
+    $(LOCAL_PATH)/alarms/creek.mp3:system/media/audio/alarms/creek.mp3 \
     $(LOCAL_PATH)/notifications/ogg/Adara.ogg:system/media/audio/notifications/Adara.ogg \
     $(LOCAL_PATH)/notifications/Aldebaran.ogg:system/media/audio/notifications/Aldebaran.ogg \
     $(LOCAL_PATH)/notifications/Altair.ogg:system/media/audio/notifications/Altair.ogg \
@@ -107,6 +108,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/notifications/sirius.ogg:system/media/audio/notifications/sirius.ogg \
     $(LOCAL_PATH)/notifications/tweeters.ogg:system/media/audio/notifications/tweeters.ogg \
     $(LOCAL_PATH)/notifications/vega.ogg:system/media/audio/notifications/vega.ogg \
+    $(LOCAL_PATH)/notifications/Iphone_Tritone.m4a:system/media/audio/notifications/Iphone_Tritone.m4a\
     $(LOCAL_PATH)/ringtones/ogg/Andromeda.ogg:system/media/audio/ringtones/Andromeda.ogg \
     $(LOCAL_PATH)/ringtones/ogg/Aquila.ogg:system/media/audio/ringtones/Aquila.ogg \
     $(LOCAL_PATH)/ringtones/ogg/ArgoNavis.ogg:system/media/audio/ringtones/ArgoNavis.ogg \
