@@ -2585,6 +2585,18 @@ public final class Settings {
         public static final String DOZE_TRIGGER_NOTIFICATION = "doze_trigger_notification";
 
         /**
+         * Define if screenshot crop & share is active
+         * @hide
+         */
+        public static final String SCREENSHOT_CROP_AND_SHARE = "screenshot_crop_and_share";
+
+        /**
+         * Define the crop behavior of screenshot crop & share
+         * @hide
+         */
+        public static final String SCREENSHOT_CROP_BEHAVIOR = "screenshot_crop_behavior";
+
+        /**
          * Follow pre-configured doze pulse repeat schedule
          * @hide
          */

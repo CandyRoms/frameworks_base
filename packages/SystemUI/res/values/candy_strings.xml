@@ -223,4 +223,12 @@ the screen). [CHAR LIMIT=NONE] -->
     <!-- App circle bar -->
     <string name="app_stop_item_title">Kill app</string>
 
+
+    <!-- Screenshot Crop & Share -->
+    <string name="action_delete_success">Deleted</string>
+    <string name="action_delete_fault">Deleting was unsuccessful</string>
+    <string name="action_save_success">Saved</string>
+    <string name="action_save_fault">Saving was unsuccessful</string>
+    <string name="action_edit">Edit</string>
+
 </resources>
