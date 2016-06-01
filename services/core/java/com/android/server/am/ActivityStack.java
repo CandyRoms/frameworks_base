@@ -1630,24 +1630,11 @@ final class ActivityStack {
         }
 
         final TaskRecord nextTask = next.task;
-        boolean isFloatingWindow = prev != null ? prev.floatingWindow : false;
         if (prevTask != null && prevTask.stack == this &&
                 prevTask.isOverHomeStack() && prev.finishing && prev.frontOfTask) {
             if (DEBUG_STACK)  mStackSupervisor.validateTopActivitiesLocked();
             if (prevTask == nextTask) {
                 prevTask.setFrontOfTask();
-            } else if (prevTask != topTask() && !isFloatingWindow) {
-                ArrayList<ActivityRecord> activities = prevTask.mActivities;
-                final int numActivities = activities.size();
-                for (int activityNdx = 0; activityNdx < numActivities; ++activityNdx) {
-                    final ActivityRecord r = activities.get(activityNdx);
-                    // r is usually the same as next, but what if two activities were launched
-                    // before prev finished?
-                    if (!r.finishing) {
-                        r.frontOfTask = true;
-                        break;
-                    }
-                }
             } else if (prevTask != topTask() && !prev.floatingWindow) {
                 // This task is going away but it was supposed to return to the home stack.
                 // Now the task above it has to return to the home task instead.
@@ -2054,18 +2041,20 @@ final class ActivityStack {
 
         // If this is being moved to the top by another activity or being launched from the home
         // activity, set mTaskToReturnTo accordingly.
-        if (isOnHomeDisplay()) {
-            ActivityStack lastStack = mStackSupervisor.getLastStack();
-            final boolean fromHome = lastStack.isHomeStack();
-            if (!isHomeStack() && (fromHome || topTask() != task)) {
-                task.setTaskToReturnTo(fromHome
-                        ? lastStack.topTask() == null
-                                ? HOME_ACTIVITY_TYPE
-                                : lastStack.topTask().taskType
-                        : APPLICATION_ACTIVITY_TYPE);
+        if (newActivity != null) {
+            if (isOnHomeDisplay() && !newActivity.floatingWindow) {
+                ActivityStack lastStack = mStackSupervisor.getLastStack();
+                final boolean fromHome = lastStack.isHomeStack();
+                if (!isHomeStack() && (fromHome || topTask() != task)) {
+                    task.setTaskToReturnTo(fromHome
+                            ? lastStack.topTask() == null
+                                    ? HOME_ACTIVITY_TYPE
+                                    : lastStack.topTask().taskType
+                            : APPLICATION_ACTIVITY_TYPE);
+                }
+            } else {
+                task.setTaskToReturnTo(APPLICATION_ACTIVITY_TYPE);
             }
-        } else {
-            task.setTaskToReturnTo(APPLICATION_ACTIVITY_TYPE);
         }
 
         mTaskHistory.remove(task);
@@ -2932,7 +2921,7 @@ final class ActivityStack {
 
         // If the finishing task is launched from Home and is not
         // the top task, then set the next task to return to Home
-        if (task != topTask() && r.frontOfTask && task.isOverHomeStack()) {
+        if (task != topTask() && !r.floatingWindow && r.frontOfTask && task.isOverHomeStack()) {
             final int taskNdx = mTaskHistory.indexOf(task) + 1;
             mTaskHistory.get(taskNdx).setTaskToReturnTo(HOME_ACTIVITY_TYPE);
         }
@@ -4354,7 +4343,7 @@ final class ActivityStack {
         final int topTaskNdx = mTaskHistory.size() - 1;
         if (task.isOverHomeStack() && taskNdx < topTaskNdx) {
             final TaskRecord nextTask = mTaskHistory.get(taskNdx + 1);
-            if (!nextTask.isOverHomeStack()) {
+            if (!nextTask.isOverHomeStack() && !r.floatingWindow) {
                 nextTask.setTaskToReturnTo(HOME_ACTIVITY_TYPE);
             }
         }
