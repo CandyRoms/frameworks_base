@@ -75,10 +75,7 @@ public class FloatingTile extends QSTile<QSTile.BooleanState> {
 
     // @Override
     protected void handleDetailClick() {
-        if (!mState.value) {
-            showDetail(true);
-        }
-        handleToggleClick();
+        showDetail(true);
     }
 
     @Override
