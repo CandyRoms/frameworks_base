@@ -316,6 +316,8 @@ public class TaskViewHeader extends FrameLayout {
         }
         if (mFloatButton.getVisibility() != View.VISIBLE) {
             mFloatButton.setVisibility(View.VISIBLE);
+            mFloatButton.setEnabled(!mConfig.launchedFromHome);
+            mFloatButton.setAlpha(mConfig.launchedFromHome ? 0.5f : 1.0f);
             mFloatButton.setAlpha(0f);
             mFloatButton.animate()
                     .alpha(1f)
