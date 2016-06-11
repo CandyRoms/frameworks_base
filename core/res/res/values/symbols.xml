@@ -2234,7 +2234,8 @@
   <java-symbol type="string" name="prohibit_manual_network_selection_in_gobal_mode" />
   <java-symbol type="id" name="profile_button" />
 
-  <java-symbol type="array" name="config_lteDbmThresholds" />
+  <!-- From SignalStrength -->
+  <java-symbol type="integer" name="config_LTE_RSRP_threshold_type" />
 
   <java-symbol type="string" name="android_system_label" />
   <java-symbol type="string" name="system_error_wipe_data" />

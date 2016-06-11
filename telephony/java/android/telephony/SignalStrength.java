@@ -51,6 +51,11 @@ public class SignalStrength implements Parcelable {
     //Use int max, as -1 is a valid value in signal strength
     public static final int INVALID = 0x7FFFFFFF;
 
+    private static final int RSRP_THRESH_TYPE_STRICT = 0;
+    private static final int[] RSRP_THRESH_STRICT = new int[] {-140, -115, -105, -95, -85, -44};
+    private static final int[] RSRP_THRESH_LENIENT = new int[] {-140, -128, -118, -108, -98, -44};
+
+
     private int mGsmSignalStrength; // Valid values are (0-31, 99) as defined in TS 27.007 8.5
     private int mGsmBitErrorRate;   // bit error rate (0-7, 99) as defined in TS 27.007 8.5
     private int mCdmaDbm;   // This value is the RSSI value
@@ -786,8 +791,14 @@ public class SignalStrength implements Parcelable {
          */
         int rssiIconLevel = SIGNAL_STRENGTH_NONE_OR_UNKNOWN, rsrpIconLevel = -1, snrIconLevel = -1;
 
-        int[] threshRsrp = Resources.getSystem().getIntArray(
-                com.android.internal.R.array.config_lteDbmThresholds);
+        int rsrpThreshType = Resources.getSystem().getInteger(com.android.internal.R.integer.
+                config_LTE_RSRP_threshold_type);
+        int[] threshRsrp;
+        if (rsrpThreshType == RSRP_THRESH_TYPE_STRICT) {
+            threshRsrp = RSRP_THRESH_STRICT;
+        } else {
+            threshRsrp = RSRP_THRESH_LENIENT;
+        }
 
         if (mLteRsrp > threshRsrp[5]) rsrpIconLevel = -1;
         else if (mLteRsrp >= threshRsrp[4]) rsrpIconLevel = SIGNAL_STRENGTH_GREAT;
