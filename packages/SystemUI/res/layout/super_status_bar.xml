@@ -49,9 +49,8 @@
         android:importantForAccessibility="no"
         sysui:ignoreRightInset="true"
         />
-
-    <com.android.systemui.statusbar.AlphaOptimizedView
-    <FrameLayout android:id="@+id/scrimview"
+  <FrameLayout
+                 android:id="@+id/scrimview"
                  android:layout_width="match_parent"
                  android:layout_height="match_parent"
                  android:visibility="visible">
