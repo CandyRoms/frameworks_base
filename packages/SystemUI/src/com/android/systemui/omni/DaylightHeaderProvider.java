@@ -61,6 +61,9 @@ public class DaylightHeaderProvider implements
     private static final int DRAWABLE_NIGHT = R.drawable.notifhead_night;
 
     // Special events
+    // Halloween is on Oct 31st
+    private static final Calendar CAL_HALLOWEEN = Calendar.getInstance();
+    private static final int DRAWABLE_HALLOWEEN = R.drawable.notifhead_halloween;
     // Christmas is on Dec 25th
     private static final Calendar CAL_CHRISTMAS = Calendar.getInstance();
     private static final int DRAWABLE_CHRISTMAS = R.drawable.notifhead_christmas;
@@ -81,6 +84,9 @@ public class DaylightHeaderProvider implements
         // if you don't reboot your phone. I hope you will reboot your phone
         // once
         // in a year.
+        CAL_HALLOWEEN.set(Calendar.MONTH, Calendar.OCTOBER);
+        CAL_HALLOWEEN.set(Calendar.DAY_OF_MONTH, 31);
+
         CAL_CHRISTMAS.set(Calendar.MONTH, Calendar.DECEMBER);
         CAL_CHRISTMAS.set(Calendar.DAY_OF_MONTH, 25);
 
@@ -105,6 +111,9 @@ public class DaylightHeaderProvider implements
         } else if (isItToday(CAL_NEWYEARSEVE)) {
             // Happy new year!
             return loadOrFetch(DRAWABLE_NEWYEARSEVE);
+        } else if (isItToday(CAL_HALLOWEEN)) {
+            // Happy Halloween!
+            return loadOrFetch(DRAWABLE_HALLOWEEN);
         }
 
         // Now we check normal periods
