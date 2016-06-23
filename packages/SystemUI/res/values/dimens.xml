@@ -587,10 +587,4 @@
 
     <!-- Thickness of the shadows of the assist disclosure beams -->
     <dimen name="assist_disclosure_shadow_thickness">1.5dp</dimen>
-
-    <!-- Screenshot Crop & Share -->
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="text_size_m">24sp</dimen>
-    <dimen name="text_size_s">17sp</dimen>
-    <dimen name="button_height">40dp</dimen>
 </resources>

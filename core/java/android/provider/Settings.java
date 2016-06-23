@@ -2560,18 +2560,6 @@ public final class Settings {
          */
         public static final String BUTTON_BACKLIGHT_TIMEOUT = "button_backlight_timeout";
 
-	/**
-         * Define if screenshot crop & share is active
-	 * @hide
-         */
-        public static final String SCREENSHOT_CROP_AND_SHARE = "screenshot_crop_and_share";
-
-	/**
-         * Define the crop behavior of screenshot crop & share
-	 * @hide
-         */
-        public static final String SCREENSHOT_CROP_BEHAVIOR = "screenshot_crop_behavior";
-
         /**
          * Timeout for ambient display notification
          * @hide

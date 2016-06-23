@@ -166,30 +166,4 @@
 
     <!-- Used by selector -->
     <color name="card_pressed">#7e3c3c3c</color>
- 
-    <!-- Screenshot Crop & Share -->
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-
-    <color name="base">#FFFFFB</color>
-    <color name="overlay">#A61C1C1C</color>
-    <color name="text">#1C1C1C</color>
-    <color name="handle">#E0E0E0</color>
-    <color name="frame">#E0E0E0</color>
-    <color name="guide">#E0E0E0</color>
-    <color name="menu_bg">#FFFFFB</color>
-
-    <color name="primaryPressed">#A61C1C1C</color>
-    <color name="primaryFocused">#E0E0E0</color>
-    <color name="primary">@android:color/transparent</color>
-
-    <color name="draw_color_1">@android:color/white</color>
-    <color name="draw_color_2">@android:color/black</color>
-    <color name="draw_color_3">#9E9E9E</color>
-    <color name="draw_color_4">#F44336</color>
-    <color name="draw_color_5">#4CAF50</color>
-    <color name="draw_color_6">#2196F3</color>
-    <color name="draw_color_7">#FF9800</color>
-    <color name="draw_color_8">#FFEB3B</color>
 </resources>
