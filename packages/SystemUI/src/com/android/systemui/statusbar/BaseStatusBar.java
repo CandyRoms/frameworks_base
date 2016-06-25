@@ -1893,7 +1893,7 @@ public abstract class BaseStatusBar extends SystemUI implements
                 @Override
                 public void run() {
                     // Additional guard to only launch in floating for headsup notifications
-                    if (FloatingHeadsup() && mHeadsUpManager.isClickedHeadsUpNotification(v)) {
+                    if (mHeadsUpManager.isClickedHeadsUpNotification(v)) {
                         boolean floating = true;
                         try {
                             // preloaded apps are added to the blacklist array when is recreated, handled in the notification manager
