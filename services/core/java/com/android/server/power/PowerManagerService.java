@@ -80,6 +80,8 @@ import java.util.Arrays;
 
 import libcore.util.Objects;
 
+import org.slim.provider.SlimSettings;
+
 import static android.os.PowerManagerInternal.POWER_HINT_INTERACTION;
 import static android.os.PowerManagerInternal.WAKEFULNESS_ASLEEP;
 import static android.os.PowerManagerInternal.WAKEFULNESS_AWAKE;
@@ -104,7 +106,7 @@ public final class PowerManagerService extends SystemService
     // Message: Sent when the screen brightness boost expires.
     private static final int MSG_SCREEN_BRIGHTNESS_BOOST_TIMEOUT = 3;
 
-    private static final int MSG_WAKE_UP = 5;
+    private static final int MSG_WAKE_UP = 4;
 
     // Dirty bit: mWakeLocks changed
     private static final int DIRTY_WAKE_LOCKS = 1 << 0;
@@ -3466,6 +3468,8 @@ public final class PowerManagerService extends SystemService
                         if (distance >= PROXIMITY_NEAR_THRESHOLD ||
                                 distance >= mProximitySensor.getMaximumRange()) {
                             r.run();
+                        } else {
+                            Slog.w(TAG, "Not waking up.  Proximity sensor blocked.");
                         }
                     }
 

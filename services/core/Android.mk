@@ -10,6 +10,10 @@ LOCAL_SRC_FILES += \
     java/com/android/server/am/EventLogTags.logtags
 
 LOCAL_JAVA_LIBRARIES := services.net telephony-common
+
+LOCAL_JAVA_LIBRARIES := services.net telephony-common org.dirtyunicorns.utils \
+    org.slim.framework
+
 LOCAL_STATIC_JAVA_LIBRARIES := tzdata_update
 
 include $(BUILD_STATIC_JAVA_LIBRARY)
