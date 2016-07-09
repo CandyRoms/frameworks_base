@@ -28,4 +28,8 @@
 
     <!-- Threshold in micro amperes above which a charger is rated as "fast" -->
     <integer name="config_chargingFastThreshold">1500000</integer>
+
+    <!-- whether to show emergency button in lock screen -->
+    <bool name="config_showEmergencyButton">true</bool>
+
 </resources>
