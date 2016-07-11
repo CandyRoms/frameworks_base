@@ -2124,13 +2124,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
         }
 
-        Bitmap wallpaperBitmap = null;
-        WallpaperManager wm = (WallpaperManager)
-                mContext.getSystemService(Context.WALLPAPER_SERVICE);
-        if (wm != null) {
-            BitmapDrawable wallpaperDrawable = (BitmapDrawable) wm.getDrawable();
-            if (wallpaperDrawable != null) {
-                wallpaperBitmap = wallpaperDrawable.getBitmap();
+       // apply user lockscreen image
+        if (backdropBitmap == null) {
+            WallpaperManager wm = (WallpaperManager)
+                    mContext.getSystemService(Context.WALLPAPER_SERVICE);
+            if (wm != null) {
+                backdropBitmap = wm.getKeyguardBitmap();
             }
         }
 
@@ -2149,7 +2148,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         if (keyguardVisible) {
             // always use current backdrop to color eq
-            mVisualizerView.setBitmap(hasBackdrop ? backdropBitmap : wallpaperBitmap);
+            mVisualizerView.setBitmap(hasBackdrop ? backdropBitmap : backdropBitmap);
         }
 
         if ((hasBackdrop || DEBUG_MEDIA_FAKE_ARTWORK)
