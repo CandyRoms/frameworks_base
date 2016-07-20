@@ -196,7 +196,7 @@
     <java-symbol type="drawable" name="ic_shortcut_action_volume_panel" />
 
     <!-- First-Boot-Logo -->
-    <java-symbol type="drawable" name="candy" />
+    <java-symbol type="drawable" name="candy_logo" />
 
     <!-- Slim recent app screen-->
     <java-symbol type="integer" name="config_recentDefaultDur" />
@@ -222,4 +222,29 @@
     <!-- Default name of the custom carrier label -->
     <java-symbol type="string" name="default_custom_label" />
 
+    <!-- We don't want to publish private symbols in android.R as part of the
+	SDK.  Instead, put them here. -->
+    <private-symbols package="com.android.internal" />
+
+    <!-- Private symbols that we need to reference from framework code.  See
+	frameworks/base/core/res/MakeJavaSymbols.sed for how to easily generate
+	this.
+    -->
+
+    <!-- Candy logo -->
+    <java-symbol type="drawable" name="candy_logo" />
+
+    <!-- Boot dexopt layout -->
+    <java-symbol type="drawable" name="dexopt_brand_logo" />
+    <java-symbol type="color" name="dexopt_background" />
+    <java-symbol type="color" name="dexopt_text" />
+    <java-symbol type="dimen" name="dexopt_icon_margin" />
+    <java-symbol type="dimen" name="dexopt_icon_size" />
+    <java-symbol type="dimen" name="dexopt_logo_size" />
+    <java-symbol type="dimen" name="dexopt_message" />
+    <java-symbol type="layout" name="boot_dexopt_layout" />
+    <java-symbol type="id" name="dexopt_icon" />
+    <java-symbol type="id" name="dexopt_message" />
+    <java-symbol type="id" name="dexopt_message_detail" />
+    <java-symbol type="id" name="dexopt_progress" />
 </resources>
