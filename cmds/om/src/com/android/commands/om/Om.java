@@ -68,6 +68,8 @@ public final class Om {
             return runDisableAll();
         } else if ("set-priority".equals(op)) {
             return runSetPriority();
+        } else if ("refresh".equals(op)) {
+            return runRefresh();
         } else if (op != null) {
             System.err.println("Error: unknown command '" + op + "'");
         }
@@ -277,6 +279,44 @@ public final class Om {
         }
     }
 
+    private int runRefresh() {
+        int userId = UserHandle.USER_OWNER;
+        int ret = 1;
+        try {
+            String opt;
+            while ((opt = nextOption()) != null) {
+                switch (opt) {
+                    case "--user":
+                        String optionData = nextOptionData();
+                        if (optionData == null || !isNumber(optionData)) {
+                            System.err.println("Error: no USER_ID specified");
+                            showUsage();
+                            return 1;
+                        }
+                        userId = Integer.parseInt(optionData);
+                        break;
+                    default:
+                        System.err.println("Error: Unknown option: " + opt);
+                        return 1;
+                }
+            }
+            mOm.refresh(userId);
+            ret=0;
+        } catch(Exception x) {
+            x.printStackTrace();
+            ret=1;
+        } finally {
+            try {
+                mOm.setWaitForRefresh(true);
+            } catch (RemoteException e) {
+                ret=1;
+                System.err.println(e.toString());
+                System.err.println(OM_NOT_RUNNING_ERR);
+            }
+        }
+        return ret;
+    }
+
     private int runDisableAll() {
         int userId = UserHandle.USER_OWNER;
         try {
@@ -297,7 +337,6 @@ public final class Om {
                         return 1;
                 }
             }
-
             Map<String, List<OverlayInfo>> targetsAndOverlays = mOm.getAllOverlays(userId);
 
             for (Entry<String, List<OverlayInfo>> targetEntry : targetsAndOverlays.entrySet()) {
@@ -382,6 +421,7 @@ public final class Om {
         System.err.println("       om enable [--user USER_ID] PACKAGE");
         System.err.println("       om disable [--user USER_ID] PACKAGE");
         System.err.println("       om disable-all [--user USER_ID]");
+        System.err.println("       om refresh [--user USER_ID]");
         System.err.println("       om set-priority [--user USER_ID] PACKAGE PARENT|lowest|highest");
         System.err.println("");
         System.err.println("om list: print all overlay packages in priority order;");
@@ -393,6 +433,8 @@ public final class Om {
         System.err.println("");
         System.err.println("om disable PACKAGE: disable overlay package PACKAGE");
         System.err.println("om disable-all: disables all overlay packages");
+        System.err.println("");
+        System.err.println("om refresh: refreshes all overlay packages");
         System.err.println("");
         System.err.println("om set-priority PACKAGE PARENT: change the priority of the overlay");
         System.err.println("         PACKAGE to be just higher than the priority of PACKAGE_PARENT");

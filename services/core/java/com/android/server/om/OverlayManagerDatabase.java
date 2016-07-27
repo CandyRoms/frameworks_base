@@ -53,12 +53,21 @@ class OverlayManagerDatabase {
 
     void init(@NonNull String packageName, int userId, @NonNull String targetPackageName,
             @NonNull String baseCodePath) {
-        remove(packageName, userId);
+        init(packageName, userId, targetPackageName, baseCodePath, false);
+    }
+
+    void init(@NonNull String packageName, int userId, @NonNull String targetPackageName,
+            @NonNull String baseCodePath, boolean wait) {
+        remove(packageName, userId, wait);
         DatabaseRow row = new DatabaseRow(packageName, userId, targetPackageName, baseCodePath);
         mTable.add(row);
     }
 
     void remove(@NonNull String packageName, int userId) {
+        remove(packageName, userId, false);
+    }
+
+    void remove(@NonNull String packageName, int userId, boolean wait) {
         DatabaseRow row = select(packageName, userId);
         if (row == null) {
             return;
@@ -66,7 +75,7 @@ class OverlayManagerDatabase {
         OverlayInfo oi = row.getOverlayInfo();
         mTable.remove(row);
         if (oi != null) {
-            notifyOverlayRemoved(oi, false);
+            notifyOverlayRemoved(oi, wait);
         }
     }
 
@@ -108,6 +117,10 @@ class OverlayManagerDatabase {
     }
 
     void setUpgrading(@NonNull String packageName, int userId, boolean newValue) throws BadKeyException {
+        setUpgrading(packageName, userId, newValue, false);
+    }
+
+    void setUpgrading(@NonNull String packageName, int userId, boolean newValue, boolean wait) throws BadKeyException {
         DatabaseRow row = select(packageName, userId);
         if (row == null) {
             throw new BadKeyException(packageName, userId);
@@ -120,7 +133,7 @@ class OverlayManagerDatabase {
             OverlayInfo oi = row.getOverlayInfo();
             row.setUpgrading(true);
             row.setState(STATE_NOT_APPROVED_UNKNOWN);
-            notifyOverlayRemoved(oi, false);
+            notifyOverlayRemoved(oi, wait);
             notifyDatabaseChanged();
         } else {
             row.setUpgrading(false);

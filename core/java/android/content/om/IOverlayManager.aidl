@@ -132,4 +132,10 @@ interface IOverlayManager {
      * @param uid the user to refresh assets for
      */
     void refresh(in int uid);
+
+    /**
+     * Set whether to delay refreshing assets
+     * @param wfr whether to delay refreshing assets
+     */
+    void setWaitForRefresh(in boolean wfr);
 }

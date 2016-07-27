@@ -595,6 +595,11 @@ public class OverlayManagerService extends SystemService {
 
             updateAssets(uid, targets.toArray(new String[targets.size()]));
         }
+
+        public void setWaitForRefresh(boolean wfr) {
+            mImpl.setWaitForRefresh(wfr);
+        }
+
     };
 
     private boolean isOverlayPackage(@NonNull PackageInfo pi) {
