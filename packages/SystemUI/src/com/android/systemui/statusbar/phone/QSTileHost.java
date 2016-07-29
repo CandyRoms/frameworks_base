@@ -62,9 +62,9 @@ import com.android.systemui.qs.tiles.ScreenshotTile;
 import com.android.systemui.qs.tiles.ScreenTimeoutTile;
 import com.android.systemui.qs.tiles.SyncTile;
 import com.android.systemui.qs.tiles.VolumeTile;
+import com.android.systemui.qs.tiles.SubstratumTile;
 import com.android.systemui.qs.tiles.WifiTile;
 import com.android.systemui.qs.tiles.CandyTile;
-import com.android.systemui.qs.tiles.ThemesTile;
 import com.android.systemui.qs.tiles.KernelAdiutorTile;
 import com.android.systemui.settings.CurrentUserTracker;
 import com.android.systemui.statusbar.policy.BluetoothController;
@@ -328,8 +328,6 @@ public class QSTileHost implements QSTile.Host {
                 return new HeadsUpTile(this);
             case QSConstants.TILE_CANDY:
 		return new CandyTile(this);
-            case QSConstants.TILE_THEMES:
-                return new ThemesTile(this);
             case QSConstants.TILE_KERNEL_ADIUTOR:
                 return new KernelAdiutorTile(this);
             case QSConstants.TILE_PIE:
@@ -342,6 +340,8 @@ public class QSTileHost implements QSTile.Host {
                 return new MusicTile(this);
             case QSConstants.TILE_FLOATING:		
                 return new FloatingTile(this);
+            case QSConstants.TILE_SUBSTRATUM:		
+                return new SubstratumTile(this);
             default:
                 throw new IllegalArgumentException("Bad tile spec: " + tileSpec);
         }

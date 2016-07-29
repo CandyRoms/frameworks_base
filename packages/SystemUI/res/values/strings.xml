@@ -690,6 +690,9 @@
     <string name="quick_settings_cellular_detail_data_limit"><xliff:g id="data_limit" example="2.0 GB">%s</xliff:g> limit</string>
     <!-- QuickSettings: Cellular detail panel, data warning format string [CHAR LIMIT=NONE] -->
     <string name="quick_settings_cellular_detail_data_warning"><xliff:g id="data_limit" example="2.0 GB">%s</xliff:g> warning</string>
+    <!-- QuickSettings: Substratum QS Tile [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_substratum_label">Substratum</string>
+    <string name="accessibility_quick_settings_substratum">Substratum.</string>
 
     <!-- Recents: The empty recents string. [CHAR LIMIT=NONE] -->
     <string name="recents_empty_message">Your recent screens appear here</string>

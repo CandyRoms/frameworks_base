@@ -174,7 +174,6 @@ the screen). [CHAR LIMIT=NONE] -->
     <string name="quick_settings_screenshot">Screenshot</string>
     <string name="quick_settings_heads_up_label">Heads up</string>
     <string name="quick_settings_candy_on">Candy Interface</string>
-    <string name="quick_settings_themes">Themes</string>
     <string name="quick_settings_kernel_adiutor">Kernel Adiutor</string>
 
     <!-- Volume QS Tile -->
