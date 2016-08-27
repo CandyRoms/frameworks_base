@@ -5433,11 +5433,11 @@ public class Notification implements Parcelable
             boolean colorable = !isLegacy() || getColorUtil().isGrayscaleIcon(mContext, smallIcon);
             int color;
             if (ambient) {
-                color = resolveAmbientColor();
+                color = Resources.getSystem().getBoolean(R.bool.config_allowNotificationIconTextTinting) ? resolveAmbientColor() : mContext.getColor(R.color.system_notification_accent_color);
             } else if (isColorized()) {
                 color = getPrimaryTextColor();
             } else {
-                color = resolveIconContrastColor();
+                color = Resources.getSystem().getBoolean(R.bool.config_allowNotificationIconTextTinting) ? resolveContrastColor() : mContext.getColor(R.color.system_notification_accent_color);
             }
             if (colorable) {
                 contentView.setDrawableTint(R.id.icon, false, color,
@@ -5468,8 +5468,12 @@ public class Notification implements Parcelable
             }
         }
 
+        int getSenderTextColor() {
+            return mContext.getColor(R.color.sender_text_color);
+        }
+
         int resolveIconContrastColor() {
-            if (!mContext.getResources().getBoolean(R.bool.config_allowNotificationIconTinting)) {
+            if (!mContext.getResources().getBoolean(R.bool.config_allowNotificationIconTextTinting)) {
                 return mContext.getColor(R.color.notification_icon_default_color);
             } else {
                 return resolveContrastColor();
@@ -5477,9 +5481,10 @@ public class Notification implements Parcelable
         }
 
         int resolveContrastColor() {
-            if (!mContext.getResources().getBoolean(R.bool.config_allowNotificationIconTinting)) {
-                return mContext.getColor(R.color.notification_icon_default_color);
+            if (!Resources.getSystem().getBoolean(R.bool.config_allowNotificationIconTextTinting)) {
+                return mContext.getColor(R.color.notification_text_default_color);
             }
+
             if (mCachedContrastColorIsFor == mN.color && mCachedContrastColor != COLOR_INVALID) {
                 return mCachedContrastColor;
             }
