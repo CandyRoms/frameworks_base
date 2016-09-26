@@ -47,6 +47,7 @@ import com.android.systemui.qs.tiles.RebootTile;
 import com.android.systemui.qs.tiles.RotationLockTile;
 import com.android.systemui.qs.tiles.ScreenshotTile;
 import com.android.systemui.qs.tiles.UiModeNightTile;
+import com.android.systemui.qs.tiles.SyncTile;
 import com.android.systemui.qs.tiles.UserTile;
 import com.android.systemui.qs.tiles.WifiTile;
 import com.android.systemui.qs.tiles.WorkModeTile;
@@ -200,7 +201,9 @@ public class QSFactoryImpl implements QSFactory {
                 return mCompassTileProvider.get();
             case "screenshot":
                 return mScreenshotTileProvider.get();
-        }
+            case "sync":
+                 return new SyncTile(mHost);
+       }
 
         // Intent tiles.
         if (tileSpec.startsWith(IntentTile.PREFIX)) return IntentTile.create(mHost, tileSpec);
