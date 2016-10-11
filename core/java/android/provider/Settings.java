@@ -7967,6 +7967,12 @@ public final class Settings {
         public static final String SUPPRESS_AUTO_BATTERY_SAVER_SUGGESTION =
                 "suppress_auto_battery_saver_suggestion";
 
+         /**
+         * Whether to enable navigation bar
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_ENABLED = "navigation_bar_enabled";
+
         /**
          * List of packages, which data need to be unconditionally cleared before full restore.
          * Type: string
