@@ -67,4 +67,6 @@
     <color name="fab_color">@*android:attr/panelColorBackground</color>
     <color name="floating_action_button_icon_color">@*android:attr/colorControlNormal</color>
 
+    <!-- Custom Carrier Label -->
+    <color name="status_bar_carrier_color">#FFFFFFFF</color>
 </resources>

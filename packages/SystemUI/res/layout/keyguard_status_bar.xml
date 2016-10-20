@@ -32,6 +32,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:gravity="center_vertical|end" >
+
         <FrameLayout android:id="@+id/system_icons_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -62,7 +63,7 @@
         android:gravity="center"
         android:visibility="gone" />
 
-    <com.android.keyguard.CarrierText
+    <com.android.systemui.candy.carrierlabel.CarrierLabel
         android:id="@+id/keyguard_carrier_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -71,8 +72,7 @@
         android:gravity="center_vertical"
         android:ellipsize="marquee"
         android:textDirection="locale"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="?attr/wallpaperTextColorSecondary"
+        android:textAppearance="@style/TextAppearance.StatusBar.CarrierLabel"
         android:singleLine="true" />
 
 </com.android.systemui.statusbar.phone.KeyguardStatusBarView>
