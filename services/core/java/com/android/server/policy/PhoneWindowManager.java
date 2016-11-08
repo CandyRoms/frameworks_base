@@ -4527,6 +4527,23 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
+    private boolean dispatchKeyToKeyHandlers(KeyEvent event) {
+        for (DeviceKeyHandler handler : mDeviceKeyHandlers) {
+            try {
+                if (DEBUG_INPUT) {
+                    Log.d(TAG, "Dispatching key event " + event + " to handler " + handler);
+                }
+              //  event = handler.handleKeyEvent(event);
+                if (event == null) {
+                    return true;
+                }
+            } catch (Exception e) {
+                Slog.w(TAG, "Could not dispatch event to device key handler", e);
+            }
+        }
+        return false;
+    }
+
     /** {@inheritDoc} */
     @Override
     public KeyEvent dispatchUnhandledKey(WindowState win, KeyEvent event, int policyFlags) {
