@@ -4406,6 +4406,27 @@ public final class Settings {
         public static final String SCREENRECORD_QUALITY_MODE = "screenrecord_quality_mode";
 
         /**
+         * Whether the proximity sensor will adjust call to speaker
+         * @hide
+         */
+        public static final String PROXIMITY_AUTO_SPEAKER = "proximity_auto_speaker";
+
+        /**
+         * Time delay to activate speaker after proximity sensor triggered
+         * @hide
+         */
+        public static final String PROXIMITY_AUTO_SPEAKER_DELAY = "proximity_auto_speaker_delay";
+
+        /**
+         * Whether the proximity sensor will adjust call to speaker,
+         * only while in call (not while ringing on outgoing call)
+         * @hide
+         */
+        public static final String PROXIMITY_AUTO_SPEAKER_INCALL_ONLY = "proximity_auto_speaker_incall_only";
+
+        /** End of Dialer Auto Proximity Speaker settings**/
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
@@ -4596,6 +4617,9 @@ public final class Settings {
             PRIVATE_SETTINGS.add(WAKE_WHEN_PLUGGED_OR_UNPLUGGED);
             PRIVATE_SETTINGS.add(AMBIENT_DOZE_CUSTOM_BRIGHTNESS);
             PRIVATE_SETTINGS.add(AMBIENT_DOZE_AUTO_BRIGHTNESS);
+            PRIVATE_SETTINGS.add(PROXIMITY_AUTO_SPEAKER);
+            PRIVATE_SETTINGS.add(PROXIMITY_AUTO_SPEAKER_DELAY);
+            PRIVATE_SETTINGS.add(PROXIMITY_AUTO_SPEAKER_INCALL_ONLY);
         }
 
         /**
