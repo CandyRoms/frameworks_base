@@ -111,4 +111,5 @@ interface IStatusBarService
      * Candy
      */
     void toggleCameraFlash();
+    void restartUI();
 }
