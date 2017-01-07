@@ -26,6 +26,9 @@
     <java-symbol type="string" name="reboot_title" />
     <java-symbol type="string" name="reboot_message" />
 
+    <!-- Emergency button in power menu -->
+    <java-symbol type="bool" name="config_showEmergencyButtonInPowerMenu" />
+
     <!-- Whether device has dash charging support -->
     <java-symbol type="bool" name="config_hasDashCharger" />
 
@@ -37,5 +40,4 @@
     <java-symbol type="id" name="aerr_copy" />
     <java-symbol type="string" name="url_copy_success" />
     <java-symbol type="string" name="url_copy_failed" />
-
 </resources>
