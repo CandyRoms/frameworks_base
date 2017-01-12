@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.os.SystemClock;
@@ -32,6 +33,19 @@ import android.os.SystemProperties;
 import java.util.List;
 
 public class CandyUtils {
+
+    public static boolean isAvailableApp(String packageName, Context context) {
+        Context mContext = context;
+        final PackageManager pm = mContext.getPackageManager();
+        try {
+            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            int enabled = pm.getApplicationEnabledSetting(packageName);
+            return enabled != PackageManager.COMPONENT_ENABLED_STATE_DISABLED &&
+                enabled != PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER;
+        } catch (NameNotFoundException e) {
+            return false;
+        }
+    }
 
     public static void restartApp(String appName, Context context) {
         new RestartAppTask(appName, context).execute();
