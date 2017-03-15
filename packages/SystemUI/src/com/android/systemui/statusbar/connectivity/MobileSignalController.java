@@ -56,7 +56,9 @@ import java.util.Map;
 /**
  * Monitors the mobile signal changes and update the SysUI icons.
  */
-public class MobileSignalController extends SignalController<MobileState, MobileIconGroup> {
+public class MobileSignalController extends SignalController<MobileState, MobileIconGroup>
+        implements TunerService.Tunable {
+
     private static final SimpleDateFormat SSDF = new SimpleDateFormat("MM-dd HH:mm:ss.SSS");
     private static final int STATUS_HISTORY_SIZE = 64;
     private final TelephonyManager mPhone;
@@ -72,6 +74,10 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
 
     private static final String SHOW_FOURG_ICON =
             "system:" + Settings.System.SHOW_FOURG_ICON;
+    private static final String ROAMING_INDICATOR_ICON =
+            "system:" + Settings.System.ROAMING_INDICATOR_ICON;
+
+    private boolean mRoamingIconAllowed;
 
     private MobileIconGroup mDefaultIcons;
     private Config mConfig;
@@ -163,6 +169,7 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
         mMobileStatusTracker = mobileStatusTrackerFactory.createTracker(mMobileCallback);
 
         Dependency.get(TunerService.class).addTunable(this, SHOW_FOURG_ICON);
+        Dependency.get(TunerService.class).addTunable(this, ROAMING_INDICATOR_ICON);
     }
 
     @Override
@@ -172,6 +179,11 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
                 mConfig = Config.readConfig(mContext);
                 setConfiguration(mConfig);
                 notifyListeners();
+                break;
+            case ROAMING_INDICATOR_ICON:
+                mRoamingIconAllowed =
+                    TunerService.parseIntegerSwitch(newValue, false);
+                updateTelephony();
                 break;
             default:
                 break;
@@ -511,7 +523,7 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
         }
         mCurrentState.dataConnected = mCurrentState.isDataConnected();
 
-        mCurrentState.roaming = isRoaming();
+        mCurrentState.roaming = isRoaming() && mRoamingIconAllowed;
         if (isCarrierNetworkChangeActive()) {
             mCurrentState.iconGroup = TelephonyIcons.CARRIER_NETWORK_CHANGE;
         } else if (isDataDisabled() && !mConfig.alwaysShowDataRatIcon) {
