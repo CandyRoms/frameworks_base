@@ -5216,6 +5216,22 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     };
 
+    private CandySettingsObserver mCandySettingsObserver = new CandySettingsObserver(mHandler);
+
+    private class CandySettingsObserver extends ContentObserver {
+       CandySettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.Secure.LOCK_QS_DISABLED),
+                    false, this, UserHandle.USER_ALL);
+        };
+
+     }
+
     @Override
     public void onNotificationClicked(StatusBarNotification sbn, ExpandableNotificationRow row) {
         RemoteInputController controller = mRemoteInputManager.getController();
