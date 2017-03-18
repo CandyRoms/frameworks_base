@@ -92,6 +92,8 @@ import com.android.systemui.statusbar.policy.RotationLockController;
 import com.android.systemui.statusbar.policy.RotationLockController.RotationLockControllerCallback;
 import com.android.systemui.statusbar.policy.UserInfoController;
 import com.android.systemui.statusbar.policy.ZenModeController;
+import com.android.systemui.tuner.TunerService;
+import com.android.systemui.tuner.TunerServiceImpl;
 import com.android.systemui.util.NotificationChannels;
 
 import java.util.Collection;
@@ -105,7 +107,7 @@ import java.util.Locale;
  */
 public class PhoneStatusBarPolicy implements Callback, Callbacks,
         RotationLockControllerCallback, Listener, LocationChangeCallback,
-        ZenModeController.Callback, DeviceProvisionedListener, KeyguardMonitor.Callback {
+        ZenModeController.Callback, DeviceProvisionedListener, KeyguardMonitor.Callback, TunerService.Tunable {
     private static final String TAG = "PhoneStatusBarPolicy";
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
@@ -159,6 +161,11 @@ public class PhoneStatusBarPolicy implements Callback, Callbacks,
 
     private BluetoothController mBluetooth;
     private AlarmManager.AlarmClockInfo mNextAlarm;
+
+    private boolean mShowBluetoothBattery;
+
+    private static final String BLUETOOTH_SHOW_BATTERY =
+            "system:" + Settings.System.BLUETOOTH_SHOW_BATTERY;
 
     public PhoneStatusBarPolicy(Context context, StatusBarIconController iconController) {
         mContext = context;
@@ -282,6 +289,22 @@ public class PhoneStatusBarPolicy implements Callback, Callbacks,
             mDockedStackExists = exists;
             updateForegroundInstantApps();
         });
+
+        Dependency.get(TunerService.class).addTunable(this,
+                BLUETOOTH_SHOW_BATTERY);
+    }
+
+    @Override
+    public void onTuningChanged(String key, String newValue) {
+        switch (key) {
+            case BLUETOOTH_SHOW_BATTERY:
+                mShowBluetoothBattery =
+                        newValue == null || Integer.parseInt(newValue) != 0;
+                updateBluetooth();
+                break;
+            default:
+                break;
+        }
     }
 
     public void destroy() {
@@ -474,25 +497,22 @@ public class PhoneStatusBarPolicy implements Callback, Callbacks,
                 mContext.getString(R.string.accessibility_quick_settings_bluetooth_on);
         boolean bluetoothVisible = false;
         if (mBluetooth != null) {
-            final Collection<CachedBluetoothDevice> devices = mBluetooth.getDevices();
-            if (devices != null) {
-                // get battery level for the first device with battery level support
-                for (CachedBluetoothDevice device : devices) {
-                    // don't get the level if still pairing
-                    if (mBluetooth.getBondState(device) == BluetoothDevice.BOND_NONE) continue;
-                    int state = device.getMaxConnectionState();
-                    if (state == BluetoothProfile.STATE_CONNECTED) {
-                        int batteryLevel = device.getBatteryLevel();
-                        BluetoothClass type = device.getBtClass();
-                        if (batteryLevel != BluetoothDevice.BATTERY_LEVEL_UNKNOWN && showBatteryForThis(type)) {
-                            iconId = getBtLevelIconRes(batteryLevel);
-                        } else {
-                            iconId = R.drawable.stat_sys_data_bluetooth_connected;
-                        }
-                        contentDescription = mContext.getString(R.string.accessibility_bluetooth_connected);
-                        bluetoothVisible = mBluetooth.isBluetoothEnabled();
-                        break;
-                    }
+            if (mBluetooth.isBluetoothConnected()) {
+                int batteryLevel = mBluetooth.getConnectedDevices().get(0).getBatteryLevel();
+                if (!mShowBluetoothBattery) {
+                    iconId = R.drawable.stat_sys_data_bluetooth_connected;
+                } else if (batteryLevel >= 88) {
+                    iconId = R.drawable.stat_sys_data_bluetooth_connected_battery_5;
+                } else if (batteryLevel >= 63) {
+                    iconId = R.drawable.stat_sys_data_bluetooth_connected_battery_4;
+                } else if (batteryLevel >= 38) {
+                    iconId = R.drawable.stat_sys_data_bluetooth_connected_battery_3;
+                } else if (batteryLevel >= 13) {
+                    iconId = R.drawable.stat_sys_data_bluetooth_connected_battery_2;
+                } else if (batteryLevel > 0) {
+                    iconId = R.drawable.stat_sys_data_bluetooth_connected_battery_1;
+                } else {
+                    iconId = R.drawable.stat_sys_data_bluetooth_connected;
                 }
             }
         }
