@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.android.systemui.doze.DozeHost;
 import com.android.systemui.doze.DozeLog;
+import com.android.systemui.doze.DozeTriggers;
 
 /**
  * Controller which handles all the doze animations of the scrims.
@@ -91,6 +92,7 @@ public class DozeScrimController {
             cancelPulsing();
         }
     }
+
 
     /** When dozing, fade screen contents in and out using the front scrim. */
     public void pulse(@NonNull DozeHost.PulseCallback callback, int reason) {
