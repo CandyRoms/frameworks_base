@@ -189,6 +189,9 @@ public class KeyguardStatusView extends GridLayout implements
 
         mClockView = findViewById(R.id.keyguard_clock_container);
         mClockView.setShowCurrentUserTime(true);
+        if (KeyguardClockAccessibilityDelegate.isNeeded(mContext)) {
+            mClockView.setAccessibilityDelegate(new KeyguardClockAccessibilityDelegate(mContext));
+        }
         mOwnerInfo = findViewById(R.id.owner_info);
         mKeyguardSlice = findViewById(R.id.keyguard_status_area);
         mTextColor = mClockView.getCurrentTextColor();
