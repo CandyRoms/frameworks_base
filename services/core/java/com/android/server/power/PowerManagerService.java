@@ -265,8 +265,10 @@ public final class PowerManagerService extends SystemService
     private int mButtonTimeout;
     private int mButtonBrightness;
     private int mButtonBrightnessSettingDefault;
+
     private boolean mButtonPressed = false;
     private boolean mButtonOn = false;
+    private boolean mButtonLightOnKeypressOnly;
 
     private final Object mLock = LockGuard.installNewLock(LockGuard.INDEX_POWER);
 
@@ -1508,7 +1510,7 @@ public final class PowerManagerService extends SystemService
             } else {
                 if (eventTime > mLastUserActivityTime) {
                     mButtonPressed = event == PowerManager.USER_ACTIVITY_EVENT_BUTTON;
-                    if ((mButtonBacklightOnTouchOnly && mButtonPressed)
+                    if ((mButtonLightOnKeypressOnly && mButtonPressed)
                             || eventTime == mLastWakeTime) {
                         mButtonPressed = true;
                         mLastButtonActivityTime = eventTime;
@@ -2115,7 +2117,7 @@ public final class PowerManagerService extends SystemService
                                             nextTimeout = now + mButtonTimeout;
                                         }
                                     }
-                                } else if (mButtonBacklightOnTouchOnly && mButtonOn &&
+                                } else if (mButtonLightOnKeypressOnly && mButtonOn &&
                                         mLastButtonActivityTime + mButtonTimeout < nextTimeout) {
                                     nextTimeout = mLastButtonActivityTime + mButtonTimeout;
                                 }
