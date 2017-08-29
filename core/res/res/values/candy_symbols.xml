@@ -65,6 +65,10 @@
 
     <java-symbol type="integer" name="config_deviceHardwareKeys" />
 
+    <!-- Capacitive key backlights -->
+    <java-symbol type="integer" name="config_buttonBrightnessSettingDefault" />
+    <java-symbol type="bool" name="config_deviceHasVariableButtonBrightness" />
+
     <!-- IMESwitcher -->
     <java-symbol type="bool" name="config_show_cmIMESwitcher"/>
 </resources>
