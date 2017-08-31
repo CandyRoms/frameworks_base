@@ -102,11 +102,13 @@ interface IStatusBarService
     // Used to hide the fingerprint dialog when the authenticationclient is stopped
     void hideFingerprintDialog();
 
-    void handleSystemNavigationKey(in int key);
-
     /**
      * Candy
      */
     void toggleNavigationBar(boolean enable);
 
+    /**
+     * Candy
+     */
+    void toggleCameraFlash();
 }
