@@ -717,6 +717,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         createAndAddWindows();
         mSSettingsObserver.observe();
         mSSettingsObserver.update();
+        mCandySettingsObserver.observe();
 
         // Make sure we always have the most current wallpaper info.
         IntentFilter wallpaperChangedFilter = new IntentFilter(Intent.ACTION_WALLPAPER_CHANGED);
@@ -5193,7 +5194,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_TILE_STYLE),
                     false, this, UserHandle.USER_ALL);
-            update();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_LOCKSCREEN),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -5209,14 +5212,20 @@ public class StatusBar extends SystemUI implements DemoMode,
                     Settings.System.QS_TILE_STYLE))) {
                 unlockQsTileStyles();
                 updateTileStyle();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_LOCKSCREEN))) {
+                setLockscreenDoubleTapToSleep();
             }
-        }
-
-        public void update() {
         }
     }
 
-    private final BroadcastReceiver mBannerActionBroadcastReceiver = new BroadcastReceiver() {
+    private void setLockscreenDoubleTapToSleep() {
+        if (mStatusBarWindow != null) {
+            mStatusBarWindow.setLockscreenDoubleTapToSleep();
+        }
+    }
+
+    private RemoteViews.OnClickHandler mOnClickHandler = new RemoteViews.OnClickHandler() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -5252,9 +5261,29 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.Secure.LOCK_QS_DISABLED),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_LOCKSCREEN),
+                    false, this, UserHandle.USER_ALL);
         };
 
-     }
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_LOCKSCREEN))) {
+                setLockscreenDoubleTapToSleep();
+            }
+        }
+
+        public void update() {
+            setLockscreenDoubleTapToSleep();
+        }
+    }
+
+    private void setLockscreenDoubleTapToSleep() {
+        if (mStatusBarWindow != null) {
+            mStatusBarWindow.setLockscreenDoubleTapToSleep();
+        }
+    }
 
     @Override
     public void onNotificationClicked(StatusBarNotification sbn, ExpandableNotificationRow row) {

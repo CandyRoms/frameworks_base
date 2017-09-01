@@ -47,6 +47,7 @@ import android.util.FloatProperty;
 import android.util.Log;
 import android.util.MathUtils;
 import android.view.LayoutInflater;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -295,6 +296,9 @@ public class NotificationPanelView extends PanelView implements
     private Handler mHandler = new Handler();
     private SettingsObserver mSettingsObserver;
 
+    private GestureDetector mLockscreenDoubleTapToSleep;
+    private boolean mIsLockscreenDoubleTapEnabled;
+
     public NotificationPanelView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setWillNotDraw(!DEBUG);
@@ -306,6 +310,14 @@ public class NotificationPanelView extends PanelView implements
         setAccessibilityPaneTitle(determineAccessibilityPaneTitle());
         mAlphaPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
         setPanelAlpha(255, false /* animate */);
+        mLockscreenDoubleTapToSleep = new GestureDetector(context,
+                new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                CandyUtils.switchScreenOff(context);
+                return true;
+            }
+        });
     }
 
     public void setStatusBar(StatusBar bar) {
@@ -881,6 +893,10 @@ public class NotificationPanelView extends PanelView implements
         if (mBlockTouches || (mQs != null && mQs.isCustomizing())) {
             return false;
         }
+        if (mIsLockscreenDoubleTapEnabled
+                && mStatusBarState == StatusBarState.KEYGUARD) {
+            mLockscreenDoubleTapToSleep.onTouchEvent(event);
+        }
         initDownStates(event);
         if (mListenForHeadsUp && !mHeadsUpTouchHelper.isTrackingHeadsUp()
                 && mHeadsUpTouchHelper.onInterceptTouchEvent(event)) {
@@ -909,6 +925,10 @@ public class NotificationPanelView extends PanelView implements
         }
         handled |= super.onTouchEvent(event);
         return mDozing ? handled : true;
+    }
+
+    public void setLockscreenDoubleTapToSleep(boolean isDoubleTapEnabled) {
+        mIsLockscreenDoubleTapEnabled = isDoubleTapEnabled;
     }
 
     private boolean handleQsTouch(MotionEvent event) {
