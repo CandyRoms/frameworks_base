@@ -254,8 +254,12 @@ public class CandyUtils {
         return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 
+   // Toggle flashlight
+    public static void toggleCameraFlash() {
+        FireActions.toggleCameraFlash();
+    }
 
-/*    private static final class FireActions {
+    private static final class FireActions {
         private static IStatusBarService mStatusBarService = null;
         private static IStatusBarService getStatusBarService() {
             synchronized (FireActions.class) {
@@ -266,7 +270,18 @@ public class CandyUtils {
                 return mStatusBarService;
             }
         }
-    }*/
+
+        public static void toggleCameraFlash() {
+            IStatusBarService service = getStatusBarService();
+            if (service != null) {
+                try {
+                    service.toggleCameraFlash();
+                } catch (RemoteException e) {
+                    // do nothing.
+                }
+            }
+        }
+    }
 
     // Method to turn off the screen
     public static void switchScreenOff(Context ctx) {
