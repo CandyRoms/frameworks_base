@@ -182,4 +182,5 @@ oneway interface IStatusBar
      * Candy
      */
     void setPartialScreenshot(boolean active);
+    void toggleCameraFlash();
 }
