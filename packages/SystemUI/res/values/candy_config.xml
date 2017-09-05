@@ -49,4 +49,7 @@
     <!-- Allow devices to use unordinary cutout overlays -->
     <bool name="config_customCutout">false</bool>
 
+    <!-- CPUInfoService temperature sysfs path -->
+    <string name="config_cpuinfoSysTemp" translatable="false"></string>
+
 </resources>
