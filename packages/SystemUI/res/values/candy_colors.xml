@@ -63,4 +63,8 @@
     <color name="quick_settings_theme_tile_user_six">#FFC27B</color>
     <color name="quick_settings_theme_tile_user_seven">#FFCC00</color>
 
+     <!-- Floating action button -->
+    <color name="fab_color">@*android:attr/panelColorBackground</color>
+    <color name="floating_action_button_icon_color">@*android:attr/colorControlNormal</color>
+
 </resources>
