@@ -6409,6 +6409,11 @@ public class WindowManagerService extends IWindowManager.Stub
     }
 
     @Override
+    public void sendCandyAction(Intent intent) {
+        mPolicy.sendCandyAction(intent);
+    }
+
+    @Override
     public void lockNow(Bundle options) {
         mPolicy.lockNow(options);
     }
