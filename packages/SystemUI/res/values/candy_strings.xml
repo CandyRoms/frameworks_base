@@ -141,4 +141,10 @@
     <string name="tuner_nav_bar_show_handle_summary"></string>
     <string name="tuner_nav_bar_legacy_category">3-button navigation</string>
     <string name="tuner_nav_bar_gesture_category">Gesture navigation</string>
+
+    <!-- Caffeine QS Tile -->
+    <string name="quick_settings_caffeine_label">Caffeine</string>
+    <string name="accessibility_quick_settings_caffeine_off">Caffeine off</string>
+    <string name="accessibility_quick_settings_caffeine_on">Caffeine on</string>
+
 </resources>
