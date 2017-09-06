@@ -32,6 +32,7 @@ import com.android.systemui.qs.tiles.BatterySaverTile;
 import com.android.systemui.qs.tiles.BluetoothTile;
 import com.android.systemui.qs.tiles.CastTile;
 import com.android.systemui.qs.tiles.CellularTile;
+import com.android.systemui.qs.tiles.CaffeineTile;
 import com.android.systemui.qs.tiles.ColorInversionTile;
 import com.android.systemui.qs.tiles.CompassTile;
 import com.android.systemui.qs.tiles.DataSaverTile;
@@ -84,6 +85,7 @@ public class QSFactoryImpl implements QSFactory {
 
     // Additions
     private final Provider<AODTile> mAODTileProvider;
+    private final Provider<CaffeineTile> mCaffeineTileProvider;
 
     private final Lazy<QSHost> mQsHostLazy;
 
@@ -110,7 +112,8 @@ public class QSFactoryImpl implements QSFactory {
             Provider<UiModeNightTile> uiModeNightTileProvider,
             Provider<ScreenRecordTile> screenRecordTileProvider,
             Provider<CompassTile> compassTileProvider,
-            Provider<AODTile> aodTileProvider) {
+            Provider<AODTile> aodTileProvider,
+            Provider<CaffeineTile> caffeineTileProvider) {
         mQsHostLazy = qsHostLazy;
         mWifiTileProvider = wifiTileProvider;
         mBluetoothTileProvider = bluetoothTileProvider;
@@ -132,10 +135,10 @@ public class QSFactoryImpl implements QSFactory {
         mMemoryTileProvider = memoryTileProvider;
         mUiModeNightTileProvider = uiModeNightTileProvider;
         mScreenRecordTileProvider = screenRecordTileProvider;
-
         //Additions
         mCompassTileProvider = compassTileProvider;
         mAODTileProvider = aodTileProvider;
+        mCaffeineTileProvider = caffeineTileProvider;
     }
 
     public QSTile createTile(String tileSpec) {
@@ -187,12 +190,13 @@ public class QSFactoryImpl implements QSFactory {
                 return mUiModeNightTileProvider.get();
             case "screenrecord":
                 return mScreenRecordTileProvider.get();
-
             // Additions
             case "compass":
                 return mCompassTileProvider.get();
             case "aod":
                 return mAODTileProvider.get();
+            case "caffeine":
+                return mCaffeineTileProvider.get();
         }
 
         // Custom tiles
