@@ -15,14 +15,14 @@
  */
 package com.android.systemui.tuner;
 
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v14.preference.PreferenceFragment;
 
 import com.android.systemui.Dependency;
 import com.android.systemui.R;
 import com.android.systemui.tuner.TunerActivity;
 
-public class LockscreenTunerActivity extends TunerActivity {
+public class PowerNotificationsTunerActivity extends TunerActivity {
 
     private static final String TAG_TUNER = "tuner";
 
@@ -32,7 +32,7 @@ public class LockscreenTunerActivity extends TunerActivity {
 
         if (getFragmentManager().findFragmentByTag(TAG_TUNER) == null) {
             final String action = getIntent().getAction();
-            final PreferenceFragment fragment = new LockscreenFragment();
+            final Fragment fragment = new PowerNotificationControlsFragment();
             getFragmentManager().beginTransaction().replace(R.id.content_frame,
                     fragment, TAG_TUNER).commit();
         }

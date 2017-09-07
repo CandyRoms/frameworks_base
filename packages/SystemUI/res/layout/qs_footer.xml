@@ -15,17 +15,19 @@
 ** limitations under the License.
 -->
 
-<!-- Extends FrameLayout -->
-<com.android.systemui.qs.QSFooterImpl
+<!-- Extends RelativeLayout -->
+<com.android.systemui.qs.QSFooter
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/qs_footer"
+    android:id="@+id/header"
     android:layout_width="match_parent"
     android:layout_height="48dp"
+    android:elevation="4dp"
     android:baselineAligned="false"
     android:clickable="false"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:paddingTop="0dp"
+    android:background="#00000000"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
@@ -73,8 +75,7 @@
             android:src="@drawable/ic_mode_edit"
             android:tint="?android:attr/colorForeground"/>
 
-        <com.android.keyguard.AlphaOptimizedImageButton
-            android:id="@+id/settings_button"
+        <com.android.keyguard.AlphaOptimizedImageButton android:id="@+id/settings_button"
             style="@android:style/Widget.Material.Button.Borderless"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -95,4 +96,9 @@
             android:padding="14dp" />
     </LinearLayout>
 
-</com.android.systemui.qs.QSFooterImpl>
+    <include layout="@layout/qs_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom" />
+
+</com.android.systemui.qs.QSFooter>

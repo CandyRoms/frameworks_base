@@ -22,7 +22,7 @@ import com.android.systemui.Dependency;
 import com.android.systemui.R;
 import com.android.systemui.tuner.TunerActivity;
 
-public class LockscreenTunerActivity extends TunerActivity {
+public class StatusBarIconsTunerActivity extends TunerActivity {
 
     private static final String TAG_TUNER = "tuner";
 
@@ -32,7 +32,10 @@ public class LockscreenTunerActivity extends TunerActivity {
 
         if (getFragmentManager().findFragmentByTag(TAG_TUNER) == null) {
             final String action = getIntent().getAction();
-            final PreferenceFragment fragment = new LockscreenFragment();
+            boolean showDemoMode = action != null && action.equals(
+                    "com.android.settings.action.DEMO_MODE");
+            final PreferenceFragment fragment = showDemoMode ? new DemoModeFragment()
+                    : new StatusbarIconsFragment();
             getFragmentManager().beginTransaction().replace(R.id.content_frame,
                     fragment, TAG_TUNER).commit();
         }

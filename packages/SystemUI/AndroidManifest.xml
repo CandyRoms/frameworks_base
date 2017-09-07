@@ -290,14 +290,58 @@
                 android:exported="true" />
 
         <activity android:name=".tuner.TunerActivity"
-                  android:enabled="true"
                   android:icon="@drawable/tuner"
                   android:theme="@style/TunerSettings"
-                  android:label="@string/systemui_tuner_icon_manager_title"
+                  android:label="@string/system_ui_tuner"
                   android:process=":tuner"
                   android:parentActivityName="org.candy.candyshop.CandyShop"
                   android:exported="true">
         </activity>
+
+        <activity android:name=".tuner.StatusbarItemsActivity"
+                  android:theme="@style/ExTunerSettings"
+                  android:label="@string/statusbar_items_title"
+                  android:process=":tuner"
+                  android:parentActivityName="org.candy.candyshop.tabs.StatusBar"
+                  android:exported="true">
+        </activity>
+
+        <activity android:name=".tuner.NavBarTunerActivity"
+                  android:theme="@style/TunerSettings"
+                  android:label="@string/navbar_tuner_activity"
+                  android:process=":tuner"
+                  android:parentActivityName="org.candy.candyshop.fragments.NavbarSettings"
+                  android:exported="true">
+        </activity>
+
+        <activity android:name=".tuner.LockscreenActivity"
+                  android:theme="@style/TunerSettings"
+                  android:label="@string/tuner_lock_screen"
+                  android:process=":tuner"
+                  android:parentActivityName="org.candy.candyshop.tabs.LockScreen"
+                  android:exported="true">
+        </activity>
+
+        <activity android:name=".tuner.PowerNotificationsTunerActivity"
+                  android:theme="@style/TunerSettings"
+                  android:label="@string/powernotif_tuner_activity"
+                  android:process=":tuner"
+                  android:parentActivityName="org.candy.candyshop.PowerNotificationsSettings"
+                  android:exported="true">
+        </activity>
+
+        <activity-alias android:name=".DemoMode"
+                  android:targetActivity=".tuner.TunerActivity"
+                  android:icon="@drawable/tuner"
+                  android:theme="@style/TunerSettings"
+                  android:label="@string/demo_mode"
+                  android:process=":tuner"
+                  android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.settings.action.DEMO_MODE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
 
         <activity android:name=".tuner.StatusbarItemsActivity"
                   android:theme="@style/ExTunerSettings"
@@ -614,13 +658,13 @@
             android:singleUser="true"
             android:permission="android.permission.BIND_DREAM_SERVICE" />
 
-        <receiver
+        <!--<receiver
             android:name=".tuner.TunerService$ClearReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.android.systemui.action.CLEAR_TUNER" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
         <provider
             android:name="android.support.v4.content.FileProvider"
