@@ -312,6 +312,22 @@
                   android:exported="true">
         </activity>
 
+        <activity android:name=".tuner.NavBarActivity"
+                  android:theme="@style/ExTunerSettings"
+                  android:label="@string/nav_bar"
+                  android:process=":tuner"
+                  android:parentActivityName="org.candy.candyshop.fragments.Navbar"
+                  android:exported="true">
+        </activity>
+
+        <activity android:name=".tuner.LockscreenActivity"
+                  android:theme="@style/ExTunerSettings"
+                  android:label="@string/tuner_lock_screen"
+                  android:process=":tuner"
+                  android:parentActivityName="org.candy.candyshop.tabs.Lockscreen"
+                  android:exported="true">
+        </activity>
+
         <!-- Service used by secondary users to register themselves with the system user. -->
         <service android:name=".recents.RecentsSystemUserService"
             android:exported="false"
