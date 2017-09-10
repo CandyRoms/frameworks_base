@@ -1139,6 +1139,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.NAVIGATION_BAR_ENABLED), false, this,
                     UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_SHOW), false, this,
+                    UserHandle.USER_ALL);
             updateSettings();
         }
 
@@ -2639,19 +2642,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // Allow the navigation bar to move on non-square small devices (phones).
         mNavigationBarCanMove = width != height && shortSizeDp < 600;
 
-        // Allow a system property to override this. Used by the emulator.
-        // See also hasNavigationBar().
-        String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
-        if ("1".equals(navBarOverride)) {
-            mHasNavigationBar = true;
-        } else if ("0".equals(navBarOverride)) {
-            mHasNavigationBar = false;
-        }
+        // reflects original device state from config or build prop, regardless of user settings
+        mHasNavigationBar = DeviceUtils.deviceSupportNavigationBar(mContext);
 
-        mHasNavigationBar = !mNavBarOverride && Settings.Secure.getIntForUser(
-                mContext.getContentResolver(), Settings.Secure.NAVIGATION_BAR_ENABLED,
-                res.getBoolean(com.android.internal.R.bool.config_showNavigationBar) ? 1 : 0,
-                UserHandle.USER_CURRENT) == 1;
+        //mHasNavigationBar = !mNavBarOverride && Settings.Secure.getIntForUser(
+        //        mContext.getContentResolver(), Settings.Secure.NAVIGATION_BAR_ENABLED,
+        //        res.getBoolean(com.android.internal.R.bool.config_showNavigationBar) ? 1 : 0,
+        //        UserHandle.USER_CURRENT) == 1;
 
         // For demo purposes, allow the rotation of the HDMI display to be controlled.
         // By default, HDMI locks rotation to landscape.
@@ -2735,6 +2732,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     public void updateSettings() {
+        final Resources res = mContext.getResources();
         ContentResolver resolver = mContext.getContentResolver();
         boolean updateRotation = false;
         synchronized (mLock) {
@@ -2788,6 +2786,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             boolean threeFingerGesture = Settings.System.getIntForUser(resolver,
                     Settings.System.THREE_FINGER_GESTURE, 0, UserHandle.USER_CURRENT) == 1;
             enableSwipeThreeFingerGesture(threeFingerGesture);
+
+            // navbar
+            mHasNavigationBar = DeviceUtils.deviceSupportNavigationBar(mContext);
 
             // Configure rotation lock.
             int userRotation = Settings.System.getIntForUser(resolver,

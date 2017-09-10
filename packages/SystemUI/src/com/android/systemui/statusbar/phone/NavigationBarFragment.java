@@ -1156,7 +1156,7 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
     private void setFullGestureMode() {
         boolean fullModeEnabled = false;
         boolean dt2sEnabled = false;
-        int mode = Settings.Secure.getInt(getContentResolver(),
+        int mode = Settings.Secure.getInt(mContentResolver,
                 Settings.Secure.NAVIGATION_BAR_MODE, 0);
         try {
             if (Settings.System.getIntForUser(mContentResolver,
@@ -1176,18 +1176,15 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         mFullGestureMode = mOverviewProxyService.shouldShowSwipeUpUI() && fullModeEnabled;
         if (mode < 2) {
             // Stock and Stock Gestures nav
-            dt2sEnabled = fullModeEnabled;
             if (mOldNavBarView != null) {
                 mOldNavBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
             }
         } else {
             // SmartBar and Fling
-            if (mNavigationBarView != null) {
-                mNavigationBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
-            }
-        }
-        if (mNavigationBarView != null) {
-            mNavigationBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
+            //if (mNavigationBarView != null) {
+            //    mNavigationBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
+            // do nothing
+            //}
         }
     }
 
