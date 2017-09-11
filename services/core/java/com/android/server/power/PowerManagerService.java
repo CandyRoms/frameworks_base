@@ -260,6 +260,9 @@ public final class PowerManagerService extends SystemService
     private int mButtonBrightness;
     private int mButtonBrightnessSettingDefault;
 
+    private boolean mButtonPressed = false;
+    private boolean mButtonOn = false;
+
     private final Object mLock = LockGuard.installNewLock(LockGuard.INDEX_POWER);
 
     // A bitfield that indicates what parts of the power state have
@@ -1376,6 +1379,12 @@ public final class PowerManagerService extends SystemService
                 }
             } else {
                 if (eventTime > mLastUserActivityTime) {
+                    mButtonPressed = event == PowerManager.USER_ACTIVITY_EVENT_BUTTON;
+                    if ((mButtonBacklightOnTouchOnly && mButtonPressed)
+                            || eventTime == mLastWakeTime) {
+                        mButtonPressed = true;
+                        mLastButtonActivityTime = eventTime;
+                    }
                     mLastUserActivityTime = eventTime;
                     mDirty |= DIRTY_USER_ACTIVITY;
                     if (event == PowerManager.USER_ACTIVITY_EVENT_BUTTON) {
@@ -2046,6 +2055,37 @@ public final class PowerManagerService extends SystemService
                                 nextTimeout = now + mButtonTimeout;
                             }
                         }
+                        mUserActivitySummary = USER_ACTIVITY_SCREEN_BRIGHT;
+                        if (mWakefulness == WAKEFULNESS_AWAKE) {
+                            int buttonBrightness;
+                            if (mButtonBrightnessOverrideFromWindowManager >= 0) {
+                                buttonBrightness = mButtonBrightnessOverrideFromWindowManager;
+                            } else {
+                                buttonBrightness = mButtonBrightness;
+                            }
+                            mLastButtonActivityTime = mButtonBacklightOnTouchOnly ?
+                                    mLastButtonActivityTime : mLastUserActivityTime;
+                            if (mButtonTimeout != 0
+                                    && now > mLastButtonActivityTime + mButtonTimeout) {
+                                mButtonsLight.setBrightness(0);
+                                mButtonOn = false;
+                            } else {
+                                if ((!mButtonBacklightOnTouchOnly || mButtonPressed) &&
+                                        !mProximityPositive) {
+                                    mButtonsLight.setBrightness(buttonBrightness);
+                                    mButtonPressed = false;
+                                    if (buttonBrightness != 0 && mButtonTimeout != 0) {
+                                        mButtonOn = true;
+                                        if (now + mButtonTimeout < nextTimeout) {
+                                            nextTimeout = now + mButtonTimeout;
+                                        }
+                                    }
+                                } else if (mButtonBacklightOnTouchOnly && mButtonOn &&
+                                        mLastButtonActivityTime + mButtonTimeout < nextTimeout) {
+                                    nextTimeout = mLastButtonActivityTime + mButtonTimeout;
+                                }
+                            }
+                        }
                         if (now > mLastUserActivityTime + BUTTON_ON_DURATION) {
                             mButtonsLight.setBrightness(0);
                         } else {
@@ -2058,6 +2098,10 @@ public final class PowerManagerService extends SystemService
                         if (now < nextTimeout) {
                             mButtonsLight.setBrightness(0);
                             mUserActivitySummary = USER_ACTIVITY_SCREEN_DIM;
+                            if (mWakefulness == WAKEFULNESS_AWAKE) {
+                                mButtonsLight.setBrightness(0);
+                                mButtonOn = false;
+                            }
                         }
                     }
                 }
