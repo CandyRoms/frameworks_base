@@ -24,6 +24,7 @@ import static android.os.PowerManagerInternal.WAKEFULNESS_DREAMING;
 import android.annotation.IntDef;
 import android.annotation.UserIdInt;
 import android.app.ActivityManager;
+import android.app.AppOpsManager;
 import android.app.SynchronousUserSwitchObserver;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -113,6 +114,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * The power manager service is responsible for coordinating power management
@@ -137,7 +141,7 @@ public final class PowerManagerService extends SystemService
     private static final int MSG_WAKE_UP = 5;
 
     // Dirty bit: mWakeLocks changed
-    private static final int DIRTY_WAKE_LOCKS = 1 << 0;
+    protected static final int DIRTY_WAKE_LOCKS = 1 << 0;
     // Dirty bit: mWakefulness changed
     private static final int DIRTY_WAKEFULNESS = 1 << 1;
     // Dirty bit: user activity was poked or may have timed out
@@ -259,15 +263,15 @@ public final class PowerManagerService extends SystemService
     private int mButtonTimeout;
     private int mButtonBrightness;
     private int mButtonBrightnessSettingDefault;
-
     private boolean mButtonPressed = false;
     private boolean mButtonOn = false;
 
+    private int mEvent;
     private final Object mLock = LockGuard.installNewLock(LockGuard.INDEX_POWER);
 
     // A bitfield that indicates what parts of the power state have
     // changed and need to be recalculated.
-    private int mDirty;
+    protected int mDirty;
 
     // Indicates whether the device is awake or asleep or somewhere in between.
     // This is distinct from the screen power state, which is managed separately.
@@ -286,7 +290,7 @@ public final class PowerManagerService extends SystemService
     private final ArrayList<SuspendBlocker> mSuspendBlockers = new ArrayList<SuspendBlocker>();
 
     // Table of all wake locks acquired by applications.
-    private final ArrayList<WakeLock> mWakeLocks = new ArrayList<WakeLock>();
+    protected final ArrayList<WakeLock> mWakeLocks = new ArrayList<WakeLock>();
 
     // A bitfield that summarizes the state of all active wakelocks.
     private int mWakeLockSummary;
@@ -309,6 +313,7 @@ public final class PowerManagerService extends SystemService
     private long mLastSleepTime;
 
     // Timestamp of the last call to user activity.
+    private long mLastButtonActivityTime;
     private long mLastUserActivityTime;
     private long mLastUserActivityTimeNoChangeLights;
 
@@ -530,6 +535,12 @@ public final class PowerManagerService extends SystemService
 
     // True if we are currently in light device idle mode.
     private boolean mLightDeviceIdleMode;
+
+    // button on touch
+    private boolean mButtonBacklightOnTouchOnly;
+
+    // overrule and disable brightness for buttons
+    private boolean mHardwareKeysDisable = false;
 
     // Set of app ids that we will always respect the wake locks for.
     int[] mDeviceIdleWhitelist = new int[0];
@@ -876,15 +887,20 @@ public final class PowerManagerService extends SystemService
                 Settings.Global.DEVICE_DEMO_MODE),
                 false, mSettingsObserver, UserHandle.USER_SYSTEM);
         resolver.registerContentObserver(Settings.System.getUriFor(
-                Settings.System.PROXIMITY_ON_WAKE),
-                false, mSettingsObserver, UserHandle.USER_ALL);
-        resolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.BUTTON_BRIGHTNESS),
                 false, mSettingsObserver, UserHandle.USER_ALL);
         resolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.BUTTON_BACKLIGHT_TIMEOUT),
                 false, mSettingsObserver, UserHandle.USER_ALL);
-
+        resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.BUTTON_BACKLIGHT_ON_TOUCH_ONLY),
+                false, mSettingsObserver, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.Secure.getUriFor(
+                Settings.Secure.HARDWARE_KEYS_DISABLE),
+                false, mSettingsObserver, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.PROXIMITY_ON_WAKE),
+                false, mSettingsObserver, UserHandle.USER_ALL);
         IVrManager vrManager = (IVrManager) getBinderService(Context.VR_SERVICE);
         if (vrManager != null) {
             try {
@@ -1022,6 +1038,16 @@ public final class PowerManagerService extends SystemService
         mButtonBrightness = Settings.System.getIntForUser(resolver,
                 Settings.System.BUTTON_BRIGHTNESS, mButtonBrightnessSettingDefault,
                 UserHandle.USER_CURRENT);
+
+        mButtonBacklightOnTouchOnly = Settings.System.getIntForUser(
+                mContext.getContentResolver(), Settings.System.BUTTON_BACKLIGHT_ON_TOUCH_ONLY,
+                0, UserHandle.USER_CURRENT) != 0;
+        mHardwareKeysDisable = Settings.Secure.getIntForUser(resolver,
+                Settings.Secure.HARDWARE_KEYS_DISABLE, 0,
+                UserHandle.USER_CURRENT) != 0;
+        mProximityWakeEnabled = Settings.System.getInt(resolver,
+                Settings.System.PROXIMITY_ON_WAKE,
+                mProximityWakeEnabledByDefaultConfig ? 1 : 0) == 1;
 
         mDirty |= DIRTY_SETTINGS;
     }
@@ -1231,7 +1257,7 @@ public final class PowerManagerService extends SystemService
         return -1;
     }
 
-    private void notifyWakeLockAcquiredLocked(WakeLock wakeLock) {
+    protected void notifyWakeLockAcquiredLocked(WakeLock wakeLock) {
         if (mSystemReady && !wakeLock.mDisabled) {
             wakeLock.mNotifiedAcquired = true;
             mNotifier.onWakeLockAcquired(wakeLock.mFlags, wakeLock.mTag, wakeLock.mPackageName,
@@ -1287,7 +1313,7 @@ public final class PowerManagerService extends SystemService
         }
     }
 
-    private void notifyWakeLockReleasedLocked(WakeLock wakeLock) {
+    protected void notifyWakeLockReleasedLocked(WakeLock wakeLock) {
         if (mSystemReady && wakeLock.mNotifiedAcquired) {
             wakeLock.mNotifiedAcquired = false;
             wakeLock.mAcquireTime = 0;
@@ -1662,7 +1688,7 @@ public final class PowerManagerService extends SystemService
      * each time something important changes, and ensure that we do it the same
      * way each time.  The point is to gather all of the transition logic here.
      */
-    private void updatePowerStateLocked() {
+    protected void updatePowerStateLocked() {
         if (!mSystemReady || mDirty == 0) {
             return;
         }
@@ -2035,33 +2061,24 @@ public final class PowerManagerService extends SystemService
                 final long screenDimDuration = getScreenDimDurationLocked(screenOffTimeout);
                 final boolean userInactiveOverride = mUserInactiveOverrideFromWindowManager;
                 final long nextProfileTimeout = getNextProfileTimeoutLocked(now);
+                final boolean buttonPressed = mEvent == PowerManager.USER_ACTIVITY_EVENT_BUTTON;
 
                 mUserActivitySummary = 0;
                 if (mLastUserActivityTime >= mLastWakeTime) {
                     nextTimeout = mLastUserActivityTime
                             + screenOffTimeout - screenDimDuration;
                     if (now < nextTimeout) {
-                        int buttonBrightness;
-                        if (mButtonBrightnessOverrideFromWindowManager >= 0) {
-                            buttonBrightness = mButtonBrightnessOverrideFromWindowManager;
-                        } else {
-                            buttonBrightness = mButtonBrightness;
-                        }
-                        if (mButtonTimeout != 0 && now > mLastUserActivityTime + mButtonTimeout) {
-                             mButtonsLight.setBrightness(0);
-                        } else {
-                            mButtonsLight.setBrightness(buttonBrightness);
-                            if (buttonBrightness != 0 && mButtonTimeout != 0) {
-                                nextTimeout = now + mButtonTimeout;
-                            }
-                        }
                         mUserActivitySummary = USER_ACTIVITY_SCREEN_BRIGHT;
                         if (mWakefulness == WAKEFULNESS_AWAKE) {
                             int buttonBrightness;
-                            if (mButtonBrightnessOverrideFromWindowManager >= 0) {
-                                buttonBrightness = mButtonBrightnessOverrideFromWindowManager;
-                            } else {
-                                buttonBrightness = mButtonBrightness;
+                            if (mHardwareKeysDisable) {
+                                buttonBrightness = 0;
+                        } else {
+	                            if (mButtonBrightnessOverrideFromWindowManager >= 0) {
+	                                buttonBrightness = mButtonBrightnessOverrideFromWindowManager;
+	                            } else {
+	                                buttonBrightness = mButtonBrightness;
+								}
                             }
                             mLastButtonActivityTime = mButtonBacklightOnTouchOnly ?
                                     mLastButtonActivityTime : mLastUserActivityTime;
@@ -2074,7 +2091,7 @@ public final class PowerManagerService extends SystemService
                                         !mProximityPositive) {
                                     mButtonsLight.setBrightness(buttonBrightness);
                                     mButtonPressed = false;
-                                    if (buttonBrightness != 0 && mButtonTimeout != 0) {
+                                    if (buttonBrightness != 0 && mButtonTimeout != 0 && buttonPressed) {
                                         mButtonOn = true;
                                         if (now + mButtonTimeout < nextTimeout) {
                                             nextTimeout = now + mButtonTimeout;
@@ -2086,17 +2103,9 @@ public final class PowerManagerService extends SystemService
                                 }
                             }
                         }
-                        if (now > mLastUserActivityTime + BUTTON_ON_DURATION) {
-                            mButtonsLight.setBrightness(0);
-                        } else {
-                            mButtonsLight.setBrightness(mDisplayPowerRequest.screenBrightness);
-                            nextTimeout = now + BUTTON_ON_DURATION;
-                        }
-                        mUserActivitySummary = USER_ACTIVITY_SCREEN_BRIGHT;
                     } else {
                         nextTimeout = mLastUserActivityTime + screenOffTimeout;
                         if (now < nextTimeout) {
-                            mButtonsLight.setBrightness(0);
                             mUserActivitySummary = USER_ACTIVITY_SCREEN_DIM;
                             if (mWakefulness == WAKEFULNESS_AWAKE) {
                                 mButtonsLight.setBrightness(0);
@@ -2109,8 +2118,7 @@ public final class PowerManagerService extends SystemService
                         && mLastUserActivityTimeNoChangeLights >= mLastWakeTime) {
                     nextTimeout = mLastUserActivityTimeNoChangeLights + screenOffTimeout;
                     if (now < nextTimeout) {
-                        if (mDisplayPowerRequest.policy == DisplayPowerRequest.POLICY_BRIGHT
-                                || mDisplayPowerRequest.policy == DisplayPowerRequest.POLICY_VR) {
+                        if (mDisplayPowerRequest.policy == DisplayPowerRequest.POLICY_BRIGHT) {
                             mUserActivitySummary = USER_ACTIVITY_SCREEN_BRIGHT;
                         } else if (mDisplayPowerRequest.policy == DisplayPowerRequest.POLICY_DIM) {
                             mUserActivitySummary = USER_ACTIVITY_SCREEN_DIM;
@@ -4009,7 +4017,7 @@ public final class PowerManagerService extends SystemService
     /**
      * Represents a wake lock that has been acquired by an application.
      */
-    private final class WakeLock implements IBinder.DeathRecipient {
+    protected final class WakeLock implements IBinder.DeathRecipient {
         public final IBinder mLock;
         public int mFlags;
         public String mTag;
