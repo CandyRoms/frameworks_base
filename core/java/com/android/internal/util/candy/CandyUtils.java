@@ -39,6 +39,9 @@ import java.util.Locale;
 
 public class CandyUtils {
 
+    public static final String INTENT_SCREENSHOT = "action_handler_screenshot";
+    public static final String INTENT_REGION_SCREENSHOT = "action_handler_region_screenshot";
+
     private static int sDeviceType = -1;
     private static final int DEVICE_PHONE = 0;
     private static final int DEVICE_HYBRID = 1;
@@ -93,6 +96,15 @@ public class CandyUtils {
                         InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
             }
         }, 20);
+    }
+
+    public static void takeScreenshot(boolean full) {
+        IWindowManager wm = WindowManagerGlobal.getWindowManagerService();
+        try {
+            wm.sendCustomAction(new Intent(full? INTENT_SCREENSHOT : INTENT_REGION_SCREENSHOT));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public static boolean isWifiOnly(Context context) {
