@@ -71,6 +71,8 @@ public class NotificationInterruptStateProviderImpl implements NotificationInter
     @VisibleForTesting
     protected boolean mUseHeadsUp = false;
 
+    private boolean mPartialScreenshot;
+
     @Inject
     public NotificationInterruptStateProviderImpl(
             ContentResolver contentResolver,
@@ -214,7 +216,7 @@ public class NotificationInterruptStateProviderImpl implements NotificationInter
             return false;
         }
 
-        if (entry.shouldSuppressPeek()) {
+        if (entry.shouldSuppressPeek() || mPartialScreenshot) {
             if (DEBUG_HEADS_UP) {
                 Log.d(TAG, "No heads up: suppressed by DND: " + sbn.getKey());
             }
@@ -369,5 +371,9 @@ public class NotificationInterruptStateProviderImpl implements NotificationInter
 
     private boolean isSnoozedPackage(StatusBarNotification sbn) {
         return mHeadsUpManager.isSnoozed(sbn.getPackageName());
+    }
+
+    public void setPartialScreenshot(boolean active) {
+        mPartialScreenshot = active;
     }
 }
