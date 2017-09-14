@@ -3159,6 +3159,9 @@
          Used to decide if we show pulse settings -->
     <bool name="config_ledCanPulse">true</bool>
 
+    <!-- Choose doze as power-action if Ambient Display or Always-On-Display is activated, else don't doze -->
+    <bool name="config_dozeOnlyOnAmbientOrAlwaysOn">true</bool>
+
     <!-- Show area update info settings in CellBroadcastReceiver and information in SIM status in Settings app -->
     <bool name="config_showAreaUpdateInfoSettings">false</bool>
 
