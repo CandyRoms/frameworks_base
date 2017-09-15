@@ -2381,6 +2381,12 @@ public final class PowerManagerService extends SystemService
                 return; // wait for next cycle
             }
 
+            // keep keyboard/buttons dark if we are dreaming
+            if (wakefulness == WAKEFULNESS_DREAMING ||
+				wakefulness == WAKEFULNESS_DOZING) {
+				mButtonsLight.setBrightness(0);
+			}
+
             // Determine whether the dream should continue.
             if (wakefulness == WAKEFULNESS_DREAMING) {
                 if (isDreaming && canDreamLocked()) {
