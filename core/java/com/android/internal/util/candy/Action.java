@@ -258,11 +258,6 @@ public class Action {
         if (intent == null) {
             return;
         }
-        try {
-            WindowManagerGlobal.getWindowManagerService().dismissKeyguard(null /* callback */);
-        } catch (RemoteException e) {
-            Log.w("Action", "Error dismissing keyguard", e);
-        }
         intent.addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP
