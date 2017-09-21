@@ -6409,8 +6409,8 @@ public class WindowManagerService extends IWindowManager.Stub
     }
 
     @Override
-    public void sendCandyAction(Intent intent) {
-        mPolicy.sendCandyAction(intent);
+    public void sendCustomAction(Intent intent) {
+        mPolicy.sendCustomAction(intent);
     }
 
     @Override

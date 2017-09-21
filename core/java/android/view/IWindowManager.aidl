@@ -283,7 +283,7 @@ interface IWindowManager
     /**
      * Send some ActionHandler commands to WindowManager.
      */
-    void sendCandyAction(in Intent intent);
+    void sendCustomAction(in Intent intent);
 
     /**
      * Called by System UI to notify of changes to the visibility of Recents.
