@@ -26,7 +26,7 @@ public class TileLayout extends ViewGroup implements QSTileLayout {
     protected int mCellWidth;
     protected int mCellHeight;
     protected int mCellMargin;
-    protected int mDefaultColumns;
+    protected boolean mShowTitles = true;
 
     protected final ArrayList<TileRecord> mRecords = new ArrayList<>();
     private int mCellMarginTop;
@@ -92,9 +92,11 @@ public class TileLayout extends ViewGroup implements QSTileLayout {
                     Settings.System.QS_COLUMNS_LANDSCAPE, 5,
                     UserHandle.USER_CURRENT);
         }
-        if (Settings.System.getIntForUser(resolver,
+        boolean showTitles = Settings.System.getIntForUser(resolver,
                 Settings.System.QS_TILE_TITLE_VISIBILITY, 0,
-                UserHandle.USER_CURRENT) == 1) {
+                UserHandle.USER_CURRENT) == 1;
+        mShowTitles = showTitles;
+        if (showTitles) {
             mCellHeight = mContext.getResources().getDimensionPixelSize(R.dimen.qs_tile_height);
         } else {
             mCellHeight = mContext.getResources().getDimensionPixelSize(R.dimen.qs_tile_height_wo_label);
@@ -170,15 +172,7 @@ public class TileLayout extends ViewGroup implements QSTileLayout {
     }
 
     @Override
-    public void updateSettings() {
-        final Resources res = mContext.getResources();
-        mDefaultColumns = Math.max(1, res.getInteger(R.integer.quick_settings_num_columns));
-        int columns = Settings.Secure.getIntForUser(
-                mContext.getContentResolver(), Settings.Secure.QS_LAYOUT_COLUMNS, mDefaultColumns,
-                UserHandle.USER_CURRENT);
-        if (mColumns != columns) {
-            mColumns = columns;
-            requestLayout();
-        }
+    public boolean isShowTitles() {
+        return mShowTitles;
     }
 }

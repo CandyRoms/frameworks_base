@@ -257,7 +257,8 @@ public class QuickQSPanel extends QSPanel {
         }
 
         @Override
-        public void updateSettings() {
+        public boolean isShowTitles() {
+            return false;
         }
     }
 }
