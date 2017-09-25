@@ -248,24 +248,12 @@ public class HeadsUpAppearanceController implements OnHeadsUpChangedListener,
             } else {
                 if (clockStyle == 0) {
                     CrossFadeHelper.fadeIn(mClockView, CONTENT_FADE_DURATION /* duration */,
-                if (!isRightClock) {
-                    CrossFadeHelper.fadeOut(clockView, CONTENT_FADE_DURATION/* duration */,
-                            0 /* delay */, () -> clockView.setVisibility(View.INVISIBLE));
-                }
-                CrossFadeHelper.fadeOut(mStatusBarContent, CONTENT_FADE_DURATION/* duration */,
-                        0 /* delay */, () -> mStatusBarContent.setVisibility(View.INVISIBLE));
-            } else {
-                CrossFadeHelper.fadeIn(mStatusBarContent, CONTENT_FADE_DURATION /* duration */,
-                        CONTENT_FADE_DELAY /* delay */);
-                if (!isRightClock) {
-                    CrossFadeHelper.fadeIn(clockView, CONTENT_FADE_DURATION /* duration */,
                             CONTENT_FADE_DELAY /* delay */);
                 } else {
                     mClockView.setVisibility(View.GONE);
                 }
                 CrossFadeHelper.fadeOut(mHeadsUpStatusBarView, CONTENT_FADE_DURATION/* duration */,
                         0 /* delay */, () -> mHeadsUpStatusBarView.setVisibility(View.GONE));
-
             }
         }
     }
