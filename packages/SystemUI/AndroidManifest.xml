@@ -385,7 +385,7 @@
                   android:theme="@style/ExTunerSettings"
                   android:label="@string/tuner_lock_screen"
                   android:process=":tuner"
-                  android:parentActivityName="org.candy.candyshop.tabs.StatusBar"
+                  android:parentActivityName="org.candy.candyshop.tabs.Lockscreen"
                   android:exported="true">
         </activity>
 
