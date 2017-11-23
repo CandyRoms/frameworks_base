@@ -440,12 +440,15 @@
         <item name="android:layout_height">48dp</item>
     </style>
 
+    <style name="TunerPreferenceTheme" parent="@android:style/Theme.DeviceDefault.Settings">
+        <item name="dropdownPreferenceStyle">@style/Preference.DropDown.Material</item>
+    </style>
+
+    <dimen name="preference_no_icon_padding_start">72dp</dimen>
+
     <style name="TunerSettings" parent="@android:style/Theme.DeviceDefault.Settings">
         <item name="android:windowActionBar">false</item>
         <item name="preferenceTheme">@style/TunerPreferenceTheme</item>
-    </style>
-
-    <style name="TunerPreferenceTheme" parent="@style/PreferenceThemeOverlay.SettingsBase">
     </style>
 
     <style name="TextAppearance.NotificationInfo">
