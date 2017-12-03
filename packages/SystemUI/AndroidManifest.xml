@@ -287,10 +287,42 @@
                   android:icon="@drawable/tuner"
                   android:theme="@style/TunerSettings"
                   android:label="@string/systemui_tuner_icon_manager_title"
-                  android:parentActivityName="com.dirtyunicorns.tweaks.DirtyTweaks"
                   android:process=":tuner"
+                  android:parentActivityName="org.candy.candyshop.CandyShop"
                   android:exported="true">
         </activity>
+
+        <activity android:name=".tuner.StatusbarItemsActivity"
+                  android:theme="@style/ExTunerSettings"
+                  android:label="@string/statusbar_items_title"
+                  android:process=":tuner"
+                  android:parentActivityName="org.candy.candyshop.tabs.StatusBar"
+                  android:exported="true">
+        </activity>
+
+        <!-- <activity android:name=".tuner.NavBarTunerActivity"
+                  android:theme="@style/TunerSettings"
+                  android:label="@string/navbar_tuner_activity"
+                  android:process=":tuner"
+                  android:parentActivityName="org.candy.candyshop.fragments.NavbarSettings"
+                  android:exported="true">
+        </activity> -->
+
+        <activity android:name=".tuner.LockscreenActivity"
+                  android:theme="@style/TunerSettings"
+                  android:label="@string/tuner_lock_screen"
+                  android:process=":tuner"
+                  android:parentActivityName="org.candy.candyshop.tabs.LockScreen"
+                  android:exported="true">
+        </activity>
+
+        <!-- <activity android:name=".tuner.PowerNotificationsTunerActivity"
+                  android:theme="@style/TunerSettings"
+                  android:label="@string/powernotif_tuner_activity"
+                  android:process=":tuner"
+                  android:parentActivityName="org.candy.candyshop.PowerNotificationsSettings"
+                  android:exported="true">
+        </activity> -->
 
         <activity-alias android:name=".DemoMode"
                   android:targetActivity=".tuner.TunerActivity"
@@ -304,38 +336,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity-alias>
-
-        <activity android:name=".tuner.StatusbarItemsActivity"
-                  android:theme="@style/ExTunerSettings"
-                  android:label="@string/statusbar_items_title"
-                  android:process=":tuner"
-                  android:parentActivityName="org.candy.candyshop.tabs.StatusBar"
-                  android:exported="true">
-        </activity>
-
-        <activity android:name=".tuner.PowerActivity"
-                  android:theme="@style/ExTunerSettings"
-                  android:label="@string/tuner_full_importance_settings"
-                  android:process=":tuner"
-                  android:parentActivityName="org.candy.candyshop.fragments.Notifications"
-                  android:exported="true">
-        </activity>
-
-        <activity android:name=".tuner.NavBarActivity"
-                  android:theme="@style/ExTunerSettings"
-                  android:label="@string/nav_bar"
-                  android:process=":tuner"
-                  android:parentActivityName="org.candy.candyshop.fragments.Navbar"
-                  android:exported="true">
-        </activity>
-
-        <activity android:name=".tuner.LockscreenActivity"
-                  android:theme="@style/ExTunerSettings"
-                  android:label="@string/tuner_lock_screen"
-                  android:process=":tuner"
-                  android:parentActivityName="org.candy.candyshop.tabs.Lockscreen"
-                  android:exported="true">
-        </activity>
 
        <!-- Service used by secondary users to register themselves with the system user. -->
         <service android:name=".recents.RecentsSystemUserService"
