@@ -23,4 +23,11 @@
   <!-- Ambient notification icon tint -->
   <java-symbol type="color" name="notification_ambient_default_color" />
 
+  <!-- Notification sender text color -->
+  <java-symbol type="color" name="sender_text_color" />
+
+  <!-- Toast text and bg colors -->
+  <java-symbol type="color" name="toast_bg_color" />
+  <java-symbol type="color" name="toast_text_color" />
+
 </resources>
