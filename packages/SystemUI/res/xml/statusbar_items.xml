@@ -70,4 +70,5 @@
     <com.android.systemui.tuner.StatusBarSwitch
         android:key="roaming"
         android:title="@string/status_bar_roaming" />
+
 </PreferenceScreen>
