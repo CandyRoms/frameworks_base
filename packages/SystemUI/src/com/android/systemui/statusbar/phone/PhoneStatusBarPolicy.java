@@ -427,6 +427,41 @@ public class PhoneStatusBarPolicy implements Callback, Callbacks,
         mIconController.setIconVisibility(mSlotBluetooth, bluetoothEnabled);
     }
 
+    private boolean showBatteryForThis(BluetoothClass type) {
+        boolean show = false;
+        if (type != null) {
+            switch (type.getDeviceClass()) {
+            case BluetoothClass.Device.AUDIO_VIDEO_WEARABLE_HEADSET:
+            case BluetoothClass.Device.AUDIO_VIDEO_HANDSFREE:
+            case BluetoothClass.Device.AUDIO_VIDEO_PORTABLE_AUDIO:
+            case BluetoothClass.Device.AUDIO_VIDEO_LOUDSPEAKER:
+            case BluetoothClass.Device.AUDIO_VIDEO_HEADPHONES:
+                show = true;
+                break;
+            default:
+                show = false;
+                break;
+            }
+        } else {
+            show = false;
+        }
+        return show;
+    }
+
+    private int getBtLevelIconRes(int level) {
+        if (level <= 15) {
+            return R.drawable.stat_sys_data_bluetooth_connected_battery_1;
+        } else if (level <= 40) {
+            return R.drawable.stat_sys_data_bluetooth_connected_battery_2;
+        } else if (level <= 60) {
+            return R.drawable.stat_sys_data_bluetooth_connected_battery_3;
+        } else if (level <= 85) {
+            return R.drawable.stat_sys_data_bluetooth_connected_battery_4;
+        } else {
+            return R.drawable.stat_sys_data_bluetooth_connected_battery_5;
+        }
+     }
+
     private final void updateTTY() {
         TelecomManager telecomManager =
                 (TelecomManager) mContext.getSystemService(Context.TELECOM_SERVICE);
