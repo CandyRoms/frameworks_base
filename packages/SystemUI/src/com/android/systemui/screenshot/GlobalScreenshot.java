@@ -28,10 +28,15 @@ import android.animation.ValueAnimator;
 import android.annotation.Nullable;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.ActivityOptions;
+import android.app.ActivityTaskManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -81,10 +86,19 @@ import android.widget.Toast;
 import com.android.internal.logging.UiEventLogger;
 import com.android.systemui.R;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.dagger.qualifiers.UiBackground;
+import com.android.systemui.shared.system.ActivityManagerWrapper;
 import com.android.systemui.shared.system.QuickStepContract;
+import com.android.systemui.shared.system.TaskStackChangeListener;
+import com.android.systemui.statusbar.phone.StatusBar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -104,6 +118,7 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
         public Consumer<Uri> finisher;
         public GlobalScreenshot.ActionsReadyListener mActionsReadyListener;
         public int errorMsgResId;
+        public String appLabel;
 
         void clearImage() {
             image = null;
@@ -231,12 +246,43 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
         }
     };
 
+    private ComponentName mTaskComponentName;
+    private PackageManager mPm;
+
+    private final Executor mUiBgExecutor;
+    private final TaskStackChangeListener mTaskListener = new TaskStackChangeListener() {
+        @Override
+        public void onTaskStackChanged() {
+            mUiBgExecutor.execute(() -> {
+                try {
+                    final ActivityManager.StackInfo focusedStack =
+                            ActivityTaskManager.getService().getFocusedStackInfo();
+                    if (focusedStack != null && focusedStack.topActivity != null) {
+                        mTaskComponentName = focusedStack.topActivity;
+                    }
+                } catch (Exception e) {}
+            });
+        }
+    };
+
+    private String getForegroundAppLabel() {
+        try {
+            final ActivityInfo ai = mPm.getActivityInfo(mTaskComponentName, 0);
+            return ai.applicationInfo.loadLabel(mPm).toString();
+        } catch (PackageManager.NameNotFoundException e) {
+             return null;
+        }
+    }
+
+    /**
+     * @param context everything needs a context :(
+     */
     @Inject
     public GlobalScreenshot(
             Context context, @Main Resources resources,
             ScreenshotSmartActions screenshotSmartActions,
             ScreenshotNotificationsController screenshotNotificationsController,
-            UiEventLogger uiEventLogger) {
+            UiEventLogger uiEventLogger, @UiBackground Executor uiBgExecutor) {
         mContext = context;
         mScreenshotSmartActions = screenshotSmartActions;
         mNotificationsController = screenshotNotificationsController;
@@ -276,6 +322,18 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
         // Setup the Camera shutter sound
         mCameraSound = new MediaActionSound();
         mCameraSound.load(MediaActionSound.SHUTTER_CLICK);
+
+        // Store UI background executor
+        mUiBgExecutor = uiBgExecutor;
+
+        // Grab PackageManager
+        mPm = mContext.getPackageManager();
+
+        // Register task stack listener
+        ActivityManagerWrapper.getInstance().registerTaskStackListener(mTaskListener);
+
+        // Initialize current foreground package name
+        mTaskListener.onTaskStackChanged();
     }
 
     @Override // ViewTreeObserver.OnComputeInternalInsetsListener
@@ -559,8 +617,9 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
         int rot = mDisplay.getRotation();
         int width = crop.width();
         int height = crop.height();
-        saveScreenshot(SurfaceControl.screenshot(crop, width, height, rot), finisher, screenRect,
+        takeScreenshot(SurfaceControl.screenshot(crop, width, height, rot), finisher, screenRect,
                 Insets.NONE, true);
+
     }
 
     private void saveScreenshot(Bitmap screenshot, Consumer<Uri> finisher, Rect screenRect,
@@ -572,6 +631,7 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
             }
             dismissScreenshot("new screenshot requested", true);
         }
+
 
         mScreenBitmap = screenshot;
 
