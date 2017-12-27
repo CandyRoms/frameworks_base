@@ -35,7 +35,7 @@ public class FlingAnimationUtils {
     private static final float LINEAR_OUT_FASTER_IN_X2 = 0.5f;
     private static final float LINEAR_OUT_FASTER_IN_Y2_MIN = 0.4f;
     private static final float LINEAR_OUT_FASTER_IN_Y2_MAX = 0.5f;
-    private static final float MIN_VELOCITY_DP_PER_SECOND = 250;
+    private static final float MIN_VELOCITY_DP_PER_SECOND = 200;
     private static final float HIGH_VELOCITY_DP_PER_SECOND = 3000;
 
     private static final float LINEAR_OUT_SLOW_IN_START_GRADIENT = 0.75f;

@@ -42,7 +42,7 @@ public class DragDownHelper implements Gefingerpoken {
     private static final float RUBBERBAND_FACTOR_EXPANDABLE = 0.5f;
     private static final float RUBBERBAND_FACTOR_STATIC = 0.15f;
 
-    private static final int SPRING_BACK_ANIMATION_LENGTH_MS = 375;
+    private static final int SPRING_BACK_ANIMATION_LENGTH_MS = 300;
 
     private int mMinDragDistance;
     private ExpandHelper.Callback mCallback;
