@@ -148,7 +148,7 @@ public class QSSecurityFooter implements OnClickListener, DialogInterface.OnClic
         final CharSequence organizationName = mSecurityController.getDeviceOwnerOrganizationName();
         final CharSequence workProfileName = mSecurityController.getWorkProfileOrganizationName();
         // Update visibility of footer
-        mIsVisible = mShowWarnings && (isDeviceManaged || hasCACerts || hasCACertsInWorkProfile ||
+        mIsVisible = mShowWarnings && ((isDeviceManaged && !isDemoDevice) || hasCACerts || hasCACertsInWorkProfile ||
             vpnName != null || vpnNameWorkProfile != null);
         // Update the string
         mFooterTextContent = getFooterText(isDeviceManaged, hasWorkProfile,
