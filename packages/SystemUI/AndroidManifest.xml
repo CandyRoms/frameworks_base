@@ -235,6 +235,7 @@
     <!-- Reboot -->
     <uses-permission android:name="android.permission.REBOOT" />
     <uses-permission android:name="android.permission.RECOVERY" />
+    <uses-permission android:name="android.permission.ACCESS_SURFACE_FLINGER" />
 
     <!-- Visualizer -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
