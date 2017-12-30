@@ -4133,6 +4133,35 @@ public final class Settings {
 
         /**
          * Wheter to show network traffic indicator in statusbar
+         * Whether to display the reboot option in the power menu
+         *
+         * @hide
+         */
+        public static final String POWERMENU_REBOOT = "powermenu_reboot";
+
+        /**
+         * Whether to display the advanced reboot option in the power menu
+         *
+         * @hide
+         */
+        public static final String POWERMENU_ADVANCED_REBOOT = "powermenu_advanced_reboot";
+
+        /**
+         * Whether to display the screenshot option in the power menu
+         *
+         * @hide
+         */
+        public static final String POWERMENU_SCREENSHOT = "powermenu_screenshot";
+
+        /**
+         * Whether to display the airplane option in the power menu
+         *
+         * @hide
+         */
+        public static final String POWERMENU_AIRPLANE = "powermenu_airplane";
+
+        /**
+         * Whether to show network traffic indicator in statusbar
          * @hide
          */
         public static final String NETWORK_TRAFFIC_STATE = "network_traffic_state";
@@ -4167,6 +4196,12 @@ public final class Settings {
          * @hide
          */
         public static final String RECENTS_ICON_PACK = "recents_icon_pack";
+
+        /**
+         * Whether to use volume keys always for media stream
+         * @hide
+         */
+        public static final String VOLUME_KEYS_CONTROL_MEDIA_STREAM = "volume_keys_control_media_stream";
 
         /**
          * Whether to use slim recents
