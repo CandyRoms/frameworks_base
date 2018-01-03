@@ -22,9 +22,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.hardware.input.InputManager;
-import android.os.Handler;
-import android.os.Looper;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.hardware.camera2.CameraAccessException;
@@ -32,11 +29,6 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.net.ConnectivityManager;
 import android.net.ConnectivityManager;
-import android.os.PowerManager;
-import android.os.SystemClock;
-import android.view.InputDevice;
-import android.view.KeyCharacterMap;
-import android.view.KeyEvent;
 import android.util.DisplayMetrics;
 import android.view.DisplayInfo;
 import android.view.WindowManager;
@@ -54,13 +46,6 @@ public class CandyUtils {
     public static boolean isChineseLanguage() {
        return Resources.getSystem().getConfiguration().locale.getLanguage().startsWith(
                Locale.CHINESE.getLanguage());
-    }
-
-    public static void switchScreenOff(Context ctx) {
-        PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
-        if (pm!= null) {
-            pm.goToSleep(SystemClock.uptimeMillis());
-        }
     }
 
     public static boolean deviceSupportsFlashLight(Context context) {

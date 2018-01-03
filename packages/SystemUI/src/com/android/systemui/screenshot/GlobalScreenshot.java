@@ -74,6 +74,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.internal.messages.nano.SystemMessageProto.SystemMessage;
+<<<<<<< HEAD
+=======
+import com.android.internal.util.candy.CandyUtils;
+>>>>>>> ffd03404... Add some CandyUtils &/or candify
 import com.android.systemui.R;
 import com.android.systemui.SystemUI;
 import com.android.systemui.util.NotificationChannels;
@@ -138,6 +142,19 @@ class SaveImageInBackgroundTask extends AsyncTask<Void, Void, Void> {
         mImageTime = System.currentTimeMillis();
         String imageDate = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date(mImageTime));
         mImageFileName = String.format(SCREENSHOT_FILE_NAME_TEMPLATE, imageDate);
+<<<<<<< HEAD
+=======
+        final PackageManager pm = context.getPackageManager();
+        ActivityInfo info = CandyUtils.getRunningActivityInfo(context);
+        if (info != null) {
+            CharSequence appName = pm.getApplicationLabel(info.applicationInfo);
+            if (appName != null) {
+                // replace all spaces and special chars with an underscore
+                String appNameString = appName.toString().replaceAll("[^a-zA-Z0-9]+","_");
+                mImageFileName = String.format(SCREENSHOT_FILE_NAME_TEMPLATE_APPNAME, appNameString, imageDate);
+            }
+        }
+>>>>>>> ffd03404... Add some CandyUtils &/or candify
 
         mScreenshotDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), SCREENSHOTS_DIR_NAME);
