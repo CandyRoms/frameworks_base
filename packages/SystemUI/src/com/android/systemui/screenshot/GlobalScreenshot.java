@@ -73,7 +73,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.internal.messages.nano.SystemMessageProto.SystemMessage;
-import com.android.internal.util.gzosp.GzospUtils;
+import com.android.internal.util.candy.CandyUtils;
 import com.android.systemui.R;
 import com.android.systemui.SystemUI;
 import com.android.systemui.util.NotificationChannels;
@@ -147,7 +147,7 @@ class SaveImageInBackgroundTask extends AsyncTask<Void, Void, Void> {
         String imageDate = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date(mImageTime));
         mImageFileName = String.format(SCREENSHOT_FILE_NAME_TEMPLATE, imageDate);
         final PackageManager pm = context.getPackageManager();
-        ActivityInfo info = GzospUtils.getRunningActivityInfo(context);
+        ActivityInfo info = CandyUtils.getRunningActivityInfo(context);
         if (info != null) {
             CharSequence appName = pm.getApplicationLabel(info.applicationInfo);
             if (appName != null) {

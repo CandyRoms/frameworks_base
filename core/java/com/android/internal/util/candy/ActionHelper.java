@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package com.android.internal.util.gzosp;
+package com.android.internal.util.candy;
 
 import android.content.ContentResolver;
 import android.content.Context;
