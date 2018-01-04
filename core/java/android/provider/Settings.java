@@ -6031,6 +6031,14 @@ public final class Settings {
         public static final String SHOW_BATTERY_PERCENT = "dummy_show_battery_percent";
 
         /**
+         * Whether to play notification sound and vibration if screen is ON
+         * 0 - never
+         * 1 - always
+         * @hide
+         */
+        public static final String NOTIFICATION_SOUND_VIB_SCREEN_ON = "notification_sound_vib_screen_on";
+
+        /**
          * Whether or not to enable multiple audio focus.
          * When enabled, requires more management by user over application playback activity,
          * for instance pausing media apps when another starts.
