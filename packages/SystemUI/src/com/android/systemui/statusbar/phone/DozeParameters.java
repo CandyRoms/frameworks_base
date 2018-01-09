@@ -52,6 +52,7 @@ public class DozeParameters implements TunerService.Tunable,
 
     private final AlwaysOnDisplayPolicy mAlwaysOnPolicy;
 
+    private boolean mDozeAlwaysOn;
     private boolean mControlScreenOffAnimation;
 
     public static DozeParameters getInstance(Context context) {
@@ -70,6 +71,9 @@ public class DozeParameters implements TunerService.Tunable,
         mControlScreenOffAnimation = !getDisplayNeedsBlanking();
         mPowerManager = mContext.getSystemService(PowerManager.class);
         mPowerManager.setDozeAfterScreenOff(!mControlScreenOffAnimation);
+
+        Dependency.get(TunerService.class).addTunable(this, Settings.Secure.DOZE_ALWAYS_ON,
+                Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED);
     }
 
     public void dump(PrintWriter pw) {
@@ -159,7 +163,7 @@ public class DozeParameters implements TunerService.Tunable,
      * @return {@code true} if enabled and available.
      */
     public boolean getAlwaysOn() {
-        return mAmbientDisplayConfiguration.alwaysOnEnabled(UserHandle.USER_CURRENT);
+        return mDozeAlwaysOn;
     }
 
     /**
@@ -217,5 +221,10 @@ public class DozeParameters implements TunerService.Tunable,
 
     public AlwaysOnDisplayPolicy getPolicy() {
         return mAlwaysOnPolicy;
+    }
+
+    @Override
+    public void onTuningChanged(String key, String newValue) {
+        mDozeAlwaysOn = mAmbientDisplayConfiguration.alwaysOnEnabled(UserHandle.USER_CURRENT);
     }
 }
