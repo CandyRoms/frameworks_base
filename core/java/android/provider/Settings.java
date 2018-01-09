@@ -4106,6 +4106,12 @@ public final class Settings {
         public static final String LOCKSCREEN_BATTERY_INFO = "lockscreen_battery_info";
 
         /**
+         * Unlock keystore with fingerprint after reboot
+         * @hide
+         */
+        public static final String FP_UNLOCK_KEYSTORE = "fp_unlock_keystore";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
