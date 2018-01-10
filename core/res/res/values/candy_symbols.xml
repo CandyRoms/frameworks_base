@@ -219,4 +219,6 @@
     <java-symbol type="array" name="config_deviceKeyHandlerLibs" />
     <java-symbol type="array" name="config_deviceKeyHandlerClasses" />
 
+    <java-symbol type="integer" name="config_flashlightProximityTimeout" />
+
 </resources>
