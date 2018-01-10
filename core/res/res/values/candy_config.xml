@@ -78,4 +78,6 @@
 
     <!-- Whether doze feature is enabled by default in settings -->
     <bool name="config_doze_enabled_by_default">false</bool>
+
+    <integer name="config_flashlightProximityTimeout">300</integer>
 </resources>
