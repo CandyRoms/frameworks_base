@@ -48,6 +48,7 @@ public class TakeScreenrecordService extends Service {
     public static final String ACTION_START = "start";
     public static final String ACTION_STOP = "stop";
     public static final String ACTION_TOGGLE_POINTER = "toggle_pointer";
+    public static final String ACTION_TOGGLE_HINT = "toggle_hint";
 
     private static GlobalScreenrecord mScreenrecord;
 
@@ -106,6 +107,8 @@ public class TakeScreenrecordService extends Service {
                 Settings.System.putIntForUser(getContentResolver(), Settings.System.SHOW_TOUCHES,
                             1 - currentStatus, UserHandle.USER_CURRENT);
                 mScreenrecord.updateNotification(-1);
+            } else if (intent.getAction().equals(ACTION_TOGGLE_HINT)) {
+                mScreenrecord.toggleHint();
             }
         }
 
