@@ -29,6 +29,7 @@
     <java-symbol type="string" name="reboot_to_bootloader_message" />
     <java-symbol type="string" name="reboot_title" />
     <java-symbol type="string" name="reboot_message" />
+
     <java-symbol type="string" name="config_optionalPackageVerifierName" />
     <java-symbol type="integer" name="config_sms_authorization_timeout_ms" />
     <java-symbol type="bool" name="config_sms_authorization_enabled" />
@@ -54,5 +55,8 @@
     <java-symbol type="style" name="Animation.SlimRecentScreen" />
     <java-symbol type="anim" name="recent_screen_fade_out" />
     <java-symbol type="anim" name="recent_enter" />
+
+    <!-- Doze always on default value -->
+    <java-symbol type="bool" name="config_dozeAlwaysOnDisplayEnabledDefault" />
 
 </resources>

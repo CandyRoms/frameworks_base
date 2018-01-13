@@ -28,7 +28,7 @@
 
     <!-- Whether to persist the notification for when a usb drive device is plugged in -->
     <bool name="config_persistUsbDriveNotification">false</bool>
-    
+
     <!--  Define optional package verifier name -->
     <string name="config_optionalPackageVerifierName" translatable="false"></string>
 
@@ -40,7 +40,7 @@
 
     <!-- Whether Keypress Boost is enabled -->
     <bool name="config_enableKeypressBoost">false</bool>
-    
+
     <!-- Extended Boosts for QPerformance -->
 
     <!-- Duration of the boost in seconds -->
@@ -80,4 +80,8 @@
          For example, a device with Home, Back and Menu keys would set this
          config to 7. -->
     <integer name="config_deviceHardwareKeys">64</integer>
+
+    <!-- Doze always on default value -->
+    <bool name="config_dozeAlwaysOnDisplayEnabledDefault">false</bool>
+
 </resources>
