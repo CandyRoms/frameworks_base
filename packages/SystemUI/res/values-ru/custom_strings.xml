@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  Copyright (C) 2017 ABC rom
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ -->
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="global_action_restart_advanced">Дополнительно</string>
+    <string name="global_action_restart_recovery">Восстановление</string>
+    <string name="global_action_restart_bootloader">Загрузчик</string>
+    <string name="global_action_restart_ui">Интерфейс</string>
+
+    <!-- High Brightness Mode Tile -->
+    <string name="quick_settings_high_brightness">Высокая яркость</string>
+    <string name="screenshot_abort_title">Снимок экрана не сделан</string>
+    <string name="screenshot_abort_text">Операция отменена</string>
+
+    <!-- accessibility label for button to open running apps prefscreen [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_running_services">Открыть список работающих приложений.</string>
+
+    <string name="alert_on_charged_level">Вы можете отключить телефон от питания ( ">"<xliff:g id="percentage">%s</xliff:g> )</string>
+    <string name="battery_level_good_title">Оптимальный уровень заряда</string>
+    <string name="notification_channel_charge_alert">Оптимальный уровень зарядки батареи</string>
+
+    <!-- SysUI Tuner -->
+    <string name="statusbar_icons_blacklist">Значки в строке состояния</string>
+    <string name="navbar_tuner_activity">Кнопки панели навигации</string>
+    <string name="lockscreen_tuner_activity">Ярлыки экрана блокировки</string>
+    <string name="powernotif_tuner_activity">Расширенное управление уведомлениями</string>
+
+    <string name="lockscreen_default">По умолчанию</string>
+    <string name="lockscreen_hidden">Нет</string>
+
+    <!-- Shows when people have clicked on the custom lockscreen shortcut [CHAR LIMIT=60] -->
+    <string name="custom_hint">Проведите пальцем от иконки в сторону центра экрана</string>
+
+    <!-- Caffeine QS Tile -->
+    <string name="quick_settings_caffeine_label">Кофеин</string>
+    <string name="accessibility_quick_settings_caffeine_off">Кофеин выкл.</string>
+    <string name="accessibility_quick_settings_caffeine_on">Кофеин вкл.</string>
+
+    <!-- Screenshot QS tile -->
+    <string name="quick_settings_screenshot_label">Снимок экрана</string>
+    <string name="quick_settings_region_screenshot_label">Снимок области</string>
+
+    <!-- Ambient display and lift gesture Tile -->
+    <string name="quick_settings_doze_notifications_label">Ambient Display</string>
+
+    <!-- Advance location quick setting tile -->
+    <string name="accessibility_quick_settings_location_battery_saving">Определение местоположения: по координатам сети.</string>
+    <string name="accessibility_quick_settings_location_gps_only">>Определение местоположения: по спутникам GPS.</string>
+    <string name="accessibility_quick_settings_location_high_accuracy">Определение местоположения: по всем источникам..</string>
+
+    <!-- PiP Tile -->
+    <string name="quick_settings_pip_label">PiP</string>
+    <string name="quick_settings_pip_tile_app_na">Приложение не поддерживает PiP</string>
+
+    <!-- Sound QS Tile -->
+    <string name="quick_settings_sound_label">Звук</string>
+    <string name="quick_settings_sound_ring">Все звуки</string>
+    <string name="quick_settings_sound_vibrate">Вибрировать</string>
+    <string name="quick_settings_sound_dnd">Не беспокоить</string>
+
+    <!-- Volume QS Tile -->
+    <string name="accessibility_quick_settings_volume_panel">Панель громкости</string>
+    <string name="quick_settings_volume_panel_label">Панель громкости</string>
+
+    <string name="recents_app_killed">Приложение закрыто</string>
+
+    <string name="status_bar_roaming">Роуминг</string>
+
+    <!-- Battery saver tile -->
+    <string name="battery_saver_qs_tile_fully_charged">Полностью заряжено</string>
+
+    <!-- Screenrecord Notification Ticker -->
+    <string name="screenrecord_notif_ticker">Идёт запись экрана</string>
+    <string name="screenrecord_notif_final_ticker">Запись экрана прошла успешно</string>
+    <!-- Screenrecord notification title -->
+    <string name="screenrecord_notif_title">Запись экрана</string>
+    <!-- Screenrecord notification action: Stop -->
+    <string name="screenrecord_notif_stop">Стоп</string>
+    <string name="screenrecord_notif_completed">Запись экрана прошла успешно</string>
+    <!-- Screenrecord notification action: show/hide pointer -->
+    <string name="screenrecord_notif_pointer_on">Вкл. указатель</string>
+    <string name="screenrecord_notif_pointer_off">Откл. указатель</string>
+    <!-- Screen record notification error title -->
+    <string name="screenrecord_notif_error">Невозможно записать экран</string>
+    <string name="notification_channel_screenrecord">Запись экрана</string>
+    <string name="screenrecord_hide_hint">Откл. подсказку</string>
+    <string name="screenrecord_show_hint">Вкл. подсказку</string>
+    <!-- Screenshot QS tile -->
+    <string name="quick_settings_screenrecord_label">Запись экрана</string>
+    <string name="quick_settings_screenrecord_lq_label">Запись экрана 480p</string>
+    <string name="quick_settings_screenrecord_mq_label">Запись экрана 720p</string>
+    <string name="quick_settings_screenrecord_hq_label">Запись экрана 720p+</string>
+</resources>
