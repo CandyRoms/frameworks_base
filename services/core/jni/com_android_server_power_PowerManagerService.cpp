@@ -20,6 +20,7 @@
 
 #include <android/hardware/power/1.1/IPower.h>
 #include <nativehelper/JNIHelp.h>
+#include <vendor/candy/power/1.0/ICandyPower.h>
 #include "jni.h"
 
 #include <nativehelper/ScopedUtfChars.h>
@@ -46,6 +47,8 @@ using android::hardware::power::V1_0::Feature;
 using android::String8;
 using IPowerV1_1 = android::hardware::power::V1_1::IPower;
 using IPowerV1_0 = android::hardware::power::V1_0::IPower;
+using ICandyPowerV1_0 = vendor::candy::power::V1_0::ICandyPower;
+using vendor::candy::power::V1_0::CandyFeature;
 
 namespace android {
 
@@ -61,7 +64,9 @@ static jobject gPowerManagerServiceObj;
 // Use getPowerHal* to retrieve a copy
 static sp<IPowerV1_0> gPowerHalV1_0_ = nullptr;
 static sp<IPowerV1_1> gPowerHalV1_1_ = nullptr;
+static sp<ICandyPowerV1_0> gCandyPowerHalV1_0_ = nullptr;
 static bool gPowerHalExists = true;
+static bool gCandyPowerHalExists = true;
 static std::mutex gPowerHalMutex;
 static nsecs_t gLastEventTime[USER_ACTIVITY_EVENT_LAST + 1];
 
@@ -100,6 +105,20 @@ static void connectPowerHalLocked() {
     }
 }
 
+// Check validity of current handle to the Candy power HAL service, and call getService() if necessary.
+// The caller must be holding gPowerHalMutex.
+void connectCandyPowerHalLocked() {
+    if (gCandyPowerHalExists && gCandyPowerHalV1_0_ == nullptr) {
+        gCandyPowerHalV1_0_ = ICandyPowerV1_0::getService();
+        if (gCandyPowerHalV1_0_ != nullptr) {
+            ALOGI("Loaded power HAL service");
+        } else {
+            ALOGI("Couldn't load power HAL service");
+            gCandyPowerHalExists = false;
+        }
+    }
+}
+
 // Retrieve a copy of PowerHAL V1_0
 sp<IPowerV1_0> getPowerHalV1_0() {
     std::lock_guard<std::mutex> lock(gPowerHalMutex);
@@ -112,6 +131,13 @@ sp<IPowerV1_1> getPowerHalV1_1() {
     std::lock_guard<std::mutex> lock(gPowerHalMutex);
     connectPowerHalLocked();
     return gPowerHalV1_1_;
+}
+
+// Retrieve a copy of CandyPowerHAL V1_0
+sp<ICandyPowerV1_0> getCandyPowerHalV1_0() {
+    std::lock_guard<std::mutex> lock(gPowerHalMutex);
+    connectCandyPowerHalLocked();
+    return gCandyPowerHalV1_0_;
 }
 
 // Check if a call to a power HAL function failed; if so, log the failure and invalidate the
@@ -232,6 +258,17 @@ static void nativeSetFeature(JNIEnv* /* env */, jclass /* clazz */, jint feature
     }
 }
 
+static jint nativeGetFeature(JNIEnv* /* env */, jclass /* clazz */, jint featureId) {
+    int value = -1;
+
+    sp<ICandyPowerV1_0> candyPowerHalV1_0 = getCandyPowerHalV1_0();
+    if (candyPowerHalV1_0 != nullptr) {
+        value = candyPowerHalV1_0->getFeature(static_cast<CandyFeature>(featureId));
+    }
+
+    return static_cast<jint>(value);
+}
+
 // ----------------------------------------------------------------------------
 
 static const JNINativeMethod gPowerManagerServiceMethods[] = {
@@ -250,6 +287,8 @@ static const JNINativeMethod gPowerManagerServiceMethods[] = {
             (void*) nativeSendPowerHint },
     { "nativeSetFeature", "(II)V",
             (void*) nativeSetFeature },
+    { "nativeGetFeature", "(I)I",
+            (void*) nativeGetFeature },
 };
 
 #define FIND_CLASS(var, className) \
