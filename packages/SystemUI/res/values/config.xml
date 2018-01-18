@@ -144,10 +144,10 @@
     <integer name="heads_up_default_snooze_length_ms">60000</integer>
 
     <!-- Minimum display time for a heads up notification, in milliseconds. -->
-    <integer name="heads_up_notification_minimum_time">2000</integer>
+    <integer name="heads_up_notification_minimum_time">1000</integer>
 
     <!-- milliseconds before the heads up notification accepts touches. -->
-    <integer name="touch_acceptance_delay">700</integer>
+    <integer name="touch_acceptance_delay">300</integer>
 
     <!-- The duration in seconds to wait before the dismiss buttons are shown. -->
     <integer name="recents_task_bar_dismiss_delay_seconds">1000</integer>
@@ -171,10 +171,10 @@
     <integer name="recents_auto_advance_duration">750</integer>
 
     <!-- The animation duration for subsequent scrolling the stack to a particular item. -->
-    <integer name="recents_subsequent_auto_advance_duration">1000</integer>
+    <integer name="recents_subsequent_auto_advance_duration">750</integer>
 
     <!-- The delay to enforce between each alt-tab key press. -->
-    <integer name="recents_alt_tab_key_delay">200</integer>
+    <integer name="recents_alt_tab_key_delay">100</integer>
 
     <!-- Svelte specific logic, see RecentsConfiguration.SVELTE_* constants. -->
     <integer name="recents_svelte_level">0</integer>
