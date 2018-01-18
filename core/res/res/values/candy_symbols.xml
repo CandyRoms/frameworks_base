@@ -72,6 +72,9 @@
     <!-- IMESwitcher -->
     <java-symbol type="bool" name="config_show_cmIMESwitcher"/>
 
-  <!-- Whether the device has outdated qti-telephony-common.jar -->
-  <java-symbol type="bool" name="config_oldQtiTelephony" />
+    <!-- Whether the device has outdated qti-telephony-common.jar -->
+    <java-symbol type="bool" name="config_oldQtiTelephony" />
+
+    <!-- Ambient display music ticker -->
+    <java-symbol type="bool" name="config_canForceDozeNotifications" />
 </resources>
