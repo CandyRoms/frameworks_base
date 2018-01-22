@@ -289,7 +289,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         OnHeadsUpChangedListener, VisualStabilityManager.Callback, CommandQueue.Callbacks,
         ActivatableNotificationView.OnActivatedListener,
         ExpandableNotificationRow.ExpansionLogger, NotificationData.Environment,
-        ExpandableNotificationRow.OnExpandClickListener, InflationCallback,
         ColorExtractor.OnColorsChangedListener, ConfigurationListener,
         ExpandableNotificationRow.OnExpandClickListener, InflationCallback, PackageChangedListener {
     public static final boolean MULTIUSER_DEBUG = false;

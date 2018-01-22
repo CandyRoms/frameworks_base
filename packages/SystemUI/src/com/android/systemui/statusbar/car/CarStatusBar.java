@@ -234,11 +234,6 @@ public class CarStatusBar extends StatusBar implements
     }
 
     @Override
-    public View getNavigationBarWindow() {
-        return mNavigationBarWindow;
-    }
-
-    @Override
     protected View.OnTouchListener getStatusBarWindowTouchListener() {
         // Usually, a touch on the background window will dismiss the notification shade. However,
         // for the car use-case, the shade should remain unless the user switches to a different
