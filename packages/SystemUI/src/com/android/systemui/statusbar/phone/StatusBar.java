@@ -6369,12 +6369,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     }
 
-    private void rebuildRecentsScreen() {
-        if (mSlimRecents != null) {
-            mSlimRecents.rebuildRecentsScreen();
-        }
-    }
-
     protected final ContentObserver mNavbarObserver = new ContentObserver(mHandler) {
         @Override
         public void onChange(boolean selfChange) {
