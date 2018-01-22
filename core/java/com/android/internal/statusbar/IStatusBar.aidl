@@ -132,8 +132,6 @@ oneway interface IStatusBar
 
     void showShutdownUi(boolean isReboot, String reason);
 
-    void handleSystemNavigationKey(in int key);
-
     /**
      * Candy
      */

@@ -147,7 +147,6 @@ public class CommandQueue extends IStatusBar.Stub {
         default void clickTile(ComponentName tile) { }
 
         default void handleSystemKey(int arg1) { }
-        default void handleSystemNavigationKey(int arg1) { }
         default void handleShowGlobalActionsMenu() { }
         default void handleShowShutdownUi(boolean isReboot, String reason) { }
 

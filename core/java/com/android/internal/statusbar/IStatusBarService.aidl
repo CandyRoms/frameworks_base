@@ -80,8 +80,6 @@ interface IStatusBarService
     void clickTile(in ComponentName tile);
     void handleSystemKey(in int key);
 
-    void handleSystemNavigationKey(in int key);
-
     /**
      * Candy
      */

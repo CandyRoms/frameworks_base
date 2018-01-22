@@ -579,18 +579,6 @@ public class StatusBarManagerService extends IStatusBarService.Stub {
     }
 
     @Override
-    public void handleSystemNavigationKey(int key) throws RemoteException {
-        enforceExpandStatusBar();
-
-        if (mBar != null) {
-            try {
-                mBar.handleSystemNavigationKey(key);
-            } catch (RemoteException ex) {
-            }
-        }
-    }
-
-    @Override
     public void toggleCameraFlash() {
         if (mBar != null) {
             try {
