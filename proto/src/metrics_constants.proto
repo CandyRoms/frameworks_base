@@ -4581,5 +4581,8 @@ message MetricsEvent {
 
     // CandyShop
     CANDYSHOP = 1502;
+
+    // Custom Quick Settings tiles
+    CUSTOM_QUICK_TILES = 1503;
   }
 }
