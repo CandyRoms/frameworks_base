@@ -883,9 +883,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int MSG_DISPATCH_KEYPRESS_BOOST_UNBLOCK = 100;
     private static final int MSG_RELEASE_ROTATION_LOCK = 101;
 
-    private static final int MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK = 25;
-    private static final int MSG_TOGGLE_TORCH = 26;
-
     private boolean mHasPermanentMenuKey;
 
     private class PolicyHandler extends Handler {
