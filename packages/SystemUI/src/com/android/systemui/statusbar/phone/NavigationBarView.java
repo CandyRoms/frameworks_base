@@ -833,15 +833,13 @@ public class NavigationBarView extends FrameLayout implements Navigator {
         return this;
     }
 
-<<<<<<< HEAD
     private final Consumer<Boolean> mDockedListener = exists -> mHandler.post(() -> {
         mDockedStackExists = exists;
         updateRecentsIcon();
     });
-=======
+
     @Override
     public void dispose() {
         removeAllViews();
     }
->>>>>>> c24579929ad... DUI: Initial checkin for Oreo [5/7]
 }
