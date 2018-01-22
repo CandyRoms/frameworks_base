@@ -253,8 +253,6 @@ public class NotificationPanelView extends PanelView implements
         setWillNotDraw(!DEBUG);
         mFalsingManager = FalsingManager.getInstance(context);
         mPowerManager = context.getSystemService(PowerManager.class);
-        mQsOverscrollExpansionEnabled =
-                getResources().getBoolean(R.bool.config_enableQuickSettingsOverscrollExpansion);
 
         mDoubleTapToSleepGesture = new GestureDetector(context,
                 new GestureDetector.SimpleOnGestureListener() {

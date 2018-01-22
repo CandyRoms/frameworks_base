@@ -75,6 +75,7 @@ public class BarTransitions {
 
     public void setAutoDim(boolean autoDim) {
         // Default is don't care.
+    }
 
     public void setBatterySaverColor(int color) {
         if (mBarBackground != null) {
