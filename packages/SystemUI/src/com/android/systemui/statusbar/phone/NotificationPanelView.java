@@ -2699,6 +2699,7 @@ public class NotificationPanelView extends PanelView implements
 
     public LockIcon getLockIcon() {
         return mKeyguardBottomArea.getLockIcon();
+    }
 
     public void setQsQuickPulldown(boolean isQsQuickPulldown) {
         mOneFingerQuickSettingsIntercept = isQsQuickPulldown;
