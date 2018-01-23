@@ -49,4 +49,5 @@
     <string name="screenrecord_show_hint">Mostra hint</string>
     <string name="screenrecord_notif_completed">Registrazione schermo completata</string>
     <string name="screenrecord_notif_final_ticker">Registrazione schermo completata</string>
+    <string name="screenrecord_notif_duration">Totale:</string>
 </resources>
