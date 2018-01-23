@@ -5897,7 +5897,7 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     private CandySettingsObserver mCandySettingsObserver = new CandySettingsObserver(mHandler);
     private class CandySettingsObserver extends ContentObserver {
-       ValidusSettingsObserver(Handler handler) {
+       CandySettingsObserver(Handler handler) {
             super(handler);
         }
 
