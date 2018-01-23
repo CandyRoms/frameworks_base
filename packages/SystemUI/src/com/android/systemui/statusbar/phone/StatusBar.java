@@ -209,6 +209,7 @@ import com.android.systemui.recents.ScreenPinningRequest;
 import com.android.systemui.recents.events.EventBus;
 import com.android.systemui.recents.events.activity.AppTransitionFinishedEvent;
 import com.android.systemui.recents.events.activity.UndockingTaskEvent;
+import com.android.systemui.recents.misc.IconPackHelper;
 import com.android.systemui.recents.misc.SystemServicesProxy;
 import com.android.systemui.slimrecent.RecentController;
 import com.android.systemui.stackdivider.Divider;
