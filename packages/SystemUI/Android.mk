@@ -36,6 +36,7 @@ LOCAL_SRC_FILES += $(call all-java-files-under, ../../../../packages/apps/DUI/sr
 LOCAL_STATIC_ANDROID_LIBRARIES := \
     SystemUIPluginLib \
     android-support-v4 \
+    android-support-v7-cardview \
     android-support-v7-recyclerview \
     android-support-v7-preference \
     android-support-v7-appcompat \

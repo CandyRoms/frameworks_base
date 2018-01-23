@@ -38,8 +38,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.app.ActivityManager;
+import android.app.ActivityManagerNative;
 import android.app.ActivityManager.StackId;
 import android.app.ActivityOptions;
+import android.app.IActivityManager;
 import android.app.INotificationManager;
 import android.app.KeyguardManager;
 import android.app.Notification;
@@ -187,12 +189,9 @@ import com.android.systemui.doze.DozeReceiver;
 import com.android.systemui.fragments.ExtensionFragmentListener;
 import com.android.systemui.fragments.FragmentHostManager;
 import com.android.systemui.keyguard.KeyguardViewMediator;
-<<<<<<< HEAD
 import com.android.systemui.keyguard.ScreenLifecycle;
 import com.android.systemui.keyguard.WakefulnessLifecycle;
-=======
 import com.android.systemui.navigation.Navigator;
->>>>>>> c24579929ad... DUI: Initial checkin for Oreo [5/7]
 import com.android.systemui.plugins.ActivityStarter;
 import com.android.systemui.plugins.qs.QS;
 import com.android.systemui.plugins.statusbar.NotificationMenuRowPlugin.MenuItem;
@@ -207,6 +206,7 @@ import com.android.systemui.recents.events.EventBus;
 import com.android.systemui.recents.events.activity.AppTransitionFinishedEvent;
 import com.android.systemui.recents.events.activity.UndockingTaskEvent;
 import com.android.systemui.recents.misc.SystemServicesProxy;
+import com.android.systemui.slimrecent.RecentController;
 import com.android.systemui.stackdivider.Divider;
 import com.android.systemui.stackdivider.WindowManagerProxy;
 import com.android.systemui.statusbar.ActivatableNotificationView;
@@ -282,12 +282,8 @@ public class StatusBar extends SystemUI implements DemoMode,
         OnHeadsUpChangedListener, VisualStabilityManager.Callback, CommandQueue.Callbacks,
         ActivatableNotificationView.OnActivatedListener,
         ExpandableNotificationRow.ExpansionLogger, NotificationData.Environment,
-<<<<<<< HEAD
-        ExpandableNotificationRow.OnExpandClickListener, InflationCallback,
-        ColorExtractor.OnColorsChangedListener, ConfigurationListener {
-=======
+        ColorExtractor.OnColorsChangedListener, ConfigurationListener,
         ExpandableNotificationRow.OnExpandClickListener, InflationCallback, PackageChangedListener {
->>>>>>> c24579929ad... DUI: Initial checkin for Oreo [5/7]
     public static final boolean MULTIUSER_DEBUG = false;
 
     public static final boolean ENABLE_REMOTE_INPUT =
@@ -645,8 +641,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     };
 
-<<<<<<< HEAD
-=======
     public void setMediaPlaying() {
         if (mNavigationBar != null) {
             if (PlaybackState.STATE_PLAYING ==
@@ -678,7 +672,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     }
 
->>>>>>> c24579929ad... DUI: Initial checkin for Oreo [5/7]
     private final OnChildLocationsChangedListener mOnChildLocationsChangedListener =
             new OnChildLocationsChangedListener() {
         @Override
@@ -1735,8 +1728,19 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
         int dockSide = WindowManagerProxy.getInstance().getDockSide();
         if (dockSide == WindowManager.DOCKED_INVALID) {
-            return mRecents.dockTopTask(NavigationBarGestureHelper.DRAG_MODE_NONE,
-                    ActivityManager.DOCKED_STACK_CREATE_MODE_TOP_OR_LEFT, null, metricsDockAction);
+            boolean isInLockTaskMode = false;
+            try {
+                IActivityManager activityManager = ActivityManagerNative.getDefault();
+                if (activityManager.isInLockTaskMode()) {
+                    isInLockTaskMode = true;
+                }
+            } catch (RemoteException e) {}
+            if (mSlimRecents != null && !isInLockTaskMode) {
+                mSlimRecents.startMultiWindow();
+            } else {
+                return mRecents.dockTopTask(NavigationBarGestureHelper.DRAG_MODE_NONE,
+                        ActivityManager.DOCKED_STACK_CREATE_MODE_TOP_OR_LEFT, null, metricsDockAction);
+            }
         } else {
             Divider divider = getComponent(Divider.class);
             if (divider != null && divider.isMinimized() && !divider.isHomeStackResizable()) {
@@ -4041,6 +4045,10 @@ public class StatusBar extends SystemUI implements DemoMode,
 
         updateRowStates();
         mScreenPinningRequest.onConfigurationChanged();
+
+        if (mSlimRecents != null) {
+            mSlimRecents.onConfigurationChanged(newConfig);
+        }
     }
 
     public void userSwitched(int newUserId) {
@@ -5131,28 +5139,17 @@ public class StatusBar extends SystemUI implements DemoMode,
         return getMaxKeyguardNotifications(false /* recompute */);
     }
 
-<<<<<<< HEAD
-    // TODO: Figure out way to remove these.
-    public NavigationBarView getNavigationBarView() {
-        return (mNavigationBar != null ? (NavigationBarView) mNavigationBar.getView() : null);
-    }
-
-    public View getNavigationBarWindow() {
-        return mNavigationBarView;
-    }
-
     /**
      * TODO: Remove this method. Views should not be passed forward. Will cause theme issues.
      * @return bottom area view
      */
     public KeyguardBottomAreaView getKeyguardBottomAreaView() {
         return mNotificationPanel.getKeyguardBottomAreaView();
-=======
+
     // TODO: Figure out way to remove this.
     // We can't remove you yet but we can make you more abstract ;D
     public Navigator getNavigationBarView() {
         return mNavigationBar != null ? mNavigationBar.getNavigator() : null;
->>>>>>> c24579929ad... DUI: Initial checkin for Oreo [5/7]
     }
 
     // ---------------------- DragDownHelper.OnDragDownListener ------------------------------------
@@ -5838,7 +5835,7 @@ public class StatusBar extends SystemUI implements DemoMode,
 
         @Override
         public void onDoubleTap(float screenX, float screenY) {
-            if (screenX > 0 && screenY > 0 && mAmbientIndicationContainer != null 
+            if (screenX > 0 && screenY > 0 && mAmbientIndicationContainer != null
                 && mAmbientIndicationContainer.getVisibility() == View.VISIBLE) {
                 mAmbientIndicationContainer.getLocationOnScreen(mTmpInt2);
                 float viewX = screenX - mTmpInt2[0];
@@ -5961,6 +5958,8 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     protected RecentsComponent mRecents;
 
+    protected RecentController mSlimRecents;
+
     protected int mZenMode;
 
     // which notification is currently being longpress-examined by the user
@@ -6074,6 +6073,12 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_TILE_TITLE_VISIBILITY),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.RECENTS_ICON_PACK),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.USE_SLIM_RECENTS),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -6105,6 +6110,12 @@ public class StatusBar extends SystemUI implements DemoMode,
                     uri.equals(Settings.System.getUriFor(Settings.System.QS_COLUMNS_LANDSCAPE)) ||
                     uri.equals(Settings.System.getUriFor(Settings.System.QS_TILE_TITLE_VISIBILITY))) {
                 updateQsPanelResources();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.RECENTS_ICON_PACK))) {
+                updateRecentsIconPack();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.USE_SLIM_RECENTS))) {
+                updateRecentsMode();
             }
         }
 
@@ -6115,6 +6126,8 @@ public class StatusBar extends SystemUI implements DemoMode,
             setStatusbarBatterySaverColor();
             setQsPanelOptions();
             updateQsPanelResources();
+            updateRecentsIconPack();
+            updateRecentsMode();
         }
     }
 
@@ -6122,10 +6135,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         if (mStatusBarWindow != null) {
             mStatusBarWindow.setLockscreenDoubleTapToSleep();
             setStatusBarWindowViewOptions();
-            setLockscreenMediaMetadata();
-            setStatusbarBatterySaverColor();
-            setQsPanelOptions();
-            updateQsPanelResources();
         }
     }
 
@@ -6157,8 +6166,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     }
 
-<<<<<<< HEAD
-=======
     private void updateRecentsIconPack() {
         boolean slimRecents = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.USE_SLIM_RECENTS, 0, mCurrentUserId) == 1;
@@ -6214,7 +6221,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     };
 
->>>>>>> c24579929ad... DUI: Initial checkin for Oreo [5/7]
     private RemoteViews.OnClickHandler mOnClickHandler = new RemoteViews.OnClickHandler() {
 
         @Override

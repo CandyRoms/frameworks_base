@@ -56,4 +56,10 @@
     <!-- Boost parameters which get passed to QPerformance -->
     <integer-array name="keypressboost_strong_param_value"/>
     <integer-array name="keypressboost_weak_param_value"/>
+
+    <!-- If this is true, key chords can be used to take a screen record on the device. -->
+    <bool name="config_enableScreenrecordChord">true</bool>
+
+    <!-- The duration (in milliseconds) of recent app screen animation. -->
+    <integer name="config_recentDefaultDur">150</integer>
 </resources>
