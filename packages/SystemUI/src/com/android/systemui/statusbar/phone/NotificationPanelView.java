@@ -244,8 +244,10 @@ public class NotificationPanelView extends PanelView implements
     private StatusBarKeyguardViewManager mStatusBarKeyguardViewManager;
     private boolean mUserSetupComplete;
 
-    private GestureDetector mLockscreenDoubleTapToSleep;
+    private GestureDetector mDoubleTapToSleepGesture;
     private boolean mIsLockscreenDoubleTapEnabled;
+
+    private int mStatusBarHeaderHeight;
 
     public NotificationPanelView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -850,9 +852,11 @@ public class NotificationPanelView extends PanelView implements
         if (mBlockTouches || (mQs != null && mQs.isCustomizing())) {
             return false;
         }
-        if (mIsLockscreenDoubleTapEnabled
-                && mStatusBarState == StatusBarState.KEYGUARD) {
-            mLockscreenDoubleTapToSleep.onTouchEvent(event);
+        if ((mIsLockscreenDoubleTapEnabled
+                && mStatusBarState == StatusBarState.KEYGUARD) ||
+                (!mQsExpanded && mDoubleTapToSleepEnabled
+                && event.getY() < mStatusBarHeaderHeight)) {
+            mDoubleTapToSleepGesture.onTouchEvent(event);
         }
         initDownStates(event);
         if (mListenForHeadsUp && !mHeadsUpTouchHelper.isTrackingHeadsUp()
