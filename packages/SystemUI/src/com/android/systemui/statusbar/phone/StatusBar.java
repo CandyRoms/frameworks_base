@@ -55,6 +55,7 @@ import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentCallbacks2;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -5864,75 +5865,35 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     };
 
-    private CustomSettingsObserver mCustomSettingsObserver = new CustomSettingsObserver(mHandler);
-    private class CustomSettingsObserver extends ContentObserver {
-        CustomSettingsObserver(Handler handler) {
+    private CandySettingsObserver mCandySettingsObserver = new CandySettingsObserver(mHandler);
+    private class CandySettingsObserver extends ContentObserver {
+       CandySettingsObserver(Handler handler) {
             super(handler);
         }
-
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_QUICK_QS_PULLDOWN),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.HEADS_UP_BLACKLIST_VALUES),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_SHOW_TICKER),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.Secure.getUriFor(
-                    Settings.Secure.QS_LAYOUT_COLUMNS),
+                    Settings.System.DOUBLE_TAP_SLEEP_LOCKSCREEN),
                     false, this, UserHandle.USER_ALL);
         }
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
             if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_QUICK_QS_PULLDOWN))) {
-                setStatusBarWindowViewOptions();
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.HEADS_UP_BLACKLIST_VALUES))) {
-                final String blackString = Settings.System.getString(mContext.getContentResolver(),
-                        Settings.System.HEADS_UP_BLACKLIST_VALUES);
-                splitAndAddToArrayList(mBlacklist, blackString, "\\|");
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_SHOW_TICKER))) {
-                updateTickerSettings();
-                initTickerView();
+                    Settings.System.DOUBLE_TAP_SLEEP_LOCKSCREEN))) {
+                setLockscreenDoubleTapToSleep();
             }
         }
 
         public void update() {
-            setStatusBarWindowViewOptions();
-            setHeadsUpBlacklist();
-            updateTickerSettings();
-            setQsLayoutColumns();
+            setLockscreenDoubleTapToSleep();
         }
     }
 
-    private void setQsLayoutColumns() {
-        ContentResolver resolver = mContext.getContentResolver();
-        mQsLayoutColumns = Settings.Secure.getIntForUser(resolver,
-                Settings.Secure.QS_LAYOUT_COLUMNS, 3, mCurrentUserId);
-    }
-
-    private void setStatusBarWindowViewOptions() {
+    private void setLockscreenDoubleTapToSleep() {
         if (mStatusBarWindow != null) {
-            mStatusBarWindow.setStatusBarWindowViewOptions();
+            mStatusBarWindow.setLockscreenDoubleTapToSleep();
         }
-    }
-
-    private void setHeadsUpBlacklist() {
-        final String blackString = Settings.System.getString(mContext.getContentResolver(),
-                    Settings.System.HEADS_UP_BLACKLIST_VALUES);
-        splitAndAddToArrayList(mBlacklist, blackString, "\\|");
-    }
-
-    private void updateTickerSettings() {
-        mTickerEnabled = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.STATUS_BAR_SHOW_TICKER, 1,
-                UserHandle.USER_CURRENT);
     }
 
     private RemoteViews.OnClickHandler mOnClickHandler = new RemoteViews.OnClickHandler() {
