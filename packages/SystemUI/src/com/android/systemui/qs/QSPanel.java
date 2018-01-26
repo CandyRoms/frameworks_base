@@ -116,7 +116,8 @@ public class QSPanel extends LinearLayout implements Tunable, Callback, Brightne
         ImageView mMinBrightness = mBrightnessView.findViewById(R.id.brightness_left);
         mMinBrightness.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+       
+     public void onClick(View v) {
                 boolean adaptive = isAdaptiveBrightness(context);
                 if (adaptive) {
                     float currentValue = Settings.System.getFloat(resolver,
@@ -731,6 +732,9 @@ public class QSPanel extends LinearLayout implements Tunable, Callback, Brightne
         }
         if (mCustomizePanel != null) {
             mCustomizePanel.updateSettings();
+        }
+        if (mFooter != null) {
+            mFooter.updateSettings();
         }
     }
 }
