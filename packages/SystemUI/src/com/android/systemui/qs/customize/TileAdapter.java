@@ -472,19 +472,21 @@ public class TileAdapter extends RecyclerView.Adapter<Holder> implements TileSta
         }
     }
 
-    private class CustomSpanSizeLookup extends SpanSizeLookup {
-        private int mColumns = 3;
+    private final DynamicSpanSizeLookup mSizeLookup = new DynamicSpanSizeLookup();
+
+    private class DynamicSpanSizeLookup extends SpanSizeLookup {
+        private int mColumns = 5;
+
+        public void setColumns(int columns) {
+            mColumns = columns;
+        }
+
         @Override
         public int getSpanSize(int position) {
             final int type = getItemViewType(position);
             return type == TYPE_EDIT || type == TYPE_DIVIDER ? mColumns : 1;
         }
-
-        public void setColumnCount(int columns) {
-            mColumns = columns;
-        }
     }
-    private final CustomSpanSizeLookup mSizeLookup = new CustomSpanSizeLookup();
 
     private class TileItemDecoration extends ItemDecoration {
         private final ColorDrawable mDrawable;
@@ -592,7 +594,7 @@ public class TileAdapter extends RecyclerView.Adapter<Holder> implements TileSta
         }
     };
 
-    public void setColumnCount(int columns) {
-        mSizeLookup.setColumnCount(columns);
+    public void setColumns(int columns) {
+        mSizeLookup.setColumns(columns);
     }
 }
