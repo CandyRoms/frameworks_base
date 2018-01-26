@@ -345,7 +345,6 @@ public class QSPanel extends LinearLayout implements Tunable, Callback, Brightne
         if (mTileLayout != null) {
             mTileLayout.updateResources();
         }
-
         if (mCustomizePanel != null) {
             mCustomizePanel.updateResources();
         }
@@ -730,12 +729,6 @@ public class QSPanel extends LinearLayout implements Tunable, Callback, Brightne
     }
 
     public void updateSettings() {
-        if (mTileLayout != null) {
-            mTileLayout.updateSettings();
-        }
-        if (mCustomizePanel != null) {
-            mCustomizePanel.updateSettings();
-        }
         if (mFooter != null) {
             mFooter.updateSettings();
         }
