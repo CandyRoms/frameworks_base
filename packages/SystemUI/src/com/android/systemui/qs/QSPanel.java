@@ -198,6 +198,7 @@ public class QSPanel extends LinearLayout implements Tunable, Callback, Brightne
         addView(mFooter.getView());
 
         updateResources();
+
     }
 
     protected void addDivider() {
@@ -697,7 +698,6 @@ public class QSPanel extends LinearLayout implements Tunable, Callback, Brightne
         int getOffsetTop(TileRecord tile);
 
         boolean updateResources();
-        void updateSettings();
 
         void setListening(boolean listening);
 

@@ -110,9 +110,9 @@ public class TileLayout extends ViewGroup implements QSTileLayout {
 
         if (mColumns != columns) {
             mColumns = columns;
-            requestLayout();
             return true;
         }
+        requestLayout();
         return false;
     }
 
