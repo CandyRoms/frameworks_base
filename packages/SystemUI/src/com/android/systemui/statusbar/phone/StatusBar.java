@@ -661,28 +661,15 @@ public class StatusBar extends SystemUI implements DemoMode,
     };
 
     public void setMediaPlaying() {
-        if (PlaybackState.STATE_PLAYING ==
-                getMediaControllerPlaybackState(mMediaController)
-                || PlaybackState.STATE_BUFFERING ==
-                getMediaControllerPlaybackState(mMediaController)) {
-            tickTrackInfo(mMediaController);
-            final String currentPkg = mMediaController.getPackageName().toLowerCase();
-            for (String packageName : mNavMediaArrowsExcludeList) {
-                if (currentPkg.contains(packageName)) {
-                    return;
-                }
-            }
-            if (mNavigationBar != null) {
-                mNavigationBar.setMediaPlaying(true);
+        if (mNavigationBar != null) {
+            if (PlaybackState.STATE_PLAYING ==
+                    getMediaControllerPlaybackState(mMediaController)
+                    || PlaybackState.STATE_BUFFERING ==
+                    getMediaControllerPlaybackState(mMediaController)) {
+               mNavigationBar.setMediaPlaying(true);
             }
         } else {
-            if (mAmbientMediaPlaying != 0 && mAmbientIndicationContainer != null) {
-                ((AmbientIndicationContainer)mAmbientIndicationContainer).hideIndication();
-            }
-            mNotificationPanel.getKeyguardStatusView().setPlayingMediaText(null);
-            if (mNavigationBar != null) {
                 mNavigationBar.setMediaPlaying(false);
-            }
         }
     }
 
@@ -6384,15 +6371,6 @@ public class StatusBar extends SystemUI implements DemoMode,
     private void rebuildRecentsScreen() {
         if (mSlimRecents != null) {
             mSlimRecents.rebuildRecentsScreen();
-        }
-    }
-
-    private void setForceAmbient() {
-        mAmbientMediaPlaying = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.FORCE_AMBIENT_FOR_MEDIA, 0,
-                UserHandle.USER_CURRENT);
-        if (mAmbientMediaPlaying != 0 && mAmbientIndicationContainer != null) {
-            ((AmbientIndicationContainer)mAmbientIndicationContainer).setIndication(mMediaMetadata);
         }
     }
 
