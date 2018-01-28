@@ -4300,13 +4300,19 @@ public final class Settings {
         public static final String STATUS_BAR_SHOW_TICKER = "status_bar_show_ticker";
 
         /**
-         * Wheter to play notification sound and vibration if screen is ON
+         * Whether to play notification sound and vibration if screen is ON
          * 0 - never
          * 1 - always
          * 2 - if media playing
          * @hide
          */
         public static final String NOTIFICATION_SOUND_VIB_SCREEN_ON = "notification_sound_vib_screen_on";
+
+        /**
+         * Force an Ambient notification when a new media track is being played
+         * @hide
+         */
+        public static final String FORCE_AMBIENT_FOR_MEDIA = "force_ambient_for_media";
 
         /** End of ABC system settings**/
 
