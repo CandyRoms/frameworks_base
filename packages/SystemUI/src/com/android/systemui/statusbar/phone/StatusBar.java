@@ -635,9 +635,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                     clearCurrentMediaNotification();
                     updateMediaMetaData(true, true);
                 }
-                if (mNavigationBar != null) {
-                    setMediaPlaying();
-                }
+                setMediaPlaying();
             }
         }
 
@@ -650,14 +648,13 @@ public class StatusBar extends SystemUI implements DemoMode,
             if (mTickerEnabled == 2) {
                 tickTrackInfo();
             }
+            setMediaPlaying();
         }
 
         @Override
         public void onSessionDestroyed() {
             super.onSessionDestroyed();
-            if (mNavigationBar != null) {
-                setMediaPlaying();
-            }
+            setMediaPlaying();
         }
     };
 
@@ -667,7 +664,21 @@ public class StatusBar extends SystemUI implements DemoMode,
                     getMediaControllerPlaybackState(mMediaController)
                     || PlaybackState.STATE_BUFFERING ==
                     getMediaControllerPlaybackState(mMediaController)) {
-               mNavigationBar.setMediaPlaying(true);
+                mNoMan.setMediaPlaying(true);
+                final String currentPkg = mMediaController.getPackageName().toLowerCase();
+                for (String packageName : mNavMediaArrowsExcludeList) {
+                    if (currentPkg.contains(packageName)) {
+                        return;
+                    }
+                }
+                if (mNavigationBar != null) {
+                    mNavigationBar.setMediaPlaying(true);
+                }
+            } else {
+                mNoMan.setMediaPlaying(false);
+                if (mNavigationBar != null) {
+                    mNavigationBar.setMediaPlaying(false);
+                }
             }
         } else {
                 mNavigationBar.setMediaPlaying(false);
@@ -1164,6 +1175,10 @@ public class StatusBar extends SystemUI implements DemoMode,
                     R.id.header_debug_info);
             mNotificationPanelDebugText.setVisibility(View.VISIBLE);
         }
+
+        mNoMan = (NotificationManager)
+                        mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        setMediaPlaying();
 
         boolean showNav = Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.NAVIGATION_BAR_VISIBLE,
@@ -2508,9 +2523,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                 clearCurrentMediaNotification();
                 mMediaController = controller;
                 mMediaController.registerCallback(mMediaListener);
-                if (mNavigationBar != null) {
-                    setMediaPlaying();
-                }
+                setMediaPlaying();
                 mMediaMetadata = mMediaController.getMetadata();
                 if (DEBUG_MEDIA) {
                     Log.v(TAG, "DEBUG_MEDIA: insert listener, receive metadata: "
@@ -2562,9 +2575,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                         + mMediaController.getPackageName());
             }
             mMediaController.unregisterCallback(mMediaListener);
-            if (mNavigationBar != null) {
-                setMediaPlaying();
-            }
+            setMediaPlaying();
         }
         mMediaController = null;
     }
@@ -6652,9 +6663,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                     }
                 }
             } else if (BANNER_ACTION_CANCEL.equals(action) || BANNER_ACTION_SETUP.equals(action)) {
-                NotificationManager noMan = (NotificationManager)
-                        mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-                noMan.cancel(SystemMessage.NOTE_HIDDEN_NOTIFICATIONS);
+                mNoMan.cancel(SystemMessage.NOTE_HIDDEN_NOTIFICATIONS);
 
                 Settings.Secure.putInt(mContext.getContentResolver(),
                         Settings.Secure.SHOW_NOTE_ABOUT_NOTIFICATION_HIDING, 0);
@@ -6851,9 +6860,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                                     setupIntent);
             overrideNotificationAppName(mContext, note);
 
-            NotificationManager noMan =
-                    (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            noMan.notify(SystemMessage.NOTE_HIDDEN_NOTIFICATIONS, note.build());
+            mNoMan.notify(SystemMessage.NOTE_HIDDEN_NOTIFICATIONS, note.build());
         }
     }
 
