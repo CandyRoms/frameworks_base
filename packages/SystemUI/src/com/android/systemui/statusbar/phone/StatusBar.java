@@ -6372,7 +6372,6 @@ public class StatusBar extends SystemUI implements DemoMode,
             setUseLessBoringHeadsUp();
             updateRecentsIconPack();
             updateRecentsMode();
-            updateTickerSettings();
             updateDozeBrightness();
             setForceAmbient();
         }
@@ -6381,10 +6380,10 @@ public class StatusBar extends SystemUI implements DemoMode,
     private void updateDozeBrightness() {
         int defaultDozeBrightness = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_screenBrightnessDoze);
-        int lastValue = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.LAST_DOZE_AUTO_BRIGHTNESS, defaultDozeBrightness,
+        int customDozeBrightness = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.AMBIENT_DOZE_CUSTOM_BRIGHTNESS, defaultDozeBrightness,
                 UserHandle.USER_CURRENT);
-        mStatusBarWindowManager.updateDozeBrightness(lastValue);
+        StatusBarWindowManager.updateCustomBrightnessDozeValue(customDozeBrightness);
     }
 
     private void setStatusBarWindowViewOptions() {
@@ -6478,14 +6477,6 @@ public class StatusBar extends SystemUI implements DemoMode,
             }
         }
     };
-
-    private void updateDozeBrightness() {
-        int defaultDozeBrightness = mContext.getResources().getInteger(
-                com.android.internal.R.integer.config_screenBrightnessDoze);
-        int customDozeBrightness = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.AMBIENT_DOZE_CUSTOM_BRIGHTNESS, defaultDozeBrightness,
-                UserHandle.USER_CURRENT);
-        StatusBarWindowManager.updateCustomBrightnessDozeValue(customDozeBrightness);
 
     private void setUseLessBoringHeadsUp() {
         mLessBoringHeadsUp = Settings.System.getIntForUser(mContext.getContentResolver(),
