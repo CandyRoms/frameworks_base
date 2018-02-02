@@ -4239,7 +4239,7 @@ public class ShortcutService extends IShortcutService.Stub {
 
     // Injection point.
     String injectBuildFingerprint() {
-        return SystemProperties.get("ro.build.date", Build.FINGERPRINT);
+        return Build.CANDY_FINGERPRINT;
     }
 
     final void wtf(String message) {
