@@ -22,6 +22,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.hardware.input.InputManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.hardware.camera2.CameraAccessException;
@@ -33,6 +36,9 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.view.InputDevice;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.util.DisplayMetrics;
 import android.view.DisplayInfo;
 import android.view.WindowManager;
@@ -187,6 +193,31 @@ public class CandyUtils {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void sendKeycode(int keycode) {
+        long when = SystemClock.uptimeMillis();
+        final KeyEvent evDown = new KeyEvent(when, when, KeyEvent.ACTION_DOWN, keycode, 0,
+                0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
+                KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY,
+                InputDevice.SOURCE_KEYBOARD);
+        final KeyEvent evUp = KeyEvent.changeAction(evDown, KeyEvent.ACTION_UP);
+
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                InputManager.getInstance().injectInputEvent(evDown,
+                        InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+            }
+        });
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                InputManager.getInstance().injectInputEvent(evUp,
+                        InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+            }
+        }, 20);
     }
 
     private static final class FireActions {
