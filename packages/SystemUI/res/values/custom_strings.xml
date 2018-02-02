@@ -84,30 +84,11 @@
     <string name="lockscreen_tuner_activity">Lockscreen shortcuts</string>
     <string name="powernotif_tuner_activity">Power notifications</string>
 
-    <!-- SysUI Tuner -->
-    <string name="statusbar_icons_blacklist">Status bar icons</string>
-    <string name="navbar_tuner_activity">Navigation bar buttons</string>
-    <string name="lockscreen_tuner_activity">Lockscreen shortcuts</string>
-    <string name="powernotif_tuner_activity">Power notifications</string>
-
     <string name="lockscreen_default">Default</string>
     <string name="lockscreen_hidden">None</string>
 
     <!-- Shows when people have clicked on the custom lockscreen shortcut [CHAR LIMIT=60] -->
     <string name="custom_hint">Swipe from icon to launch</string>
-
-    <!-- Screenshot QS tile -->
-    <string name="quick_settings_screenshot_label">Screenshot</string>
-    <string name="quick_settings_region_screenshot_label">Partial screenshot</string>
-
-    <!-- Caffeine QS Tile -->
-    <string name="quick_settings_caffeine_label">Caffeine</string>
-    <string name="accessibility_quick_settings_caffeine_off">Caffeine off</string>
-    <string name="accessibility_quick_settings_caffeine_on">Caffeine on</string>
-
-    <!-- Screenshot QS tile -->
-    <string name="quick_settings_screenshot_label">Screenshot</string>
-    <string name="quick_settings_region_screenshot_label">Partial screenshot</string>
 
     <!-- Ambient display and lift gesture Tile -->
     <string name="quick_settings_doze_notifications_label">Ambient notifications</string>
@@ -149,4 +130,7 @@
     <string name="quick_settings_screenrecord_lq_label">Screenrecord LQ</string>
     <string name="quick_settings_screenrecord_mq_label">Screenrecord MQ</string>
     <string name="quick_settings_screenrecord_hq_label">Screenrecord HQ</string>
+
+    <!-- High Brightness Mode Tile -->
+    <string name="quick_settings_high_brightness">High brightness</string>
 </resources>
