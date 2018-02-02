@@ -31,4 +31,18 @@
 
     <string name="quick_settings_doze_notifications_label">Notifiche Ambient</string>
 
+    <string name="quick_settings_region_screenshot_label">Screenshot parziale</string>
+
+    <string name="recents_app_killed">App terminata</string>
+
+    <string name="screenrecord_notif_ticker">Lo schermo sta per essere registrato</string>
+    <string name="screenrecord_notif_title">Registrazione in corso</string>
+    <string name="screenrecord_notif_pointer_on">Mostra puntatore</string>
+    <string name="screenrecord_notif_pointer_off">Nascondi puntatore</string>
+    <string name="screenrecord_notif_error">Impossibile avviare la registrazione</string>
+    <string name="notification_channel_screenrecord">Registra schermo</string>
+    <string name="quick_settings_screenrecord_label">Registra schermo</string>
+    <string name="quick_settings_screenrecord_lq_label">Registra schermo LQ</string>
+    <string name="quick_settings_screenrecord_mq_label">Registra schermo MQ</string>
+    <string name="quick_settings_screenrecord_hq_label">Registra schermo HQ</string>
 </resources>
