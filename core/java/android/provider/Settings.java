@@ -3776,7 +3776,7 @@ public final class Settings {
         @Deprecated
         public static final String DOCK_SOUNDS_ENABLED = Global.DOCK_SOUNDS_ENABLED;
 
-	/**
+	    /**
          * Check the proximity sensor during wakeup
          * @hide
          */
@@ -4004,7 +4004,7 @@ public final class Settings {
         public static final String STATUS_BAR_QUICK_QS_PULLDOWN = "status_bar_quick_qs_pulldown";
 
         /** Whether to skip music track with volume rocker
-        /**
+         *
          * @hide
          */
         public static final String VOLUME_BUTTON_MUSIC_CONTROL = "volume_button_music_control";
