@@ -2351,9 +2351,6 @@ public final class PowerManagerService extends SystemService
             if (startDreaming) {
                 mDreamManager.stopDream(false /*immediate*/);
                 mDreamManager.startDream(wakefulness == WAKEFULNESS_DOZING);
-
-                // notify power-HAL we transition into dozing/dreaming
-                powerHintInternal(CandyPowerHint.DOZING, 1);
             }
             isDreaming = mDreamManager.isDreaming();
         } else {
@@ -2370,6 +2367,9 @@ public final class PowerManagerService extends SystemService
                 } else {
                     Slog.i(TAG, "Dreaming...");
                 }
+
+                // notify power-HAL we transition into dozing/dreaming
+                powerHintInternal(CandyPowerHint.DOZING, 1);
             }
 
             // If preconditions changed, wait for the next iteration to determine
