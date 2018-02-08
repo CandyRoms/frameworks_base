@@ -359,6 +359,10 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
             public boolean showBeforeProvisioning() {
                 return false;
             }
+
+            public boolean onLongPress() {
+                return false;
+            }
         };
         onAirplaneModeChanged();
 
@@ -559,10 +563,11 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
         @Override
         public boolean onLongPress() {
             UserManager um = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
-            if (!um.hasUserRestriction(UserManager.DISALLOW_SAFE_BOOT)) {
+            /*if (!um.hasUserRestriction(UserManager.DISALLOW_SAFE_BOOT)) {
+                mDialog.dismiss();
                 mWindowManagerFuncs.reboot(true);
                 return true;
-            }
+            }*/
             return false;
         }
 
@@ -664,6 +669,7 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
         public boolean onLongPress() {
             UserManager um = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
             if (!um.hasUserRestriction(UserManager.DISALLOW_SAFE_BOOT)) {
+                mDialog.dismiss();
                 mWindowManagerFuncs.reboot(true);
                 return true;
             }
@@ -720,6 +726,7 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
         @Override
         public boolean onLongPress() {
             //if (FeatureFlagUtils.isEnabled(mContext, FeatureFlagUtils.SCREENRECORD_LONG_PRESS)) {
+                mDialog.dismiss();
                 mScreenRecordHelper.launchRecordPrompt();
             /*} else {
                 onPress();
@@ -1111,7 +1118,7 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
         public boolean onLongClickItem(int position) {
             final Action action = mAdapter.getItem(position);
             if (action instanceof LongPressAction) {
-                mDialog.dismiss();
+                //mDialog.dismiss();
                 return ((LongPressAction) action).onLongPress();
             }
             return false;
@@ -1458,7 +1465,8 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
 
         @Override
         public boolean onLongPress() {
-            return true;
+            // pass to onClick listener (onPress action)
+            return false;
         }
 
         public boolean isEnabled() {
