@@ -1087,6 +1087,7 @@ public class ExpandableNotificationRow extends ActivatableNotificationView
         }
         mNotificationInflater.onDensityOrFontScaleChanged();
         onNotificationUpdated();
+        updateBackgroundTint();
     }
 
     @Override
