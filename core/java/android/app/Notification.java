@@ -5497,7 +5497,7 @@ public class Notification implements Parcelable
                 color = NotificationColorUtil.resolveDefaultColor(mContext, background);
             } else {
                 boolean isDark = mInNightMode || mContext.getResources()
-                        .getBoolean(R.bool.config_useDarkBgNotificationIconTinting);
+                        .getBoolean(R.bool.config_useDarkBgNotificationIconTextTinting);
                 color = NotificationColorUtil.resolveContrastColor(mContext, mN.color,
                         background, isDark);
             }
