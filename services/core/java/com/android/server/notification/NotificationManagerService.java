@@ -377,8 +377,9 @@ public class NotificationManagerService extends SystemService {
     // The last key in this list owns the hardware.
     ArrayList<String> mLights = new ArrayList<>();
 
+    @GuardedBy("mNotificationLock")
     private HashMap<String, Long> mAnnoyingNotifications = new HashMap<String, Long>();
-    private long mAnnoyingNotificationThreshold = -1;
+    private long mAnnoyingNotificationThreshold = 30000; // 30 seconds
 
     private AppOpsManager mAppOps;
     private UsageStatsManagerInternal mAppUsageStats;
@@ -1209,8 +1210,6 @@ public class NotificationManagerService extends SystemService {
                 = Settings.System.getUriFor(Settings.System.NOTIFICATION_SOUND_VIB_SCREEN_ON);
         private final Uri MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD_URI
                 = Settings.System.getUriFor(Settings.System.MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD);
-        private final Uri INCALL_NOTIFICATIONS_VIBRATE_URI
-                = Settings.System.getUriFor(Settings.System.INCALL_NOTIFICATIONS_VIBRATE);
         SettingsObserver(Handler handler) {
             super(handler);
         }
@@ -1250,15 +1249,15 @@ public class NotificationManagerService extends SystemService {
             if (uri == null || NOTIFICATION_BADGING_URI.equals(uri)) {
                 mRankingHelper.updateBadgingEnabled();
             }
+            if (uri == null || MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD_URI.equals(uri)) {
+                mAnnoyingNotificationThreshold = Settings.System.getLongForUser(resolver,
+                       Settings.System.MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD, 30000,
+                       UserHandle.USER_CURRENT);
+            }
             if (uri == null || NOTIFICATION_SOUND_VIB_SCREEN_ON.equals(uri)) {
                 mSoundVibScreenOn = Settings.System.getIntForUser(resolver,
                             Settings.System.NOTIFICATION_SOUND_VIB_SCREEN_ON, 1,
                             UserHandle.USER_CURRENT) != 0;
-            }
-            if (uri == null || MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD_URI.equals(uri)) {
-                mAnnoyingNotificationThreshold = Settings.System.getLongForUser(resolver,
-                            Settings.System.MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD, 0,
-                            UserHandle.USER_CURRENT);
             }
         }
     }
@@ -4582,22 +4581,23 @@ public class NotificationManagerService extends SystemService {
         }
     }
 
-    private boolean notificationIsAnnoying(String pkg) {
-        if (pkg == null
+    @GuardedBy("mNotificationLock")
+    private boolean notificationIsAnnoying(String key, String pkg) {
+        if (key == null
                 || mAnnoyingNotificationThreshold <= 0
-                || "android".equals(pkg)) {
+                || (pkg != null && "android".equals(pkg))) {
             return false;
         }
 
         long currentTime = System.currentTimeMillis();
-        if (mAnnoyingNotifications.containsKey(pkg)
-                && (currentTime - mAnnoyingNotifications.get(pkg)
+        if (mAnnoyingNotifications.containsKey(key)
+                && (currentTime - mAnnoyingNotifications.get(key)
                 < mAnnoyingNotificationThreshold)) {
             // less than threshold; it's an annoying notification!!
             return true;
         } else {
             // not in map or time to re-add
-            mAnnoyingNotifications.put(pkg, currentTime);
+            mAnnoyingNotifications.put(key, currentTime);
             return false;
         }
     }
@@ -4856,7 +4856,7 @@ public class NotificationManagerService extends SystemService {
             boolean notificationIsAnnoying = notificationIsAnnoying(key, pkg);
             boolean beNoisy = (!mScreenOn && !notificationIsAnnoying)
                     // if mScreenOn && !mSoundVibScreenOn never be noisy
-                    || (mScreenOn && mSoundVibScreenOn && !notificationIsAnnoying(pkg));
+                    || (mScreenOn && mSoundVibScreenOn && !notificationIsAnnoying);
             if (mSystemReady && mAudioManager != null && beNoisy) {
                 Uri soundUri = record.getSound();
                 hasValidSound = soundUri != null && !Uri.EMPTY.equals(soundUri);
