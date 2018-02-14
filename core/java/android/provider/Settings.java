@@ -4198,12 +4198,6 @@ public final class Settings {
         public static final String RECENTS_ICON_PACK = "recents_icon_pack";
 
         /**
-         * Whether to use volume keys always for media stream
-         * @hide
-         */
-        public static final String VOLUME_KEYS_CONTROL_MEDIA_STREAM = "volume_keys_control_media_stream";
-
-        /**
          * Whether to use slim recents
          * @hide
          */
