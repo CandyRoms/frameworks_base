@@ -120,6 +120,8 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
                     Settings.System.STATUS_BAR_SHOW_TICKER, 1,
                     UserHandle.USER_CURRENT);
             initTickerView();
+
+            mStatusBarComponent.updateBatterySettings();
         }
     }
 
