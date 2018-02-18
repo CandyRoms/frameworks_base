@@ -734,7 +734,7 @@ public class QSPanel extends LinearLayout implements Tunable, Callback, Brightne
         int animStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.ANIM_TILE_STYLE, 0, UserHandle.USER_CURRENT);
         int animDuration = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.ANIM_TILE_DURATION, 2000, UserHandle.USER_CURRENT);
+                Settings.System.ANIM_TILE_DURATION, 1000, UserHandle.USER_CURRENT);
         int interpolatorType = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.ANIM_TILE_INTERPOLATOR, 0, UserHandle.USER_CURRENT);
         if (animStyle == 0) {
@@ -777,6 +777,27 @@ public class QSPanel extends LinearLayout implements Tunable, Callback, Brightne
             }
             animTile.setDuration(animDuration);
             animTile.start();
+        }
+    }
+
+    private void configureTile(QSTile t, QSTileView v) {
+        if (mTileLayout != null) {
+            if (t.isDualTarget()) {
+                if (!mTileLayout.isShowTitles()) {
+                    v.setOnLongClickListener(view -> {
+                        t.secondaryClick();
+                        mHost.openPanels();
+                        return true;
+                    });
+                } else {
+                    v.setOnLongClickListener(view -> {
+                        t.click();
+                        setAnimationTile(v);
+                        t.longClick();
+                        return true;
+                    });
+                }
+            }
         }
     }
 
