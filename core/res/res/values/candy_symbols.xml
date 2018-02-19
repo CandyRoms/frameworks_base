@@ -153,4 +153,7 @@
     <java-symbol type="drawable" name="weather_thunderstorms" />
     <java-symbol type="drawable" name="weather_windy" />
 
+    <!-- In call notification vibration strength -->
+    <java-symbol type="integer" name="config_in_call_notification_vibration_strength" />
+
 </resources>
