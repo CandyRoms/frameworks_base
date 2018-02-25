@@ -165,6 +165,7 @@ import android.annotation.Nullable;
 import android.app.ActivityManager;
 import android.app.ActivityManagerInternal;
 import android.app.ActivityManagerInternal.SleepToken;
+import android.app.ActivityOptions;
 import android.app.ActivityThread;
 import android.app.AppOpsManager;
 import android.app.IUiModeManager;
@@ -847,6 +848,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private int mCurrentUserId;
     private boolean haveEnableGesture = false;
+    private int[] haveEnabledMultiTouchGestures = new int[4];
+    private String[] multiTouchGesturePackages = new String[4];
 
     // Maps global key codes to the components that will handle them.
     private GlobalKeyManager mGlobalKeyManager;
@@ -1209,6 +1212,33 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.NAVIGATION_BAR_WIDTH), false, this,
                     UserHandle.USER_ALL);
+	        resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_FINGERS), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_RIGHT), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_LEFT), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_UP), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_DOWN), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_RIGHT), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_LEFT), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_UP), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_DOWN), false, this,
+                    UserHandle.USER_ALL);
             updateSettings();
         }
 
@@ -1334,6 +1364,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         Settings.Secure.putInt(mContext.getContentResolver(), Settings.Secure.HUSH_GESTURE_USED, 1);
         mLogger.action(MetricsProto.MetricsEvent.ACTION_HUSH_GESTURE, mRingerToggleChord);
     }
+
+    private MultiTouchGesturesListener mMultiTouchGesturesRight;
+    private MultiTouchGesturesListener mMultiTouchGesturesLeft;
+    private MultiTouchGesturesListener mMultiTouchGesturesUp;
+    private MultiTouchGesturesListener mMultiTouchGesturesDown;
+    private String mMultiTouchGesturesRightPackage;
+    private String mMultiTouchGesturesLeftPackage;
+    private String mMultiTouchGesturesUpPackage;
+    private String mMultiTouchGesturesDownPackage;
 
     IStatusBarService getStatusBarService() {
         synchronized (mServiceAquireLock) {
@@ -2275,6 +2314,44 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         return mContext.getResources().getConfiguration().isScreenRound();
     }
 
+    private static void triggerVirtualKeypress(Context context, final int keyCode) {
+        final InputManager im = InputManager.getInstance();
+        final long now = SystemClock.uptimeMillis();
+        int downflags = 0;
+
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+                || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
+                || keyCode == KeyEvent.KEYCODE_DPAD_UP
+                || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+            downflags = KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE;
+        } else {
+            downflags = KeyEvent.FLAG_FROM_SYSTEM;
+        }
+
+        final KeyEvent downEvent = new KeyEvent(now, now, KeyEvent.ACTION_DOWN,
+                keyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
+                downflags, InputDevice.SOURCE_KEYBOARD);
+        final KeyEvent upEvent = KeyEvent.changeAction(downEvent, KeyEvent.ACTION_UP);
+        final Handler handler = new Handler(Looper.getMainLooper());
+
+        final Runnable downRunnable = new Runnable() {
+            @Override
+            public void run() {
+                im.injectInputEvent(downEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+            }
+        };
+
+        final Runnable upRunnable = new Runnable() {
+            @Override
+            public void run() {
+                im.injectInputEvent(upEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+            }
+        };
+
+        handler.post(downRunnable);
+        handler.postDelayed(upRunnable, 10);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void init(Context context, IWindowManager windowManager,
@@ -2665,6 +2742,86 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
+    private MultiTouchGesturesListener initMultiTouchGesture(int fingers, int keycode, MultiTouchGesturesListener.Directions direction) {
+        return new MultiTouchGesturesListener(mContext, fingers, direction, new MultiTouchGesturesListener.Callbacks() {
+            @Override
+            public void onSwipeGesture() {
+                triggerVirtualKeypress(mContext, keycode);
+            }
+        });
+    }
+
+    private MultiTouchGesturesListener initMultiTouchScreenshotGesture(int fingers, MultiTouchGesturesListener.Directions direction) {
+        return new MultiTouchGesturesListener(mContext, fingers, direction, new MultiTouchGesturesListener.Callbacks() {
+            @Override
+            public void onSwipeGesture() {
+                mHandler.post(mScreenshotRunnable);
+            }
+        });
+    }
+
+    private MultiTouchGesturesListener initMultiTouchLaunchPackageGesture(int fingers, MultiTouchGesturesListener.Directions direction, String packageName) {
+        return new MultiTouchGesturesListener(mContext, fingers, direction, new MultiTouchGesturesListener.Callbacks() {
+            @Override
+            public void onSwipeGesture() {
+                /** Open another app.
+                 * @param context current Context, like Activity, App, or Service
+                 * @param packageName the full package name of the app to open
+                 * @return true if likely successful, false if unsuccessful
+                 */
+                PackageManager manager = mContext.getPackageManager();
+                try {
+                    Intent i = manager.getLaunchIntentForPackage(packageName);
+                    if (i == null) {
+                        Slog.e(TAG, "Error: Intent for " + packageName + " is null!");
+                        return;
+                    }
+                    i.addCategory(Intent.CATEGORY_LAUNCHER);
+                    final View v = new View(mContext);
+                    int left = 0, top = 0;
+                    int width = v.getMeasuredWidth(), height = v.getMeasuredHeight();
+                    ActivityOptions opts = ActivityOptions.makeClipRevealAnimation(v, left, top, width, height);
+                    mContext.startActivity(i, opts.toBundle());
+                } catch (ActivityNotFoundException e) {
+                    Slog.e(TAG, "Error: Activity " + packageName + " not found!");
+                }
+            }
+        });
+    }
+
+    private MultiTouchGesturesListener handleMultiTouchGesture(MultiTouchGesturesListener gesture, int fingers, int value, MultiTouchGesturesListener.Directions direction, String pkg) {
+        if (haveEnabledMultiTouchGestures[direction.ordinal()] == value
+                && (multiTouchGesturePackages[direction.ordinal()] == null
+                ? pkg == null : multiTouchGesturePackages[direction.ordinal()].equals(pkg))) {
+            return gesture;
+        }
+        haveEnabledMultiTouchGestures[direction.ordinal()] = value;
+        multiTouchGesturePackages[direction.ordinal()] = pkg;
+        // substract fingers that were previously added to cover changes
+        int keyvalue = value - fingers;
+        if (gesture != null) {
+            // unregister Listener before reassigning
+            mWindowManagerFuncs.unregisterPointerEventListener(gesture);
+        }
+
+        if (keyvalue != 0) { // 0 -> Gesture is disabled
+            switch (keyvalue) {
+                case 1000:
+                    gesture = initMultiTouchScreenshotGesture(fingers, direction);
+                    break;
+                case 1001:
+                    gesture = initMultiTouchLaunchPackageGesture(fingers, direction, pkg);
+                    break;
+                default:
+                    gesture = initMultiTouchGesture(fingers, keyvalue, direction);
+                    break;
+            }
+            mWindowManagerFuncs.registerPointerEventListener(gesture);
+            return gesture;
+        }
+        return null;
+    }
+
     @Override
     public void setInitialDisplaySize(Display display, int width, int height, int density) {
         // This method might be called before the policy has been fully initialized
@@ -2851,6 +3008,41 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
             // navbar
             mHasNavigationBar = DeviceUtils.deviceSupportNavigationBar(mContext);
+
+            // MultiTouch Navigaton Gestures
+            int multiTouchCustomGestureFingers = Settings.System.getIntForUser(resolver,
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_FINGERS, 2, UserHandle.USER_CURRENT);
+            String multiTouchCustomGestureRightPkg = Settings.System.getStringForUser(resolver,
+                Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_RIGHT, UserHandle.USER_CURRENT);
+            int multiTouchCustomGestureRight = Settings.System.getIntForUser(resolver,
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_RIGHT, 0, UserHandle.USER_CURRENT);
+            mMultiTouchGesturesRight = handleMultiTouchGesture(mMultiTouchGesturesRight,
+                multiTouchCustomGestureFingers, multiTouchCustomGestureRight + multiTouchCustomGestureFingers,
+                MultiTouchGesturesListener.Directions.RIGHT, multiTouchCustomGestureRightPkg);
+
+            String multiTouchCustomGestureLeftPkg = Settings.System.getStringForUser(resolver,
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_LEFT, UserHandle.USER_CURRENT);
+            int multiTouchCustomGestureLeft = Settings.System.getIntForUser(resolver,
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_LEFT, 0, UserHandle.USER_CURRENT);
+            mMultiTouchGesturesLeft = handleMultiTouchGesture(mMultiTouchGesturesLeft,
+                multiTouchCustomGestureFingers, multiTouchCustomGestureLeft + multiTouchCustomGestureFingers,
+                MultiTouchGesturesListener.Directions.LEFT, multiTouchCustomGestureLeftPkg);
+
+            String multiTouchCustomGestureUpPkg = Settings.System.getStringForUser(resolver,
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_UP, UserHandle.USER_CURRENT);
+            int multiTouchCustomGestureUp = Settings.System.getIntForUser(resolver,
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_UP, 0, UserHandle.USER_CURRENT);
+            mMultiTouchGesturesUp = handleMultiTouchGesture(mMultiTouchGesturesUp,
+                multiTouchCustomGestureFingers, multiTouchCustomGestureUp + multiTouchCustomGestureFingers,
+                MultiTouchGesturesListener.Directions.UP, multiTouchCustomGestureUpPkg);
+
+            String multiTouchCustomGestureDownPkg = Settings.System.getStringForUser(resolver,
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_DOWN, UserHandle.USER_CURRENT);
+            int multiTouchCustomGestureDown = Settings.System.getIntForUser(resolver,
+                    Settings.System.MULTI_TOUCH_CUSTOM_GESTURE_DOWN, 0, UserHandle.USER_CURRENT);
+            mMultiTouchGesturesDown = handleMultiTouchGesture(mMultiTouchGesturesDown,
+                multiTouchCustomGestureFingers, multiTouchCustomGestureDown + multiTouchCustomGestureFingers,
+                MultiTouchGesturesListener.Directions.DOWN, multiTouchCustomGestureDownPkg);
 
             // Configure rotation lock.
             int userRotation = Settings.System.getIntForUser(resolver,

@@ -4948,6 +4948,60 @@ public final class Settings {
         public static final String NETWORK_TRAFFIC_HIDEARROW = "network_traffic_hidearrow";
 
         /**
+         * Finger amount for MultiTouch Gestures
+         * @hide
+         */
+        public static final String MULTI_TOUCH_CUSTOM_GESTURE_FINGERS = "multi_touch_custom_gesture_fingers";
+
+        /**
+         * right gesture for MultiTouch Gestures
+         * @hide
+         */
+        public static final String MULTI_TOUCH_CUSTOM_GESTURE_RIGHT = "multi_touch_custom_gesture_right";
+
+        /**
+         * left gesture for MultiTouch Gestures
+         * @hide
+         */
+        public static final String MULTI_TOUCH_CUSTOM_GESTURE_LEFT = "multi_touch_custom_gesture_left";
+
+        /**
+         * up gesture for MultiTouch Gestures
+         * @hide
+         */
+        public static final String MULTI_TOUCH_CUSTOM_GESTURE_UP = "multi_touch_custom_gesture_up";
+
+        /**
+         * down gesture for MultiTouch Gestures
+         * @hide
+         */
+        public static final String MULTI_TOUCH_CUSTOM_GESTURE_DOWN = "multi_touch_custom_gesture_down";
+
+        /**
+         * right gesture for MultiTouch Gestures
+         * @hide
+         */
+        public static final String MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_RIGHT = "multi_touch_custom_gesture_package_right";
+
+        /**
+         * left gesture for MultiTouch Gestures
+         * @hide
+         */
+        public static final String MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_LEFT = "multi_touch_custom_gesture_package_left";
+
+        /**
+         * up gesture for MultiTouch Gestures
+         * @hide
+         */
+        public static final String MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_UP = "multi_touch_custom_gesture_package_up";
+
+        /**
+         * down gesture for MultiTouch Gestures
+         * @hide
+         */
+        public static final String MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_DOWN = "multi_touch_custom_gesture_package_down";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
