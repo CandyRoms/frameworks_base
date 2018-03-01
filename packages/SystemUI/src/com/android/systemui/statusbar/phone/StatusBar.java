@@ -6343,9 +6343,6 @@ public class StatusBar extends SystemUI implements DemoMode,
                     Settings.System.USE_SLIM_RECENTS),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.AMBIENT_DOZE_CUSTOM_BRIGHTNESS),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.FORCE_AMBIENT_FOR_MEDIA),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -6397,9 +6394,6 @@ public class StatusBar extends SystemUI implements DemoMode,
                     Settings.System.USE_SLIM_RECENTS))) {
                 updateRecentsMode();
             } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.AMBIENT_DOZE_CUSTOM_BRIGHTNESS))) {
-                updateDozeBrightness();
-            } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.QS_TILE_TITLE_VISIBILITY))) {
                 updateQsPanelResources();
                 setQsPanelOptions();
@@ -6429,7 +6423,6 @@ public class StatusBar extends SystemUI implements DemoMode,
             setUseLessBoringHeadsUp();
             updateRecentsIconPack();
             updateRecentsMode();
-            updateDozeBrightness();
             setForceAmbient();
             updateClockPosition();
             updateBatterySettings();
@@ -6446,15 +6439,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         if (mQuickStatusBarHeader != null) {
             mQuickStatusBarHeader.updateBatterySettings();
         }
-    }
-
-    private void updateDozeBrightness() {
-        int defaultDozeBrightness = mContext.getResources().getInteger(
-                com.android.internal.R.integer.config_screenBrightnessDoze);
-        int customDozeBrightness = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.AMBIENT_DOZE_CUSTOM_BRIGHTNESS, defaultDozeBrightness,
-                UserHandle.USER_CURRENT);
-        StatusBarWindowManager.updateCustomBrightnessDozeValue(customDozeBrightness);
     }
 
     private void setStatusBarWindowViewOptions() {
