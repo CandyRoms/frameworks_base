@@ -6349,9 +6349,6 @@ public class StatusBar extends SystemUI implements DemoMode,
                     Settings.System.USE_SLIM_RECENTS),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.AMBIENT_DOZE_CUSTOM_BRIGHTNESS),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.FORCE_AMBIENT_FOR_MEDIA),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -6365,6 +6362,9 @@ public class StatusBar extends SystemUI implements DemoMode,
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.STATUS_BAR_BATTERY_STYLE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.LAST_DOZE_AUTO_BRIGHTNESS),
                     false, this, UserHandle.USER_ALL);
         }
 
@@ -6403,9 +6403,6 @@ public class StatusBar extends SystemUI implements DemoMode,
                     Settings.System.USE_SLIM_RECENTS))) {
                 updateRecentsMode();
             } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.AMBIENT_DOZE_CUSTOM_BRIGHTNESS))) {
-                updateDozeBrightness();
-            } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.QS_TILE_TITLE_VISIBILITY))) {
                 updateQsPanelResources();
                 setQsPanelOptions();
@@ -6423,6 +6420,9 @@ public class StatusBar extends SystemUI implements DemoMode,
                     || uri.equals(Settings.Secure.getUriFor(
                     Settings.Secure.STATUS_BAR_BATTERY_STYLE))) {
                 updateBatterySettings();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.LAST_DOZE_AUTO_BRIGHTNESS))) {
+                updateDozeBrightness();
             }
         }
 
@@ -6435,10 +6435,10 @@ public class StatusBar extends SystemUI implements DemoMode,
             setUseLessBoringHeadsUp();
             updateRecentsIconPack();
             updateRecentsMode();
-            updateDozeBrightness();
             setForceAmbient();
             updateClockPosition();
             updateBatterySettings();
+            updateDozeBrightness();
         }
     }
 
@@ -6452,15 +6452,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         if (mQuickStatusBarHeader != null) {
             mQuickStatusBarHeader.updateBatterySettings();
         }
-    }
-
-    private void updateDozeBrightness() {
-        int defaultDozeBrightness = mContext.getResources().getInteger(
-                com.android.internal.R.integer.config_screenBrightnessDoze);
-        int customDozeBrightness = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.AMBIENT_DOZE_CUSTOM_BRIGHTNESS, defaultDozeBrightness,
-                UserHandle.USER_CURRENT);
-        StatusBarWindowManager.updateCustomBrightnessDozeValue(customDozeBrightness);
     }
 
     private void setStatusBarWindowViewOptions() {
@@ -6568,6 +6559,15 @@ public class StatusBar extends SystemUI implements DemoMode,
         mLessBoringHeadsUp = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.LESS_BORING_HEADS_UP, 1,
                 UserHandle.USER_CURRENT) == 1;
+    }
+
+    private void updateDozeBrightness() {
+        int defaultDozeBrightness = mContext.getResources().getInteger(
+                com.android.internal.R.integer.config_screenBrightnessDoze);
+        int lastValue = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.LAST_DOZE_AUTO_BRIGHTNESS, defaultDozeBrightness,
+                UserHandle.USER_CURRENT);
+        mStatusBarWindowManager.updateDozeBrightness(lastValue);
     }
 
     private RemoteViews.OnClickHandler mOnClickHandler = new RemoteViews.OnClickHandler() {

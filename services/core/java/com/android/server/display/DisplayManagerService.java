@@ -1882,11 +1882,6 @@ public final class DisplayManagerService extends SystemService {
         }
 
         @Override
-        public void updateCustomBrightnessDozeValue(int value) {
-            mDisplayPowerController.updateCustomBrightnessDozeValue(value);
-        }
-
-        @Override
         public void enableAutoDozeBrightness(boolean enable) {
             mDisplayPowerController.enableAutoDozeBrightness(enable);
         }

@@ -4022,18 +4022,6 @@ public final class Settings {
        public static final String QS_FOOTER_WARNINGS = "qs_footer_warnings";
 
         /**
-         * Custom brightness value for Ambient Display
-         * @hide
-         */
-        public static final String AMBIENT_DOZE_CUSTOM_BRIGHTNESS = "ambient_doze_custom_brightness";
-
-        /**
-         * Use latest screen-on brightness value for Ambient Display
-         * @hide
-         */
-        public static final String AMBIENT_DOZE_AUTO_BRIGHTNESS = "ambient_doze_auto_brightness";
-
-        /**
          * Whether to launch default music player when headset plugged in
          * 0 = don't do anything (default)
          * 1 = launch only on wired connection
@@ -4511,6 +4499,18 @@ public final class Settings {
         public static final String SHOW_CLEAR_ALL_RECENTS = "show_clear_all_recents";
 
         /**
+         * Use latest screen-on brightness value for Ambient Display
+         * @hide
+         */
+        public static final String AMBIENT_DOZE_AUTO_BRIGHTNESS = "ambient_doze_auto_brightness";
+
+        /**
+         * Use latest screen-on brightness value for Ambient Display
+         * @hide
+         */
+        public static final String LAST_DOZE_AUTO_BRIGHTNESS = "last_doze_auto_brightness";
+
+        /**
          * location of the clear all rectents button
          * @hide
          */
@@ -4718,8 +4718,6 @@ public final class Settings {
             PRIVATE_SETTINGS.add(NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD);
             PRIVATE_SETTINGS.add(QS_TILE_TITLE_VISIBILITY);
             PRIVATE_SETTINGS.add(WAKE_WHEN_PLUGGED_OR_UNPLUGGED);
-            PRIVATE_SETTINGS.add(AMBIENT_DOZE_CUSTOM_BRIGHTNESS);
-            PRIVATE_SETTINGS.add(AMBIENT_DOZE_AUTO_BRIGHTNESS);
             PRIVATE_SETTINGS.add(PROXIMITY_AUTO_SPEAKER);
             PRIVATE_SETTINGS.add(PROXIMITY_AUTO_SPEAKER_DELAY);
             PRIVATE_SETTINGS.add(PROXIMITY_AUTO_SPEAKER_INCALL_ONLY);
