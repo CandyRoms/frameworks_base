@@ -3245,7 +3245,7 @@ public class ActivityStackSupervisor extends ConfigurationContainer implements D
     void prepareForShutdownLocked() {
         for (int i = 0; i < mActivityDisplays.size(); i++) {
             createSleepTokenLocked("shutdown", mActivityDisplays.keyAt(i));
-            checkReadyForSleepLocked(true /* allowDelay */);
+            checkReadyForSleepLocked();
 
             if (mGoingToSleep.isHeld())
                 mGoingToSleep.release();
