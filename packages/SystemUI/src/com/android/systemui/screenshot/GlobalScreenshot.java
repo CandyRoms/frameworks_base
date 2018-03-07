@@ -67,6 +67,7 @@ import android.os.UserHandle;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.Slog;
 import android.view.Display;
 import android.view.LayoutInflater;
