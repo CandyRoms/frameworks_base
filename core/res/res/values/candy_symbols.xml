@@ -90,6 +90,9 @@
        backgrounds (requires config_allowNotificationIconTinting to be true)-->
     <java-symbol type="bool" name="config_useDarkBgNotificationIconTinting" />
 
+    <!-- Notification icon tint -->
+    <java-symbol type="color" name="notification_icon_default_color" />
+
     <!-- Ambient notification icon tint -->
     <java-symbol type="color" name="notification_ambient_icon_default_color" />
     <java-symbol type="color" name="notification_ambient_default_color" />
@@ -122,4 +125,8 @@
 
     <!-- Notification app name tint -->
     <java-symbol type="bool" name="config_allowNotificationAppNameTextTinting" />
+
+    <!-- Auto fill -->
+    <java-symbol type="color" name="autofill_save_title_color" />
+    <java-symbol type="color" name="autofill_autofill_save_custom_subtitle_color" />
 </resources>
