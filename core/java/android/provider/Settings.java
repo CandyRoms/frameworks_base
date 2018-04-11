@@ -4423,6 +4423,17 @@ public final class Settings {
         public static final String VOLUME_BUTTON_MUSIC_CONTROL = "volume_button_music_control";
 
         /**
+         * Whether to change the transparency of the qs panel
+         * @hide
+         */
+        public static final String QS_PANEL_BG_ALPHA = "qs_panel_bg_alpha";
+
+        /** @hide */
+
+        private static final Validator QS_PANEL_BG_ALPHA_VALIDATOR =
+                ANY_INTEGER_VALIDATOR;
+
+         /**
          * Wheter to play notification sound and vibration if screen is on
          * @hide
          */
@@ -5144,7 +5155,8 @@ public final class Settings {
 	        STOCK_STATUSBAR_IN_HIDE,
             OMNI_FINGERPRINT_SUCCESS_VIB,
             OMNI_CUSTOM_FP_ICON,
-            DOZE_ON_CHARGE
+            DOZE_ON_CHARGE,
+            QS_PANEL_BG_ALPHA,
         };
 
         /**
@@ -5293,6 +5305,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(DOUBLE_TAP_SLEEP_GESTURE);
             PRIVATE_SETTINGS.add(HEADSET_CONNECT_PLAYER);
             PRIVATE_SETTINGS.add(DOZE_ON_CHARGE);
+            PRIVATE_SETTINGS.add(QS_PANEL_BG_ALPHA);
         }
 
         /**
@@ -5404,6 +5417,7 @@ public final class Settings {
             VALIDATORS.put(OMNI_CUSTOM_FP_ICON, OMNI_CUSTOM_FP_ICON_VALIDATOR);
             VALIDATORS.put(OMNI_FINGERPRINT_SUCCESS_VIB, OMNI_FINGERPRINT_SUCCESS_VIB_VALIDATOR);
             VALIDATORS.put(DOZE_ON_CHARGE, DOZE_ON_CHARGE_VALIDATOR);
+            VALIDATORS.put(QS_PANEL_BG_ALPHA, QS_PANEL_BG_ALPHA_VALIDATOR);
         }
 
         /**
