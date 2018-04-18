@@ -39,6 +39,9 @@
     <string name="lockscreen_hidden">None</string>
     <string name="custom_hint">Swipe from icon to launch</string>
 
+    <!-- AOD QS tile -->
+    <string name="quick_settings_aod_label">AOD</string>
+
     <!-- Navbar Tuner -->
     <string name="preview">Preview</string>
     <string name="keycode">Keycode</string>
