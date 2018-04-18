@@ -28,6 +28,9 @@
     <string name="global_action_settings">Settings</string>
     <string name="global_action_screenrecord">Screenrecord</string>
     <string name="global_action_flashlight">Flashlight</string>
+    
+    <!-- AOD QS tile -->
+    <string name="quick_settings_aod_label">AOD</string>
 
     <!-- Reboot/Recovery QS tile -->
     <string name="quick_settings_reboot_label">Reboot</string>
