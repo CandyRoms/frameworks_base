@@ -56,4 +56,7 @@
     <!-- Screenrecord -->
     <dimen name="screenrecord_hint_size">48dp</dimen>
 
+    <!-- The width/height of the charging indicator view on keyguard. -->
+    <dimen name="keyguard_charging_indication_height">64dp</dimen>
+    <dimen name="keyguard_charging_indication_width">32dp</dimen>
 </resources>
