@@ -66,6 +66,7 @@ import com.android.systemui.statusbar.policy.BatteryController.BatteryStateChang
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 import com.android.systemui.util.Utils.DisableStateTracker;
+import com.android.systemui.R;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -109,11 +110,10 @@ public class BatteryMeterView extends LinearLayout implements
     private int mTextColor;
     private int mLevel;
     private int mShowPercentMode = MODE_DEFAULT;
-
     private boolean mCharging;
     public int mBatteryStyle = BATTERY_STYLE_PORTRAIT;
     public int mShowBatteryPercent;
-
+    private boolean mShowPercentAvailable;
     private boolean mBatteryHidden;
 
     private DualToneHandler mDualToneHandler;
@@ -154,6 +154,9 @@ public class BatteryMeterView extends LinearLayout implements
         atts.recycle();
 
         mSettingObserver = new SettingObserver(new Handler(context.getMainLooper()));
+        mShowPercentAvailable = context.getResources().getBoolean(
+                com.android.internal.R.bool.config_battery_percentage_setting_available);
+
 
         addOnAttachStateChangeListener(
                 new DisableStateTracker(DISABLE_NONE, DISABLE2_SYSTEM_ICONS,
@@ -419,29 +422,36 @@ public class BatteryMeterView extends LinearLayout implements
             mThemedDrawable.setShowPercent(false);
             mCircleDrawable.setShowPercent(false);
             mFullCircleDrawable.setShowPercent(false);
-            if (!showing) {
-                mBatteryPercentView = loadPercentView();
-                if (mPercentageStyleId != 0) { // Only set if specified as attribute
-                    mBatteryPercentView.setTextAppearance(mPercentageStyleId);
+
+        final boolean systemSetting = 0 != Settings.System
+                .getIntForUser(getContext().getContentResolver(),
+                SHOW_BATTERY_PERCENT, 0, mUser);
+
+            if ((mShowPercentAvailable && systemSetting) || mForceShowPercent) {
+                if (!showing) {
+                    mBatteryPercentView = loadPercentView();
+                    if (mPercentageStyleId != 0) { // Only set if specified as attribute
+                        mBatteryPercentView.setTextAppearance(mPercentageStyleId);
+                    }
+                    if (mTextColor != 0) mBatteryPercentView.setTextColor(mTextColor);
+                    addView(mBatteryPercentView,
+                            new ViewGroup.LayoutParams(
+                                    LayoutParams.WRAP_CONTENT,
+                                    LayoutParams.MATCH_PARENT));
                 }
-                if (mTextColor != 0) mBatteryPercentView.setTextColor(mTextColor);
-                addView(mBatteryPercentView,
-                        new ViewGroup.LayoutParams(
-                                LayoutParams.WRAP_CONTENT,
-                                LayoutParams.MATCH_PARENT));
-            }
-            if (mBatteryStyle == BATTERY_STYLE_TEXT) {
-                mBatteryPercentView.setPaddingRelative(0, 0, 0, 0);
+                if (mBatteryStyle == BATTERY_STYLE_TEXT) {
+                    mBatteryPercentView.setPaddingRelative(0, 0, 0, 0);
+                } else {
+                    Resources res = getContext().getResources();
+                    mBatteryPercentView.setPaddingRelative(
+                            res.getDimensionPixelSize(R.dimen.battery_level_padding_start), 0, 0, 0);
+                }
             } else {
-                Resources res = getContext().getResources();
-                mBatteryPercentView.setPaddingRelative(
-                        res.getDimensionPixelSize(R.dimen.battery_level_padding_start), 0, 0, 0);
+                removeBatteryPercentView();
+                mThemedDrawable.setShowPercent(drawPercentInside);
+                mCircleDrawable.setShowPercent(drawPercentInside);
+                mFullCircleDrawable.setShowPercent(drawPercentInside);
             }
-        } else {
-            removeBatteryPercentView();
-            mThemedDrawable.setShowPercent(drawPercentInside);
-            mCircleDrawable.setShowPercent(drawPercentInside);
-            mFullCircleDrawable.setShowPercent(drawPercentInside);
         }
         updatePercentText();
     }
