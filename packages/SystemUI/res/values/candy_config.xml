@@ -49,7 +49,10 @@
     <!-- Allow devices to use unordinary cutout overlays -->
     <bool name="config_customCutout">false</bool>
 
-    <!-- CPUInfoService temperature sysfs path -->
-    <string name="config_cpuinfoSysTemp" translatable="false"></string>
+    <!-- The CPU temperature sensor path, defaults to empty -->
+    <string name="config_cpuTempSensor" translatable="false"></string> 
+
+    <!-- The CPU temperature divider, if needed -->
+    <integer name="config_cpuTempDivider" translatable="false">1</integer>
 
 </resources>
