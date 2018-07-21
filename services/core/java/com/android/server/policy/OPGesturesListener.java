@@ -21,7 +21,7 @@ package com.android.server.policy;
 import android.content.Context;
 import android.util.Slog;
 import android.view.MotionEvent;
-import android.view.WindowManagerPolicy.PointerEventListener;
+import android.view.WindowManagerPolicyConstants.PointerEventListener;
 
 public class OPGesturesListener implements PointerEventListener {
     private static final String TAG = "OPGestures";
