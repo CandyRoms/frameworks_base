@@ -182,4 +182,7 @@
 
     <!-- Tuner StatusBar blacklist -->
     <string name="tuner_cellular_title">Mobile</string>
+
+    <!-- Ambient Display Pixel-Like string -->
+    <string name="ambientmusic_songinfo">%s by %s</string>
 </resources>
