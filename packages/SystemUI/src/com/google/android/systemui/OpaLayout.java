@@ -14,6 +14,7 @@ import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.Settings;
+import android.provider.Settings.Secure;
 import android.util.ArraySet;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -106,12 +107,16 @@ public class OpaLayout extends FrameLayout implements ButtonInterface{
            resolver.registerContentObserver(Settings.System.getUriFor(
                   Settings.System.PIXEL_NAV_ANIMATION),
                   false, this, UserHandle.USER_CURRENT);
+           resolver.registerContentObserver(Settings.Secure.getUriFor(
+                  Settings.Secure.SWIPE_UP_TO_SWITCH_APPS_ENABLED),
+                  false, this, UserHandle.USER_CURRENT);
         }
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
            super.onChange(selfChange, uri);
            setOpaEnabled(true);
+           setHaloEnabled();
         }
     }
 
@@ -564,11 +569,24 @@ public class OpaLayout extends FrameLayout implements ButtonInterface{
         }
     }
 
+    public void setHaloEnabled() {
+        final int quickStepDefault = getContext().getResources().getBoolean(
+            com.android.internal.R.bool.config_swipe_up_gesture_default) ? 1 : 0;
+        final int quickStepOn = Settings.Secure.getIntForUser(getContext().getContentResolver(),
+                Settings.Secure.SWIPE_UP_TO_SWITCH_APPS_ENABLED, quickStepDefault, UserHandle.USER_CURRENT);
+        if (quickStepOn == 1) {
+            ((ImageView) mHalo).setVisibility(View.GONE);
+        } else {
+            ((ImageView) mHalo).setVisibility(View.VISIBLE);
+        }
+    }
+
     private void hideAllOpa(){
         fadeOutButton(mBlue);
         fadeOutButton(mRed);
         fadeOutButton(mYellow);
         fadeOutButton(mGreen);
+        setHaloEnabled();
     }
 
     private void showAllOpa(){
@@ -576,6 +594,7 @@ public class OpaLayout extends FrameLayout implements ButtonInterface{
         fadeInButton(mRed);
         fadeInButton(mYellow);
         fadeInButton(mGreen);
+        setHaloEnabled();
     }
 
     private void fadeInButton(View viewToFade){
