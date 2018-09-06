@@ -44,7 +44,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.WindowManagerGlobal;
 
-import com.android.internal.policy.IKeyguardDismissCallback;
+//import com.android.internal.policy.IKeyguardDismissCallback;
 
 import java.net.URISyntaxException;
 
