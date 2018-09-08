@@ -6119,5 +6119,17 @@ message MetricsEvent {
     // ---- End P Constants, all P constants go above this line ----
     // Add new aosp constants above this line.
     // END OF AOSP CONSTANTS
+
+    // CANDY custom constants
+    CANDY = 1500;
+
+    // Candy
+    CANDYWALLS = 1501;
+
+    // CandyShop
+    CANDYSHOP = 1502;
+
+    // Custom Quick Settings tiles
+    CUSTOM_QUICK_TILES = 1503;
   }
 }
