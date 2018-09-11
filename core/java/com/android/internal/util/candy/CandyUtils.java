@@ -44,6 +44,14 @@ import java.util.List;
 
 public class CandyUtils {
 
+    // Method to turn off the screen
+    public static void switchScreenOff(Context ctx) {
+        PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
+        if (pm!= null) {
+            pm.goToSleep(SystemClock.uptimeMillis());
+        }
+    }
+
     public static boolean isAvailableApp(String packageName, Context context) {
         Context mContext = context;
         final PackageManager pm = mContext.getPackageManager();
