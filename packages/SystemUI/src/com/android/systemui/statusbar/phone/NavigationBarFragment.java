@@ -1413,14 +1413,6 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         return mBarMode == NAVIGATION_MODE_DEFAULT || mScreenPinningEnabled;
     }
 
-    private void notifyPulseScreenOn(boolean on) {
-        mNavigationBarView.notifyPulseScreenOn(on);
-    }
-
-    private void sendIntentToPulse(Intent intent) {
-        mNavigationBarView.sendIntentToPulse(intent);
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -1429,12 +1421,6 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
             changeNavigator();
             mNeedsBarRefresh = false;
         }
-    }
-
-    @Override
-    public void onDetach() {
-        mNavigationBarView.dispose();
-        super.onDetach();
     }
 
     public void setPanelExpanded(boolean expanded) {
