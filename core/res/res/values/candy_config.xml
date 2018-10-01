@@ -80,4 +80,6 @@
          backgrounds (requires config_allowNotificationIconTinting to be true)-->
     <bool name="config_useDarkBgNotificationIconTinting">false</bool>
 
+    <!-- Whether to cleanup fingerprints upon connection to the daemon and when user switches -->
+    <bool name="config_cleanupUnusedFingerprints">true</bool>
 </resources>
