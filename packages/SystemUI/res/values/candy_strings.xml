@@ -112,5 +112,8 @@
     <string name="theme_info_title">What is this?</string>
     <string name="theme_info_message">The Sweetener tile is a unique but easy to use tile that allows the user to change the system Candy flavor or sweetener.\n\nTo change between flavors and sweeteners, simply long press on the tile and then press again to select from the options offered.</string>
 
-</resources>
+     <!-- Reboot/Recovery QS Tile -->
+    <string name="quick_settings_reboot_label">Reboot</string>
+    <string name="quick_settings_reboot_recovery_label">Recovery</string>
 
+</resources>
