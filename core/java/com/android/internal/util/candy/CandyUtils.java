@@ -30,6 +30,8 @@ import android.net.ConnectivityManager;
 import android.os.BatteryManager;
 import android.os.UserHandle;
 import android.hardware.input.InputManager;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -50,6 +52,8 @@ import java.util.Locale;
 
 public class CandyUtils {
 
+    public static final String TAG = "CandyUtils";
+   
     private static int sDeviceType = -1;
     private static final int DEVICE_PHONE = 0;
     private static final int DEVICE_HYBRID = 1;
@@ -240,5 +244,11 @@ public class CandyUtils {
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
         float px = 24 * (metrics.densityDpi / 160f);
         return result > Math.round(px);
+    }
+
+    public static boolean deviceHasCompass(Context ctx) {
+        SensorManager sm = (SensorManager) ctx.getSystemService(Context.SENSOR_SERVICE);
+        return sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null
+                && sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null;
     }
 }
