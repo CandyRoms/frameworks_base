@@ -278,6 +278,7 @@ import com.android.internal.policy.KeyguardDismissCallback;
 import com.android.internal.policy.PhoneWindow;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.candy.CandyUtils;
+import com.android.internal.util.candy.DeviceUtils;
 import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.ScreenshotHelper;
 import com.android.internal.util.ScreenShapeHelper;
@@ -2614,7 +2615,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     sbar.toggleNavigationBar(mHasNavigationBar);
                 } catch (RemoteException e1) {}
             }
-            mHasNavigationBar = DeviceUtils.deviceSupportNavigationBar(mContext);
             mUseGestureButton = Settings.System.getIntForUser(resolver,
                     Settings.System.USE_BOTTOM_GESTURE_NAVIGATION, 0,
                     UserHandle.USER_CURRENT) != 0;
