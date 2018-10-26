@@ -352,7 +352,7 @@ public class ThemeTile extends QSTileImpl<BooleanState> {
 
     @Override
     public boolean isAvailable() {
-        return !aosipUtils.isPackageInstalled(mContext, SUBS_PACKAGE);
+        return !CandyUtils.isPackageInstalled(mContext, SUBS_PACKAGE);
     }
 
     @Override
