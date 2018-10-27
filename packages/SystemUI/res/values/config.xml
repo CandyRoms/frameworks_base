@@ -117,13 +117,14 @@
     <integer name="quick_settings_user_time_settings_tile_span">1</integer>
 
     <!-- The default tiles to display in QuickSettings -->
+    <!-- ORDER SHOULD MATCH "quick_settings_tiles_stock" BELOW! -->
     <string name="quick_settings_tiles_default" translatable="false">
-        wifi,bt,dnd,flashlight,rotation,battery,cell,airplane,cast
+        wifi,bt,dnd,flashlight,rotation,battery,cell,airplane,cast,nfc,location,hotspot
     </string>
 
-    <!-- Tiles native to System UI. Order should match "quick_settings_tiles_default" -->
+    <!-- Tiles native to System UI. ORDER SHOULD MATCH "quick_settings_tiles_default" ABOVE! -->
     <string name="quick_settings_tiles_stock" translatable="false">
-        wifi,cell,battery,dnd,flashlight,rotation,bt,airplane,cast,nfc,location,hotspot,inversion,saver,work,night,theme,reboot,screenshot,screenrecord,sound,expanded_desktop,cpuinfo
+        wifi,bt,dnd,flashlight,rotation,battery,cell,airplane,cast,nfc,location,hotspot,inversion,saver,work,night,theme,reboot,screenshot,screenrecord,sound,expanded_desktop,cpuinfo,music
     </string>
 
     <!-- The tiles to display in QuickSettings -->
