@@ -4270,6 +4270,16 @@ public final class Settings {
                 BOOLEAN_VALIDATOR;
 
         /**
+         * Weather lockscreen temperature scale
+         * @hide
+         */
+        public static final String WEATHER_LOCKSCREEN_UNIT = "weather_lockscreen_unit";
+
+        /** @hide */
+        private static final Validator WEATHER_LOCKSCREEN_UNIT_VALIDATOR =
+               BOOLEAN_VALIDATOR;
+
+        /**
          * IMPORTANT: If you add a new public settings you also have to add it to
          * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
          * it to PRIVATE_SETTINGS below. Also add a validator that can validate
@@ -4283,7 +4293,7 @@ public final class Settings {
          */
         public static final String PIXEL_NAV_ANIMATION = "pixel_nav_animation";
 
-        /*
+        /**
          * How many rows to show in the qs panel when in portrait
          * @hide
          */
@@ -4335,7 +4345,7 @@ public final class Settings {
          */
         public static final String ACCENT_PICKER = "accent_picker";
 
-        /*
+        /**
          * Toast icon
          * @hide
          */
@@ -4867,6 +4877,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(ONE_HAND_MODE_ENABLED);
             PRIVATE_SETTINGS.add(STATUS_BAR_LOGO);
             PRIVATE_SETTINGS.add(MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD);
+            PRIVATE_SETTINGS.add(WEATHER_LOCKSCREEN_UNIT);
         }
 
         /**
@@ -4966,6 +4977,7 @@ public final class Settings {
                     USE_BOTTOM_GESTURE_NAVIGATION_VALIDATOR);
             VALIDATORS.put(ONE_HAND_MODE_ENABLED, ONE_HAND_MODE_ENABLED_VALIDATOR);
             VALIDATORS.put(MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD, MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD_VALIDATOR);
+            VALIDATORS.put(WEATHER_LOCKSCREEN_UNIT, WEATHER_LOCKSCREEN_UNIT_VALIDATOR);
         }
 
         /**

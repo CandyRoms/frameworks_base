@@ -82,4 +82,8 @@
 
     <!-- The translation for disappearing security views after having solved them. -->
     <dimen name="disappear_y_translation">-32dp</dimen>
+
+     <!-- Weather condition icon  -->
+    <dimen name="weather_icon_size">17dp</dimen>
+
 </resources>
