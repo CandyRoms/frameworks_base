@@ -150,7 +150,7 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
     private int mNavigationBarMode;
     private boolean mAccessibilityFeedbackEnabled;
     private AccessibilityManager mAccessibilityManager;
-    private MagnificationContentObserver mMagnificationObserver;
+    private SettingsObserver mSettingsObserver;
     private ContentResolver mContentResolver;
     private final MetricsLogger mMetricsLogger = Dependency.get(MetricsLogger.class);
 
@@ -162,6 +162,8 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
     private WindowManager mWindowManager;
     private CommandQueue mCommandQueue;
     private long mLastLockToAppLongPress;
+
+    private boolean mFullGestureMode;
 
     private Locale mLocale;
     private int mLayoutDirection;
@@ -202,6 +204,7 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
     private final OverviewProxyListener mOverviewProxyListener = new OverviewProxyListener() {
         @Override
         public void onConnectionChanged(boolean isConnected) {
+            setFullGestureMode(); // updateStates will update back icon visibility
             mNavigationBarView.updateStates();
             updateScreenPinningGestures();
         }
@@ -214,6 +217,7 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
 
         @Override
         public void onInteractionFlagsChanged(@InteractionType int flags) {
+            setFullGestureMode();
             mNavigationBarView.updateStates();
             updateScreenPinningGestures();
         }
@@ -221,10 +225,12 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         @Override
         public void onBackButtonAlphaChanged(float alpha, boolean animate) {
             final ButtonDispatcher backButton = mNavigationBarView.getBackButton();
-            if (backButton != null) {
-                backButton.setVisibility(alpha > 0 ? View.VISIBLE : View.INVISIBLE);
-                backButton.setAlpha(alpha, animate);
+            if (mFullGestureMode) {
+                backButton.setVisibility(View.INVISIBLE);
+                return;
             }
+            backButton.setVisibility(alpha > 0 ? View.VISIBLE : View.INVISIBLE);
+            backButton.setAlpha(alpha, animate);
         }
     };
 
@@ -244,11 +250,14 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         Dependency.get(AccessibilityManagerWrapper.class).addCallback(
                 mAccessibilityListener);
         mContentResolver = getContext().getContentResolver();
-        mMagnificationObserver = new MagnificationContentObserver(
+        mSettingsObserver = new SettingsObserver(
                 getContext().getMainThreadHandler());
         mContentResolver.registerContentObserver(Settings.Secure.getUriFor(
                 Settings.Secure.ACCESSIBILITY_DISPLAY_MAGNIFICATION_NAVBAR_ENABLED), false,
-                mMagnificationObserver, UserHandle.USER_ALL);
+                mSettingsObserver, UserHandle.USER_ALL);
+        mContentResolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.FULL_GESTURE_NAVBAR), false,
+                mSettingsObserver, UserHandle.USER_ALL);
 
         if (savedInstanceState != null) {
             mDisabledFlags1 = savedInstanceState.getInt(EXTRA_DISABLE_STATE, 0);
@@ -298,8 +307,7 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         Dependency.get(AccessibilityManagerWrapper.class).removeCallback(
                 mAccessibilityListener);
         mContentResolver.unregisterContentObserver(mNavbarObserver);
-        mContentResolver.unregisterContentObserver(mMagnificationObserver);
-        mContentResolver.unregisterContentObserver(mNavbarObserver);
+        mContentResolver.unregisterContentObserver(mSettingsObserver);
         try {
             WindowManagerGlobal.getWindowManagerService()
                     .removeRotationWatcher(mRotationWatcher);
@@ -350,6 +358,8 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         notifyNavigationBarScreenOn();
         mOverviewProxyService.addCallback(mOverviewProxyListener);
         mNavigationBarView.notifyInflateFromUser();
+
+        setFullGestureMode();
     }
 
     @Override
@@ -1124,9 +1134,9 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
     private final AccessibilityServicesStateChangeListener mAccessibilityListener =
             this::updateAccessibilityServicesState;
 
-    private class MagnificationContentObserver extends ContentObserver {
+    private class SettingsObserver extends ContentObserver {
 
-        public MagnificationContentObserver(Handler handler) {
+        public SettingsObserver(Handler handler) {
             super(handler);
         }
 
@@ -1143,6 +1153,7 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
     private void setFullGestureMode() {
         boolean fullModeEnabled = false;
         boolean dt2sEnabled = false;
+        boolean enabled = false;
         try {
             if (Settings.System.getIntForUser(mContentResolver,
                     Settings.System.FULL_GESTURE_NAVBAR,
@@ -1156,7 +1167,7 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
             }
         } catch (Settings.SettingNotFoundException e) {
         }
-	//TODO: We need to get this done in sometime or find a way for the same
+	    //TODO: We need to get this done in sometime or find a way for the same
         mFullGestureMode = mOverviewProxyService.shouldShowSwipeUpUI() && fullModeEnabled;
         if (mOldNavBarView != null) {
             mOldNavBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
