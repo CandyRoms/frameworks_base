@@ -4506,10 +4506,9 @@ public final class Settings {
         public static final String FORCE_EXPANDED_NOTIFICATIONS = "force_expanded_notifications";
 
         /**
-         * Wether navigation bar is enabled or not
          * @hide
          */
-        public static final String NAVIGATION_BAR_SHOW = "navigation_bar_show";
+        public static final String FULL_GESTURE_NAVBAR = "full_gesture_navbar";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings

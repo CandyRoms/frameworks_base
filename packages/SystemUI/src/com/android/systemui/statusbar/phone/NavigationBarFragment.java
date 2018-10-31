@@ -229,6 +229,10 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
                 backButton.setVisibility(View.INVISIBLE);
                 return;
             }
+            if (mFullGestureMode) {
+                backButton.setVisibility(View.INVISIBLE);
+                return;
+            }
             backButton.setVisibility(alpha > 0 ? View.VISIBLE : View.INVISIBLE);
             backButton.setAlpha(alpha, animate);
         }
@@ -257,9 +261,6 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
                 mSettingsObserver, UserHandle.USER_ALL);
         mContentResolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.FULL_GESTURE_NAVBAR), false,
-                mSettingsObserver, UserHandle.USER_ALL);
-        mContentResolver.registerContentObserver(Settings.System.getUriFor(
-                Settings.System.FULL_GESTURE_NAVBAR_DT2S), false,
                 mSettingsObserver, UserHandle.USER_ALL);
 
         if (savedInstanceState != null) {
@@ -310,6 +311,7 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         Dependency.get(AccessibilityManagerWrapper.class).removeCallback(
                 mAccessibilityListener);
         mContentResolver.unregisterContentObserver(mNavbarObserver);
+        mContentResolver.unregisterContentObserver(mMagnificationObserver);
         mContentResolver.unregisterContentObserver(mSettingsObserver);
         try {
             WindowManagerGlobal.getWindowManagerService()
@@ -361,7 +363,6 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         notifyNavigationBarScreenOn();
         mOverviewProxyService.addCallback(mOverviewProxyListener);
         mNavigationBarView.notifyInflateFromUser();
-
         setFullGestureMode();
     }
 
@@ -1147,44 +1148,25 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         public void onChange(boolean selfChange) {
             NavigationBarFragment.this.updateAccessibilityServicesState(mAccessibilityManager);
             NavigationBarFragment.this.setFullGestureMode();
-            if (mOldNavBarView != null) {
-                mOldNavBarView.updateNavButtonIcons();
+            if (mNavigationBarView != null) {
+                mNavigationBarView.updateNavButtonIcons();
             }
         }
     }
 
     private void setFullGestureMode() {
-        boolean fullModeEnabled = false;
-        boolean dt2sEnabled = false;
-        int mode = Settings.Secure.getInt(mContentResolver,
-                Settings.Secure.NAVIGATION_BAR_MODE, 0);
+        boolean enabled = false;
         try {
             if (Settings.System.getIntForUser(mContentResolver,
                     Settings.System.FULL_GESTURE_NAVBAR,
                     UserHandle.USER_CURRENT) == 1) {
-                fullModeEnabled = true;
-            }
-            if (Settings.System.getIntForUser(mContentResolver,
-                    Settings.System.FULL_GESTURE_NAVBAR_DT2S,
-                    UserHandle.USER_CURRENT) == 1) {
-                dt2sEnabled = fullModeEnabled;
+                enabled = true;
             }
         } catch (Settings.SettingNotFoundException e) {
         }
-
-	    //TODO: We need to get this done in sometime or find a way for the same
-        mFullGestureMode = mOverviewProxyService.shouldShowSwipeUpUI() && fullModeEnabled;
-        if (mode < 2) {
-            // Stock and Stock Gestures nav
-            if (mOldNavBarView != null) {
-                mOldNavBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
-            }
-        } else {
-            // SmartBar and Fling
-            //if (mNavigationBarView != null) {
-            //    mNavigationBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
-            // do nothing
-            //}
+        mFullGestureMode = mOverviewProxyService.shouldShowSwipeUpUI() && enabled;
+        if (mNavigationBarView != null) {
+            mNavigationBarView.setFullGestureMode(mFullGestureMode);
         }
     }
 

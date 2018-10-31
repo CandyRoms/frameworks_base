@@ -46,7 +46,6 @@ import android.util.Log;
 import android.util.Slog;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.KeyEvent;
 import android.view.WindowManagerGlobal;
 import android.view.animation.DecelerateInterpolator;
@@ -93,9 +92,6 @@ public class QuickStepController implements GestureHelper {
     private View mCurrentNavigationBarView;
 
     private boolean mBackActionScheduled;
-    private boolean isDoubleTapPending;
-    private boolean wasConsumed;
-    private static final int sDoubleTapTimeout = ViewConfiguration.getDoubleTapTimeout() - 100;
 
     private final Handler mHandler = new Handler();
     private final Rect mTrackRect = new Rect();
@@ -342,22 +338,11 @@ public class QuickStepController implements GestureHelper {
                 break;
             }
             case MotionEvent.ACTION_CANCEL:
-                wasConsumed = true;
-                isDoubleTapPending = false;
+                mBackActionScheduled = false;
                 break;
             case MotionEvent.ACTION_UP:
-               if (mNavigationBarView.isFullGestureMode()) {
-                    if (wasConsumed) {
-                        wasConsumed = false;
-                    } else {
-                        isDoubleTapPending = true;
-                        mHandler.postDelayed(mDoubleTapCancelTimeout,
-                        /* if dt2s is disabled we don'need to wait a 2nd tap to call the home action */
-                        mNavigationBarView.isDt2s() ? sDoubleTapTimeout : 0);
-                    }
-               }
-
                 if (mBackActionScheduled) {
+                    mBackActionScheduled = false;
                     CandyUtils.sendKeycode(KeyEvent.KEYCODE_BACK);
                 } else {
                     endQuickScrub(true /* animate */);
