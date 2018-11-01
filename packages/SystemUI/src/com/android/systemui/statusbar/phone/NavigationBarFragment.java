@@ -258,6 +258,9 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         mContentResolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.FULL_GESTURE_NAVBAR), false,
                 mSettingsObserver, UserHandle.USER_ALL);
+        mContentResolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.FULL_GESTURE_NAVBAR_DT2S), false,
+                mSettingsObserver, UserHandle.USER_ALL);
 
         if (savedInstanceState != null) {
             mDisabledFlags1 = savedInstanceState.getInt(EXTRA_DISABLE_STATE, 0);
@@ -1153,7 +1156,8 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
     private void setFullGestureMode() {
         boolean fullModeEnabled = false;
         boolean dt2sEnabled = false;
-        boolean enabled = false;
+        int mode = Settings.Secure.getInt(getContentResolver(),
+                Settings.Secure.NAVIGATION_BAR_MODE, 0);
         try {
             if (Settings.System.getIntForUser(mContentResolver,
                     Settings.System.FULL_GESTURE_NAVBAR,
@@ -1167,10 +1171,23 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
             }
         } catch (Settings.SettingNotFoundException e) {
         }
+
 	    //TODO: We need to get this done in sometime or find a way for the same
         mFullGestureMode = mOverviewProxyService.shouldShowSwipeUpUI() && fullModeEnabled;
-        if (mOldNavBarView != null) {
-            mOldNavBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
+        if (mode < 2) {
+            // Stock and Stock Gestures nav
+            dt2sEnabled = fullModeEnabled;
+            if (mOldNavBarView != null) {
+                mOldNavBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
+            }
+        } else {
+            // SmartBar and Fling
+            if (mNavigationBarView != null) {
+                mNavigationBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
+            }
+        }
+        if (mNavigationBarView != null) {
+            mNavigationBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
         }
     }
 
