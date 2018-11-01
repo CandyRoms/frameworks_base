@@ -1095,6 +1095,12 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         }
     }
 
+    public final void dispose() {
+        if (mPulse != null) {
+            mPulse.doUnlinkVisualizer();
+        }
+    }
+
     public final void notifyInflateFromUser() {
         if (mPulse != null) {
             mPulse.notifyScreenOn(true);
