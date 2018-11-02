@@ -18,6 +18,7 @@ package com.android.systemui.statusbar.phone;
 
 import static android.view.MotionEvent.ACTION_DOWN;
 import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_BACK;
+import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_DEAD_ZONE;
 import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_HOME;
 import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_NONE;
 
