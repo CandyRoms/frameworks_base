@@ -66,6 +66,7 @@ public class NotificationMediaManager implements Dumpable {
 
     private Set<String> mBlacklist = new HashSet<String>();
 
+    // callback into NavigationFragment for Pulse
     public interface MediaUpdateListener {
         public default void onMediaUpdated(boolean playing) {}
         public default void setPulseColors(boolean isColorizedMedia, int[] colors) {}
@@ -393,6 +394,11 @@ public class NotificationMediaManager implements Dumpable {
             boolean mediaNotification= false;
             // check if the app supports new media notifications, if so then set it as entry
             // to get metadata from
+            if (!mBlacklist.isEmpty() && mBlacklist.contains(pkg)) {
+                // don't play Pulse for this app
+                return;
+            }
+
             for (int i = 0; i < N; i++) {
                 final NotificationData.Entry entry = activeNotifications.get(i);
                 if (isMediaNotification(entry) && entry.notification.getPackageName().equals(pkg)) {
@@ -454,6 +460,15 @@ public class NotificationMediaManager implements Dumpable {
         for (MediaUpdateListener listener : mListeners) {
             if (listener != null) {
                 listener.setPulseColors(isColorizedMEdia, colors);
+            }
+        }
+    }
+
+    public void setPulseBlacklist(String blacklist) {
+        mBlacklist.clear();
+        if (blacklist != null) {
+            for (String app : blacklist.split("\\|")) {
+                mBlacklist.add(app);
             }
         }
     }
