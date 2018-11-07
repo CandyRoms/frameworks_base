@@ -80,6 +80,7 @@ public class ThemeAccentUtils {
         "com.android.systemui.qstile.roundedsquare", // 2
         "com.android.systemui.qstile.squircle", // 3
         "com.android.systemui.qstile.teardrop", // 4
+        "com.android.systemui.qstile.hexagon", // 5
     };
 
     // Unloads the stock dark theme
