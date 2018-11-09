@@ -290,4 +290,13 @@ public class CandyUtils {
             pm.goToSleep(SystemClock.uptimeMillis());
         }
     }
+
+    public static void takeScreenrecord(int mode) {
+        IWindowManager wm = WindowManagerGlobal.getWindowManagerService();
+        try {
+            wm.screenRecordAction(mode);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 }
