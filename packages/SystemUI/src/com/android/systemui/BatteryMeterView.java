@@ -76,6 +76,7 @@ public class BatteryMeterView extends LinearLayout implements
     private int mShowPercent;
     private boolean mCharging;
     private boolean mPowerSave;
+    private boolean mShowPercentAvailable;
 
     private int mDarkModeBackgroundColor;
     private int mDarkModeFillColor;
@@ -119,6 +120,9 @@ public class BatteryMeterView extends LinearLayout implements
         atts.recycle();
 
         mSettingObserver = new SettingObserver(new Handler(context.getMainLooper()));
+        mShowPercentAvailable = context.getResources().getBoolean(
+                com.android.internal.R.bool.config_battery_percentage_setting_available);
+
 
         addOnAttachStateChangeListener(
                 new DisableStateTracker(DISABLE_NONE, DISABLE2_SYSTEM_ICONS));

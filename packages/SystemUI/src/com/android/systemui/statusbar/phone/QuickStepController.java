@@ -192,7 +192,7 @@ public class QuickStepController implements GestureHelper {
                 mNavigationBarView.getDownHitTarget() == HIT_TARGET_DEAD_ZONE;
         if (mOverviewEventSender.getProxy() == null || (!mNavigationBarView.isQuickScrubEnabled()
                 && !mNavigationBarView.isQuickStepSwipeUpEnabled())) {
-            return false;
+            return deadZoneConsumed;
         }
         mNavigationBarView.requestUnbufferedDispatch(event);
 
@@ -437,9 +437,6 @@ public class QuickStepController implements GestureHelper {
             mTrackAnimator = new AnimatorSet();
             mTrackAnimator.playTogether(trackAnimator, navBarAnimator);
             mTrackAnimator.start();
-
-            // Disable slippery for quick scrub to not cancel outside the nav bar
-            mNavigationBarView.updateSlippery();
 
             try {
                 mOverviewEventSender.getProxy().onQuickScrubStart();
