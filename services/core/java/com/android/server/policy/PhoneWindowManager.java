@@ -2768,11 +2768,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.VOLUME_BUTTON_MUSIC_CONTROL, 1,
                     UserHandle.USER_CURRENT) != 0;
             IStatusBarService sbar = getStatusBarService();
-            if (sbar != null) {
-                try {
-                    sbar.toggleNavigationBar(mHasNavigationBar);
-                } catch (RemoteException e1) {}
-            }
             mUseGestureButton = Settings.System.getIntForUser(resolver,
                     Settings.System.USE_BOTTOM_GESTURE_NAVIGATION, 0,
                     UserHandle.USER_CURRENT) != 0;
