@@ -155,6 +155,5 @@ oneway interface IStatusBar
     /**
      * Candy
      */
-    void toggleNavigationBar(boolean enable);
     void toggleCameraFlash();
 }

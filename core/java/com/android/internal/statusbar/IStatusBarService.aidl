@@ -105,11 +105,6 @@ interface IStatusBarService
     /**
      * Candy
      */
-    void toggleNavigationBar(boolean enable);
-
-    /**
-     * Candy
-     */
     void toggleCameraFlash();
     void restartUI();
 }
