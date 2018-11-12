@@ -4337,12 +4337,6 @@ public final class Settings {
         /**
          * @hide
          */
-        public static final String FULL_GESTURE_NAVBAR_DT2S = "full_gesture_navbar_dt2s";
-
-
-        /**
-         * @hide
-         */
         public static final String SCREENRECORD_QUALITY_MODE = "screenrecord_quality_mode";
 
         /**
