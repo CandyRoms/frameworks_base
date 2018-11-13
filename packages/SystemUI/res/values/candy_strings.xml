@@ -59,6 +59,8 @@
     <string name="right">Right</string>
     <string name="navbar_editor_title">Editor</string>
     <string name="navbar_editor_summary">Configure navigaton bar</string>
+    <string name="menu_ime_always_show">Menu / Keyboard Switcher (always show)</string>
+    <string name="search">Search</string>
 
     <!-- Advance location quick setting tile -->
     <string name="quick_settings_secondary_location_off"></string>
