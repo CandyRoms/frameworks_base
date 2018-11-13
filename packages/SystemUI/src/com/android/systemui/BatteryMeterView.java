@@ -27,6 +27,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.ContentObserver;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.Settings;
@@ -69,6 +70,7 @@ public class BatteryMeterView extends LinearLayout implements
     private TextView mBatteryPercentView;
     private String mBatteryEstimate = null;
 
+    private static final String FONT_FAMILY = "sans-serif-medium";
     private BatteryController mBatteryController;
     private SettingObserver mSettingObserver;
     private int mTextColor;
@@ -296,7 +298,9 @@ public class BatteryMeterView extends LinearLayout implements
     }
 
     private void updatePercentText() {
+        Typeface tf = Typeface.create(FONT_FAMILY, Typeface.NORMAL);
         if (mBatteryController != null && mBatteryPercentView != null) {
+            mBatteryPercentView.setTypeface(tf);
             if (!mShowEstimate || mCharging) {
                 setPercentTextAtCurrentLevel();
             } else {
