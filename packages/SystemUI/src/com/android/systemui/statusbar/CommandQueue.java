@@ -102,6 +102,7 @@ public class CommandQueue extends IStatusBar.Stub {
     private static final int MSG_TOGGLE_NAVIGATION_EDITOR      = 52 << MSG_SHIFT;
     private static final int MSG_DISPATCH_NAVIGATION_EDITOR_RESULTS = 53 << MSG_SHIFT;
     private static final int MSG_TOGGLE_NAVIGATION_BAR         = 54 << MSG_SHIFT;
+    private static final int MSG_HANDLE_SYSTEM_NAVIGATION_KEY  = 55 << MSG_SHIFT;
 
 
     public static final int FLAG_EXCLUDE_NONE = 0;
@@ -186,6 +187,7 @@ public class CommandQueue extends IStatusBar.Stub {
         default void toggleNavigationEditor() {}
         default void dispatchNavigationEditorResults(Intent intent) {}
 
+        default void handleSystemNavigationKey(int key) {}
         default void toggleNavigationBar(boolean enable) { }
     }
 
@@ -611,13 +613,6 @@ public class CommandQueue extends IStatusBar.Stub {
         }
     }
 
-    public void toggleNavigationBar(boolean enable) {
-        synchronized (mLock) {
-            mHandler.removeMessages(MSG_TOGGLE_NAVIGATION_BAR);
-            mHandler.obtainMessage(MSG_TOGGLE_NAVIGATION_BAR, enable ? 1 : 0, 0, null).sendToTarget();
-        }
-    }
-
     public void toggleCameraFlash() {
         synchronized (mLock) {
             mHandler.removeMessages(MSG_TOGGLE_CAMERA_FLASH);
@@ -629,6 +624,21 @@ public class CommandQueue extends IStatusBar.Stub {
         synchronized (mLock) {
             mHandler.removeMessages(MSG_RESTART_UI);
             mHandler.obtainMessage(MSG_RESTART_UI).sendToTarget();
+        }
+    }
+
+    public void toggleNavigationBar(boolean enable) {
+        synchronized (mLock) {
+            mHandler.removeMessages(MSG_TOGGLE_NAVIGATION_BAR);
+            mHandler.obtainMessage(MSG_TOGGLE_NAVIGATION_BAR, enable ? 1 : 0, 0, null).sendToTarget();
+        }
+    }
+
+    @Override
+    public void handleSystemNavigationKey(int key) throws RemoteException {
+        synchronized (mLock) {
+            mHandler.removeMessages(MSG_HANDLE_SYSTEM_NAVIGATION_KEY);
+            mHandler.obtainMessage(MSG_HANDLE_SYSTEM_NAVIGATION_KEY, key).sendToTarget();
         }
     }
 
@@ -917,6 +927,11 @@ public class CommandQueue extends IStatusBar.Stub {
                 case MSG_TOGGLE_NAVIGATION_BAR:
                     for (int i = 0; i < mCallbacks.size(); i++) {
                         mCallbacks.get(i).toggleNavigationBar(msg.arg1 != 0);
+                    }
+                    break;
+                case MSG_HANDLE_SYSTEM_NAVIGATION_KEY:
+                    for (int i = 0; i < mCallbacks.size(); i++) {
+                        mCallbacks.get(i).handleSystemNavigationKey(msg.arg1);
                     }
                     break;
             }

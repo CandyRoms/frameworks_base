@@ -135,8 +135,9 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
     private static final int LOCK_TO_APP_GESTURE_TOLERENCE = 200;
 
     public static final int NAVIGATION_MODE_DEFAULT = 0;
-    public static final int NAVIGATION_MODE_SMARTBAR = 1;
-    public static final int NAVIGATION_MODE_FLING = 2;
+    public static final int NAVIGATION_MODE_DEFAULT_GESTURES = 1;
+    public static final int NAVIGATION_MODE_SMARTBAR = 2;
+    public static final int NAVIGATION_MODE_FLING = 3;
 
     protected Navigator mNavigationBarView = null;
 

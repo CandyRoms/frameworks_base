@@ -321,8 +321,6 @@ import java.lang.reflect.Constructor;
 
 import dalvik.system.PathClassLoader;
 
-import dalvik.system.PathClassLoader;
-
 /**
  * WindowManagerPolicy implementation for the Android phone UI.  This
  * introduces a new method suffix, Lp, for an internal lock of the
@@ -2823,7 +2821,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mVolumeMusicControl = Settings.System.getIntForUser(resolver,
                     Settings.System.VOLUME_BUTTON_MUSIC_CONTROL, 1,
                     UserHandle.USER_CURRENT) != 0;
-            IStatusBarService sbar = getStatusBarService();
             mUseGestureButton = Settings.System.getIntForUser(resolver,
                     Settings.System.USE_BOTTOM_GESTURE_NAVIGATION, 0,
                     UserHandle.USER_CURRENT) != 0;
@@ -2845,7 +2842,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if (sbar != null) {
                 try {
                     sbar.toggleNavigationBar(mHasNavigationBar);
-                } catch (RemoteException e1) {}
+                } catch (RemoteException e) {}
             }
         }
 
