@@ -71,4 +71,7 @@
 
     <!-- IMESwitcher -->
     <java-symbol type="bool" name="config_show_cmIMESwitcher"/>
+
+  <!-- Whether the device has outdated qti-telephony-common.jar -->
+  <java-symbol type="bool" name="config_oldQtiTelephony" />
 </resources>
