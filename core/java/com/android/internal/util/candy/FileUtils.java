@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -94,6 +95,27 @@ public final class FileUtils {
     }
 
     /**
+     * Write a string value to the specified file.
+     * @param filename      The filename
+     * @param value         The value
+     */
+    public static void writeValue(String filename, String value) {
+        if (filename == null) {
+            return;
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(new File(filename));
+            fos.write(value.getBytes());
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Checks whether the given file exists
      *
      * @return true if exists, false if not
@@ -108,7 +130,7 @@ public final class FileUtils {
      *
      * @return true if readable, false if not
      */
-    public static boolean isFileReadable(String fileName) {
+    public static boolean fileReadable(String fileName) {
         final File file = new File(fileName);
         return file.exists() && file.canRead();
     }
@@ -118,7 +140,7 @@ public final class FileUtils {
      *
      * @return true if writable, false if not
      */
-    public static boolean isFileWritable(String fileName) {
+    public static boolean fileWritable(String fileName) {
         final File file = new File(fileName);
         return file.exists() && file.canWrite();
     }
