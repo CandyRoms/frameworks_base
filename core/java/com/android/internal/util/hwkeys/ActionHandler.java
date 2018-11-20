@@ -104,7 +104,9 @@ public class ActionHandler {
     public static final String SYSTEMUI_TASK_EXPANDED_DESKTOP = "task_expanded_desktop";
     public static final String SYSTEMUI_TASK_SCREENOFF = "task_screenoff";
     public static final String SYSTEMUI_TASK_KILL_PROCESS = "task_killcurrent";
+    public static final String SYSTEMUI_TASK_ASSIST = "task_assist";
     public static final String SYSTEMUI_TASK_GOOGLE_ASSISTANT = "task_google_assistant";
+    public static final String SYSTEMUI_TASK_GOOGLE_NOW_ON_TAP = "task_google_now_on_tap";
     public static final String SYSTEMUI_TASK_POWER_MENU = "task_powermenu";
     public static final String SYSTEMUI_TASK_TORCH = "task_torch";
     public static final String SYSTEMUI_TASK_CAMERA = "task_camera";
@@ -113,6 +115,7 @@ public class ActionHandler {
     public static final String SYSTEMUI_TASK_WIFIAP = "task_wifiap";
     public static final String SYSTEMUI_TASK_RECENTS = "task_recents";
     public static final String SYSTEMUI_TASK_LAST_APP = "task_last_app";
+    public static final String SYSTEMUI_TASK_VOICE_SEARCH = "task_voice_search";
     public static final String SYSTEMUI_TASK_APP_SEARCH = "task_app_search";
     public static final String SYSTEMUI_TASK_MENU = "task_menu";
     public static final String SYSTEMUI_TASK_BACK = "task_back";
@@ -169,7 +172,10 @@ public class ActionHandler {
         ExpandedDesktop(SYSTEMUI_TASK_EXPANDED_DESKTOP, SYSTEMUI, "label_action_expanded_desktop", "ic_sysbar_expanded_desktop"),
         ScreenOff(SYSTEMUI_TASK_SCREENOFF, SYSTEMUI, "label_action_screen_off", "ic_sysbar_screen_off"),
         KillApp(SYSTEMUI_TASK_KILL_PROCESS, SYSTEMUI, "label_action_force_close_app", "ic_sysbar_killtask"),
+        Assistant(SYSTEMUI_TASK_ASSIST, SYSTEMUI, "label_action_search_assistant", "ic_sysbar_assist"),
         GoogleAssistant(SYSTEMUI_TASK_GOOGLE_ASSISTANT, SYSTEMUI, "label_action_google_assistant", "ic_sysbar_google_assistant"),
+        GoogleNowOnTap(SYSTEMUI_TASK_GOOGLE_NOW_ON_TAP, SYSTEMUI, "label_action_google_now_on_tap", "ic_sysbar_google_now_on_tap"),
+        VoiceSearch(SYSTEMUI_TASK_VOICE_SEARCH, SYSTEMUI, "label_action_voice_search", "ic_sysbar_search"),
         InAppSearch(SYSTEMUI_TASK_APP_SEARCH, SYSTEMUI, "label_action_in_app_search", "ic_sysbar_in_app_search"),
         Flashlight(SYSTEMUI_TASK_TORCH, SYSTEMUI, "label_action_flashlight", "ic_sysbar_torch"),
         Bluetooth(SYSTEMUI_TASK_BT, SYSTEMUI, "label_action_bluetooth", "ic_sysbar_bt"),
@@ -222,11 +228,13 @@ public class ActionHandler {
             SystemAction.NoAction, SystemAction.SettingsPanel,
             SystemAction.NotificationPanel, SystemAction.Screenshot,
             SystemAction.ScreenOff, SystemAction.KillApp,
+            SystemAction.Assistant, SystemAction.GoogleNowOnTap,
             SystemAction.Flashlight, SystemAction.Bluetooth,
             SystemAction.WiFi, SystemAction.Hotspot,
             SystemAction.LastApp, SystemAction.PowerMenu,
             SystemAction.Overview,SystemAction.Menu,
             SystemAction.Back, SystemAction.GoogleAssistant,
+			SystemAction.Back, SystemAction.VoiceSearch,
             SystemAction.Home, SystemAction.ExpandedDesktop,
             SystemAction.Screenrecord, SystemAction.Ime,
             SystemAction.StopScreenPinning, SystemAction.ImeArrowDown,
@@ -288,7 +296,8 @@ public class ActionHandler {
             if (sDisabledActions.contains(action)) {
                 continue;
             }
-            if (TextUtils.equals(action, SYSTEMUI_TASK_IME_NAVIGATION_DOWN)
+            if (TextUtils.equals(action, SYSTEMUI_TASK_STOP_SCREENPINNING)
+                    || TextUtils.equals(action, SYSTEMUI_TASK_IME_NAVIGATION_DOWN)
                     || TextUtils.equals(action, SYSTEMUI_TASK_IME_NAVIGATION_LEFT)
                     || TextUtils.equals(action, SYSTEMUI_TASK_IME_NAVIGATION_RIGHT)
                     || TextUtils.equals(action, SYSTEMUI_TASK_IME_NAVIGATION_UP)
@@ -416,6 +425,16 @@ public class ActionHandler {
             }
         }
 
+        private static void fireGoogleNowOnTap() {
+            IStatusBarService service = getStatusBarService();
+            if (service != null) {
+                try {
+                    service.startAssist(new Bundle());
+                } catch (RemoteException e) {
+                }
+            }
+        }
+		
         private static void splitScreen() {
             IStatusBarService service = getStatusBarService();
             if (service != null) {
@@ -441,6 +460,15 @@ public class ActionHandler {
             if (service != null) {
                 try {
                     service.onClearAllNotifications(ActivityManager.getCurrentUser());
+                } catch (RemoteException e) {
+                }
+            }
+        }
+        private static void sendSystemKeyToStatusBar(int keyCode) {
+            IStatusBarService service = getStatusBarService();
+            if (service != null) {
+                try {
+                    service.handleSystemKey(keyCode);
                 } catch (RemoteException e) {
                 }
             }
@@ -522,8 +550,14 @@ public class ActionHandler {
                 powerManager.wakeUp(SystemClock.uptimeMillis());
             }
             return;
+        } else if (action.equals(SYSTEMUI_TASK_ASSIST)) {
+            launchAssistAction(context);
+            return;
         } else if (action.equals(SYSTEMUI_TASK_GOOGLE_ASSISTANT)) {
             StatusBarHelper.fireGoogleAssistant();
+            return;
+        } else if (action.equals(SYSTEMUI_TASK_GOOGLE_NOW_ON_TAP)) {
+            StatusBarHelper.fireGoogleNowOnTap();
             return;
         } else if (action.equals(SYSTEMUI_TASK_POWER_MENU)) {
             sendCommandToWindowManager(new Intent(INTENT_SHOW_POWER_MENU));
@@ -554,6 +588,9 @@ public class ActionHandler {
             return;
         } else if (action.equals(SYSTEMUI_TASK_NOTIFICATION_PANEL)) {
             StatusBarHelper.expandNotificationPanel();
+            return;
+        } else if (action.equals(SYSTEMUI_TASK_VOICE_SEARCH)) {
+            launchVoiceSearch(context);
             return;
         } else if (action.equals(SYSTEMUI_TASK_APP_SEARCH)) {
             triggerVirtualKeypress(context, KeyEvent.KEYCODE_SEARCH);
@@ -767,6 +804,25 @@ public class ActionHandler {
         }
     }
 
+
+    private static void launchVoiceSearch(Context context) {
+        sendCloseSystemWindows("assist");
+        // launch the search activity
+        Intent intent = new Intent(Intent.ACTION_SEARCH_LONG_PRESS);
+        try {
+            // TODO: This only stops the factory-installed search manager.
+            // Need to formalize an API to handle others
+            SearchManager searchManager = (SearchManager) context
+                    .getSystemService(Context.SEARCH_SERVICE);
+            if (searchManager != null) {
+                searchManager.stopSearch();
+            }
+            launchActivity(context, intent);
+        } catch (ActivityNotFoundException e) {
+            Slog.w(TAG, "No assist activity installed", e);
+        }
+    }
+	
     private static void dispatchMediaKeyWithWakeLock(int keycode, Context context) {
         if (ActivityManagerNative.isSystemReady()) {
             KeyEvent event = new KeyEvent(SystemClock.uptimeMillis(),
@@ -1042,6 +1098,21 @@ public class ActionHandler {
         pm.goToSleep(SystemClock.uptimeMillis());
     }
 
+    private static void launchAssistAction(Context context) {
+        sendCloseSystemWindows("assist");
+        Intent intent = ((SearchManager) context.getSystemService(Context.SEARCH_SERVICE))
+                .getAssistIntent(true);
+        if (intent != null) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            try {
+                context.startActivityAsUser(intent, UserHandle.CURRENT);
+            } catch (ActivityNotFoundException e) {
+                Slog.w(TAG, "No activity to handle assist action.", e);
+            }
+        }
+    }
     public static void turnOffLockTask() {
         try {
             ActivityManagerNative.getDefault().stopSystemLockTaskMode();

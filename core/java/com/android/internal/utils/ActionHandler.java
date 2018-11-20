@@ -66,7 +66,7 @@ import android.view.InputDevice;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.WindowManagerGlobal;
-//import android.view.WindowManagerPolicyControl;
+import android.view.WindowManagerPolicyControl;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
@@ -106,6 +106,7 @@ public class ActionHandler {
     public static final String SYSTEMUI_TASK_SCREENOFF = "task_screenoff";
     public static final String SYSTEMUI_TASK_KILL_PROCESS = "task_killcurrent";
     public static final String SYSTEMUI_TASK_ASSIST = "task_assist";
+	public static final String SYSTEMUI_TASK_GOOGLE_ASSISTANT = "task_google_assistant";
     public static final String SYSTEMUI_TASK_GOOGLE_NOW_ON_TAP = "task_google_now_on_tap";
     public static final String SYSTEMUI_TASK_POWER_MENU = "task_powermenu";
     public static final String SYSTEMUI_TASK_TORCH = "task_torch";
@@ -150,16 +151,12 @@ public class ActionHandler {
     static final Set<String> sDisabledActions = new HashSet<String>();
     static {
         sDisabledActions.add(SYSTEMUI_TASK_SCREENRECORD);
-        sDisabledActions.add(SYSTEMUI_TASK_EXPANDED_DESKTOP);
-        sDisabledActions.add(SYSTEMUI_TASK_ONE_HANDED_MODE_LEFT);
-        sDisabledActions.add(SYSTEMUI_TASK_ONE_HANDED_MODE_RIGHT);
+		sDisabledActions.add(SYSTEMUI_TASK_ONE_HANDED_MODE_LEFT);
+		sDisabledActions.add(SYSTEMUI_TASK_ONE_HANDED_MODE_RIGHT);
         sDisabledActions.add(SYSTEMUI_TASK_REGION_SCREENSHOT);
         sDisabledActions.add(SYSTEMUI_TASK_STOP_SCREENPINNING);
         sDisabledActions.add(SYSTEMUI_TASK_ASSISTANT_SOUND_SEARCH);
         sDisabledActions.add(SYSTEMUI_TASK_POWER_MENU);
-		sDisabledActions.add(SYSTEMUI_TASK_EXPANDED_DESKTOP);
-        sDisabledActions.add(SYSTEMUI_TASK_KILL_PROCESS);
-        sDisabledActions.add(SYSTEMUI_TASK_SCREENRECORD);
     }
 
     static enum SystemAction {
@@ -173,6 +170,7 @@ public class ActionHandler {
         ScreenOff(SYSTEMUI_TASK_SCREENOFF, SYSTEMUI, "label_action_screen_off", "ic_sysbar_screen_off"),
         KillApp(SYSTEMUI_TASK_KILL_PROCESS, SYSTEMUI, "label_action_force_close_app", "ic_sysbar_killtask"),
         Assistant(SYSTEMUI_TASK_ASSIST, SYSTEMUI, "label_action_search_assistant", "ic_sysbar_assist"),
+        GoogleAssistant(SYSTEMUI_TASK_GOOGLE_ASSISTANT, SYSTEMUI, "label_action_google_assistant", "ic_sysbar_google_assistant"),
         GoogleNowOnTap(SYSTEMUI_TASK_GOOGLE_NOW_ON_TAP, SYSTEMUI, "label_action_google_now_on_tap", "ic_sysbar_google_now_on_tap"),
         VoiceSearch(SYSTEMUI_TASK_VOICE_SEARCH, SYSTEMUI, "label_action_voice_search", "ic_sysbar_search"),
         InAppSearch(SYSTEMUI_TASK_APP_SEARCH, SYSTEMUI, "label_action_in_app_search", "ic_sysbar_in_app_search"),
@@ -233,6 +231,7 @@ public class ActionHandler {
             SystemAction.WiFi, SystemAction.Hotspot,
             SystemAction.LastApp, SystemAction.PowerMenu,
             SystemAction.Overview,SystemAction.Menu,
+            SystemAction.Back, SystemAction.GoogleAssistant,
             SystemAction.Back, SystemAction.VoiceSearch,
             SystemAction.Home, SystemAction.ExpandedDesktop,
             SystemAction.Screenrecord, SystemAction.Ime,
@@ -315,7 +314,7 @@ public class ActionHandler {
                 continue;
             } else if (TextUtils.equals(action, SYSTEMUI_TASK_CAMERA)
                     && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-                continue;           
+                continue;
             } else if (TextUtils.equals(action, SYSTEMUI_TASK_SCREENRECORD)) {
                 if (!ActionUtils.getBoolean(context, "config_enableScreenrecordChord",
                         ActionUtils.PACKAGE_ANDROID)) {
@@ -441,6 +440,16 @@ public class ActionHandler {
             }
         }
 
+        private static void fireGoogleAssistant() {
+            IStatusBarService service = getStatusBarService();
+            if (service != null) {
+                try {
+                    service.startAssist(new Bundle());
+                } catch (RemoteException e) {
+                }
+            }
+        }
+
         private static void fireGoogleNowOnTap() {
             IStatusBarService service = getStatusBarService();
             if (service != null) {
@@ -543,9 +552,9 @@ public class ActionHandler {
             return;
         } else if (action.equals(SYSTEMUI_TASK_NO_ACTION)) {
             return;
-//        } else if (action.equals(SYSTEMUI_TASK_KILL_PROCESS)) {
-//            killProcess(context);
-//            return;
+        } else if (action.equals(SYSTEMUI_TASK_KILL_PROCESS)) {
+            killProcess(context);
+            return;
         } else if (action.equals(SYSTEMUI_TASK_SCREENSHOT)) {
             sendCommandToWindowManager(new Intent(INTENT_SCREENSHOT));
             return;
@@ -558,7 +567,7 @@ public class ActionHandler {
             // } else if (action.equals(SYSTEMUI_TASK_AUDIORECORD)) {
             // takeAudiorecord();
         } else if (action.equals(SYSTEMUI_TASK_EXPANDED_DESKTOP)) {
-//            toggleExpandedDesktop(context);
+            toggleExpandedDesktop(context);
             return;
         } else if (action.equals(SYSTEMUI_TASK_SCREENOFF)) {
             screenOff(context);
@@ -572,6 +581,9 @@ public class ActionHandler {
             return;
         } else if (action.equals(SYSTEMUI_TASK_ASSIST)) {
             launchAssistAction(context);
+            return;
+        } else if (action.equals(SYSTEMUI_TASK_GOOGLE_ASSISTANT)) {
+            StatusBarHelper.fireGoogleAssistant();
             return;
         } else if (action.equals(SYSTEMUI_TASK_GOOGLE_NOW_ON_TAP)) {
             StatusBarHelper.fireGoogleNowOnTap();
@@ -808,7 +820,7 @@ public class ActionHandler {
             }
         }
     }
-/*
+
     private static void toggleExpandedDesktop(Context context) {
         ContentResolver cr = context.getContentResolver();
         String newVal = "";
@@ -824,7 +836,8 @@ public class ActionHandler {
             WindowManagerPolicyControl.reloadFromSetting(context);
         }
     }
-*/
+
+
     private static void launchVoiceSearch(Context context) {
         sendCloseSystemWindows("assist");
         // launch the search activity
@@ -962,10 +975,9 @@ public class ActionHandler {
             e.printStackTrace();
         }
     }
-/*
-    public static void killProcess(Context context) {
-        if (context.checkCallingOrSelfPermission(android.Manifest.permission.FORCE_STOP_PACKAGES) == PackageManager.PERMISSION_GRANTED
-            && !isLockTaskOn()) {
+
+    private static void killProcess(Context context) {
+        if (context.checkCallingOrSelfPermission(android.Manifest.permission.FORCE_STOP_PACKAGES) == PackageManager.PERMISSION_GRANTED) {
             try {
                 PackageManager packageManager = context.getPackageManager();
                 final Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -1029,14 +1041,14 @@ public class ActionHandler {
                     iam.forceStopPackage(pkg, UserHandle.USER_CURRENT);
 
                     // Remove killed app from Recents
-                    final ActivityManager am = (ActivityManager)
+/*                    final ActivityManager am = (ActivityManager)
                             context.getSystemService(Context.ACTIVITY_SERVICE);
                     final List<ActivityManager.RecentTaskInfo> recentTasks =
                             am.getRecentTasksForUser(ActivityManager.getMaxRecentTasksStatic(),
-//                            ActivityManager.RECENT_IGNORE_HOME_AND_RECENTS_STACK_TASKS         // follow up on these deprecated flags
-//                                    | ActivityManager.RECENT_INGORE_PINNED_STACK_TASKS
+                            ActivityManager.RECENT_IGNORE_HOME_AND_RECENTS_STACK_TASKS         // follow up on these deprecated flags
+                                    | ActivityManager.RECENT_INGORE_PINNED_STACK_TASKS
                                     ActivityManager.RECENT_IGNORE_UNAVAILABLE,
-//                                    | ActivityManager.RECENT_INCLUDE_PROFILES,
+                                    | ActivityManager.RECENT_INCLUDE_PROFILES,
                                     UserHandle.CURRENT.getIdentifier());
                     final int size = recentTasks.size();
                     for (int i = 0; i < size; i++) {
@@ -1046,6 +1058,7 @@ public class ActionHandler {
                             am.removeTask(taskid);
                         }
                     }
+*/
 
                     String pkgName;
                     try {
@@ -1073,7 +1086,7 @@ public class ActionHandler {
             Log.d("ActionHandler", "Caller cannot kill processes, aborting");
         }
     }
-*/
+
 
     public static Context getPackageContext(Context context, String packageName) {
         Context pkgContext = null;
@@ -1147,6 +1160,7 @@ public class ActionHandler {
         }
         return false;
     }
+
 */
     public static void volumePanel(Context context) {
         AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
