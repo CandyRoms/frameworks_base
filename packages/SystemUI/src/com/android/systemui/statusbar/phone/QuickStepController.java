@@ -44,6 +44,7 @@ import android.os.RemoteException;
 import android.util.FloatProperty;
 import android.util.Log;
 import android.util.Slog;
+import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
