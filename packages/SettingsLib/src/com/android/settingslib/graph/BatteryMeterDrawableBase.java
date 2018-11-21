@@ -107,6 +107,7 @@ public class BatteryMeterDrawableBase extends Drawable {
 
     private final Path mShapePath = new Path();
     private final Path mOutlinePath = new Path();
+    private final Path mClipPath = new Path();
     private final Path mTextPath = new Path();
 
     private DashPathEffect mPathEffect;
@@ -513,6 +514,8 @@ public class BatteryMeterDrawableBase extends Drawable {
 
         if (!mCharging && !mPowerSaveEnabled) {
             if (level <= mCriticalLevel) {
+                mWarningTextPaint.setTextSize(mHeight * 0.75f);
+                mWarningTextHeight = -mWarningTextPaint.getFontMetrics().ascent;
                 // draw the warning text
                 final float x = mWidth * 0.5f + left;
                 final float y = (mHeight + mWarningTextHeight) * 0.48f + top;
@@ -587,7 +590,7 @@ public class BatteryMeterDrawableBase extends Drawable {
 
         } else if (mPowerSaveEnabled) {
             // define the plus shape
-            final float pw = mFrame.width() * 2 / 3;
+            final float pw = mFrame.width() * 2 / 4;
             final float pl = mFrame.left + (mFrame.width() - pw) / 2;
             final float pt = mFrame.top + (mFrame.height() - pw) / 2;
             final float pr = mFrame.right - (mFrame.width() - pw) / 2;
@@ -624,8 +627,8 @@ public class BatteryMeterDrawableBase extends Drawable {
         mWarningTextPaint.setTextSize(circleSize / 2f);
         int px = (mWidth - width) / 2;
         mTextPaint.getTextBounds("99", 0, "99".length(), bounds);
-        float x = circleSize / 2.0f + px;
-        float y = circleSize / 2.0f + (bounds.bottom - bounds.top) / 2.0f
+        float pctX = circleSize / 2.0f + px;
+        float pctY = circleSize / 2.0f + (bounds.bottom - bounds.top) / 2.0f
                 - strokeWidth / 2.0f + mContext.getResources().getDisplayMetrics().density;
         String pctText = null;
 
@@ -639,11 +642,15 @@ public class BatteryMeterDrawableBase extends Drawable {
                     && (mShowPercent && !(mLevel == 100 && !SHOW_100_PERCENT))) {
                 mTextPaint.setColor(mBatteryPaint.getColor());
                 pctText = String.valueOf(SINGLE_DIGIT_PERCENT ? (level/10) : level);
-                c.drawText(pctText, x, y, mTextPaint);
+                c.drawText(pctText, pctX, pctY, mTextPaint);
             } else if (!mCharging && !mPowerSaveEnabled) {
                 if (level <= mCriticalLevel) {
                     // draw the warning text
-                    c.drawText(mWarningString, x, y, mWarningTextPaint);
+                    mWarningTextHeight = -mWarningTextPaint.getFontMetrics().ascent;
+                    pctX = mWidth * 0.5f;
+                    pctY = (mHeight + mWarningTextHeight) * 0.47f;
+                    mWarningTextPaint.setTextSize(mHeight * 0.5f);
+                    c.drawText(mWarningString, pctX, pctY, mWarningTextPaint);
                 }
             }
         }
