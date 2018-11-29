@@ -140,6 +140,7 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
     public static final int NAVIGATION_MODE_FLING = 3;
 
     protected Navigator mNavigationBarView = null;
+    protected NavigationBarView mOldNavBarView = null;
 
     protected AssistManager mAssistManager;
 
@@ -1132,6 +1133,33 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         @Override
         public void onChange(boolean selfChange) {
             NavigationBarFragment.this.updateAccessibilityServicesState(mAccessibilityManager);
+            NavigationBarFragment.this.setFullGestureMode();
+            if (mOldNavBarView != null) {
+                mOldNavBarView.updateNavButtonIcons();
+            }
+        }
+    }
+
+    private void setFullGestureMode() {
+        boolean fullModeEnabled = false;
+        boolean dt2sEnabled = false;
+        try {
+            if (Settings.System.getIntForUser(mContentResolver,
+                    Settings.System.FULL_GESTURE_NAVBAR,
+                    UserHandle.USER_CURRENT) == 1) {
+                fullModeEnabled = true;
+            }
+            if (Settings.System.getIntForUser(mContentResolver,
+                    Settings.System.FULL_GESTURE_NAVBAR_DT2S,
+                    UserHandle.USER_CURRENT) == 1) {
+                dt2sEnabled = fullModeEnabled;
+            }
+        } catch (Settings.SettingNotFoundException e) {
+        }
+	//TODO: We need to get this done in sometime or find a way for the same
+        mFullGestureMode = mOverviewProxyService.shouldShowSwipeUpUI() && fullModeEnabled;
+        if (mOldNavBarView != null) {
+            mOldNavBarView.setFullGestureMode(mFullGestureMode, dt2sEnabled);
         }
     }
 
