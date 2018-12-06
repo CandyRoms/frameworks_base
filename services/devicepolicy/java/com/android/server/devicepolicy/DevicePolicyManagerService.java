@@ -4789,20 +4789,25 @@ public class DevicePolicyManagerService extends BaseIDevicePolicyManager {
     private boolean resetPasswordInternal(String password, long tokenHandle, byte[] token,
             int flags, int callingUid, int userHandle) {
         int quality;
+        final int realQuality;
         synchronized (getLockObject()) {
             quality = getPasswordQuality(null, userHandle, /* parent */ false);
             if (quality == DevicePolicyManager.PASSWORD_QUALITY_MANAGED) {
                 quality = PASSWORD_QUALITY_UNSPECIFIED;
             }
             final PasswordMetrics metrics = PasswordMetrics.computeForPassword(password);
-            final int realQuality = metrics.quality;
-            if (realQuality < quality
-                    && quality != DevicePolicyManager.PASSWORD_QUALITY_COMPLEX) {
-                Slog.w(LOG_TAG, "resetPassword: password quality 0x"
-                        + Integer.toHexString(realQuality)
-                        + " does not meet required quality 0x"
-                        + Integer.toHexString(quality));
-                return false;
+            realQuality = metrics.quality;
+            if (quality != PASSWORD_QUALITY_UNSPECIFIED) {
+
+                if (realQuality < quality
+                        && quality != DevicePolicyManager.PASSWORD_QUALITY_COMPLEX) {
+                    Slog.w(LOG_TAG, "resetPassword: password quality 0x"
+                            + Integer.toHexString(realQuality)
+                            + " does not meet required quality 0x"
+                            + Integer.toHexString(quality));
+                    return false;
+                }
+                quality = Math.max(realQuality, quality);
             }
             quality = Math.max(realQuality, quality);
             int length = getPasswordMinimumLength(null, userHandle, /* parent */ false);
@@ -4881,7 +4886,7 @@ public class DevicePolicyManagerService extends BaseIDevicePolicyManager {
         try {
             if (token == null) {
                 if (!TextUtils.isEmpty(password)) {
-                    mLockPatternUtils.saveLockPassword(password, null, quality, userHandle);
+                    mLockPatternUtils.saveLockPassword(password, null, realQuality, userHandle);
                 } else {
                     mLockPatternUtils.clearLock(null, userHandle);
                 }
@@ -4890,7 +4895,7 @@ public class DevicePolicyManagerService extends BaseIDevicePolicyManager {
                 result = mLockPatternUtils.setLockCredentialWithToken(password,
                         TextUtils.isEmpty(password) ? LockPatternUtils.CREDENTIAL_TYPE_NONE
                                 : LockPatternUtils.CREDENTIAL_TYPE_PASSWORD,
-                        quality, tokenHandle, token, userHandle);
+                        realQuality, tokenHandle, token, userHandle);
             }
             boolean requireEntry = (flags & DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY) != 0;
             if (requireEntry) {
