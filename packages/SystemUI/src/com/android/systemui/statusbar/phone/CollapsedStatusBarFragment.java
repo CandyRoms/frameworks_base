@@ -32,6 +32,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.android.systemui.Dependency;
@@ -77,6 +79,10 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
     private View mCustomCarrierLabel;
     private int mShowCarrierLabel;
 
+    // Candy Logo
+    private ImageView mCandyLogo;
+    private boolean mShowLogo;
+
     private class SettingsObserver extends ContentObserver {
        SettingsObserver(Handler handler) {
            super(handler);
@@ -88,6 +94,9 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
                     false, this, UserHandle.USER_ALL);
          mContentResolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_SHOW_CARRIER),
+                    false, this, UserHandle.USER_ALL);
+        getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_LOGO),
                     false, this, UserHandle.USER_ALL);
        }
 
@@ -113,6 +122,7 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
         mKeyguardMonitor = Dependency.get(KeyguardMonitor.class);
         mNetworkController = Dependency.get(NetworkController.class);
         mStatusBarComponent = SysUiServiceProvider.getComponent(getContext(), StatusBar.class);
+        mSettingsObserver = new SettingsObserver(mHandler);
         mSettingsObserver.observe();
     }
 
@@ -137,6 +147,8 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
         mCenterClockLayout = (LinearLayout) mStatusBar.findViewById(R.id.center_clock_layout);
         mRightClock = mStatusBar.findViewById(R.id.right_clock);
         mCustomCarrierLabel = mStatusBar.findViewById(R.id.statusbar_carrier_text);
+        mCandyLogo = (ImageView)mStatusBar.findViewById(R.id.status_bar_logo);
+        Dependency.get(DarkIconDispatcher.class).addDarkReceiver(mCandyLogo);
         updateSettings(false);
         showSystemIconArea(false);
         initEmergencyCryptkeeperText();
@@ -168,6 +180,7 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
         if (mNetworkController.hasEmergencyCryptKeeperText()) {
             mNetworkController.removeCallback(mSignalCallback);
         }
+        Dependency.get(DarkIconDispatcher.class).removeDarkReceiver(mCandyLogo);
     }
 
     public void initNotificationIconArea(NotificationIconAreaController
@@ -260,11 +273,17 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
     public void hideNotificationIconArea(boolean animate) {
         animateHide(mNotificationIconAreaInner, animate, true);
         animateHide(mCenterClockLayout, animate, true);
+        if (mShowLogo) {
+            animateHide(mCandyLogo, animate, true);
+        }
     }
 
     public void showNotificationIconArea(boolean animate) {
         animateShow(mNotificationIconAreaInner, animate);
         animateShow(mCenterClockLayout, animate);
+        if (mShowLogo) {
+            animateShow(mCandyLogo, animate);
+        }
     }
 
     public void hideOperatorName(boolean animate) {
@@ -369,6 +388,18 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
                 UserHandle.USER_CURRENT);
         updateClockStyle(animate);
         setCarrierLabel(animate);
+        mShowLogo = Settings.System.getIntForUser(
+                getContext().getContentResolver(), Settings.System.STATUS_BAR_LOGO, 0,
+                UserHandle.USER_CURRENT) == 1;
+        if (mNotificationIconAreaInner != null) {
+            if (mShowLogo) {
+                if (mNotificationIconAreaInner.getVisibility() == View.VISIBLE) {
+                    animateShow(mCandyLogo, animate);
+                }
+            } else {
+                    animateHide(mCandyLogo, animate, false);
+            }
+        }
     }
 
     private void updateClockStyle(boolean animate) {

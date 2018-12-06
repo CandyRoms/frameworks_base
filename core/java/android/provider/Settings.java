@@ -4555,6 +4555,12 @@ public final class Settings {
         public static final String SHOW_LTE_FOURGEE = "show_lte_fourgee";
 
         /**
+         * Whether to display our Candy logo in the statusbar for extra sweetness
+         * @hide
+         */
+        public static final String STATUS_BAR_LOGO = "status_bar_logo";
+
+        /**
          * Status bar carrier label
          * 0: Hide
          * 1: Display on keyguard status bar
@@ -4797,6 +4803,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(DOUBLE_TAP_SLEEP_LOCKSCREEN);
             PRIVATE_SETTINGS.add(STATUS_BAR_QUICK_QS_PULLDOWN);
             PRIVATE_SETTINGS.add(ONE_HAND_MODE_ENABLED);
+            PRIVATE_SETTINGS.add(STATUS_BAR_LOGO);
         }
 
         /**
