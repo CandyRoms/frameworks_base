@@ -43,6 +43,11 @@ public class ThemeAccentUtils {
         "com.android.gboard.theme.dark", // 3
     };
 
+    private static final String[] LIGHT_THEMES = {
+        "com.google.intelligence.sense.theme.light", // 0
+        "com.android.gboard.theme.light", // 1
+    };
+
     // Accents
     private static final String[] ACCENTS = {
         "default_accent", // 0
@@ -130,13 +135,20 @@ public class ThemeAccentUtils {
             try {
                 om.setEnabled(theme,
                         useDarkTheme, userId);
-                unfuckBlackWhiteAccent(om, userId);
                 if (useDarkTheme) {
                     unloadStockDarkTheme(om, userId);
                 }
             } catch (RemoteException e) {
             }
         }
+        for (String theme : LIGHT_THEMES) {
+            try {
+                om.setEnabled(theme,
+                        !useDarkTheme, userId);
+            } catch (RemoteException e) {
+            }
+        }
+        unfuckBlackWhiteAccent(om, userId);
     }
 
     // Set black theme
