@@ -16,6 +16,7 @@
 package com.android.systemui.statusbar.policy;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -23,8 +24,10 @@ import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.net.NetworkCapabilities;
 import android.os.Handler;
+import android.os.UserHandle;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.Settings;
 import android.provider.Settings.Global;
 import android.telephony.NetworkRegistrationInfo;
 import android.telephony.ims.ImsMmTelManager;
@@ -401,6 +404,19 @@ public class MobileSignalController extends SignalController<
             Log.d(mTag, "addCapabilitiesCallback " + mCapabilityCallback + " into " + mImsManager);
         } catch (ImsException e) {
             Log.d(mTag, "unable to addCapabilitiesCallback callback.");
+        }
+        queryImsState();
+    }
+
+    private void queryImsState() {
+        TelephonyManager tm = mPhone.createForSubscriptionId(mSubscriptionInfo.getSubscriptionId());
+        boolean isVoiceCapable = tm.isVolteAvailable();
+        boolean isVideoCapable = tm.isVideoTelephonyAvailable();
+        Log.d(mTag, "tm=" + tm +" phone=" + mPhone
+                + " isVoiceCapable=" + isVoiceCapable
+                + " isVideoCapable=" +isVideoCapable);
+        if ( isVoiceCapable || isVideoCapable ) {
+            mCurrentState.isVolteRegistered = true;
         }
     }
 
