@@ -1179,6 +1179,7 @@ public final class Telephony {
              */
             public static final String EXTRA_IS_INITIAL_CREATE =
                     "android.provider.extra.IS_INITIAL_CREATE";
+
             /**
              * Read the PDUs out of an {@link #SMS_RECEIVED_ACTION} or a
              * {@link #DATA_SMS_RECEIVED_ACTION} intent.
