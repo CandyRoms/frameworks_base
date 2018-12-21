@@ -26,15 +26,15 @@ import android.graphics.Paint;
 import android.media.audiofx.Visualizer;
 import android.os.AsyncTask;
 import android.os.UserHandle;
+import android.provider.Settings;
 import android.support.v7.graphics.Palette;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import com.android.systemui.UiOffloadThread;
 import com.android.systemui.Dependency;
 import com.android.systemui.tuner.TunerService;
-
-import android.provider.Settings;
 
 public class VisualizerView extends View
         implements Palette.PaletteAsyncListener {
@@ -147,17 +147,13 @@ public class VisualizerView extends View
     };
 
     private void unlink() {
-        if (DEBUG) {
-            Log.w(TAG, "+++ mUnlinkVisualizer run(), mVisualizer: " + mVisualizer);
-        }
-        if (mVisualizer != null) {
-            mVisualizer.setEnabled(false);
-            mVisualizer.release();
-            mVisualizer = null;
-        }
-        if (DEBUG) {
-            Log.w(TAG, "--- mUninkVisualizer run()");
-        }
+        mUiOffloadThread.submit(() -> {
+            if (mVisualizer != null) {
+                mVisualizer.setEnabled(false);
+                mVisualizer.release();
+                mVisualizer = null;
+            }
+        });
     }
 
     public VisualizerView(Context context, AttributeSet attrs, int defStyle) {
