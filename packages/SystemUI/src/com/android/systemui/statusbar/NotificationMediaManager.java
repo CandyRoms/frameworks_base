@@ -382,6 +382,8 @@ public class NotificationMediaManager implements Dumpable {
             boolean dontPulse = false;
 
             boolean mediaNotification= false;
+            // check if the app supports new media notifications, if so then set it as entry
+            // to get metadata from
             for (int i = 0; i < N; i++) {
                 final NotificationData.Entry entry = activeNotifications.get(i);
                 if (isMediaNotification(entry) && entry.notification.getPackageName().equals(pkg)) {
@@ -393,8 +395,22 @@ public class NotificationMediaManager implements Dumpable {
                     break;
                 }
             }
+            // the app doesn't support new media notifications but check if
+            // it has an old style notification for this media session, so we can use its
+            // notification title as track info fallback
             if (!mediaNotification) {
-                // no notification for this mediacontroller thus no artwork or track info,
+                for (int i = 0; i < N; i++) {
+                    final NotificationData.Entry entry = activeNotifications.get(i);
+                    if  (entry.notification.getPackageName().equals(pkg)) {
+                        mEntryManager.setEntryToRefresh(entry, dontPulse);
+                        mediaNotification = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!mediaNotification) {
+                // no notification for this mediacontroller so no artwork or track info,
                 // clean up Ambient Music and Pulse albumart color
                 mEntryManager.setEntryToRefresh(null, true);
                 setMediaNotificationText(null, false);
