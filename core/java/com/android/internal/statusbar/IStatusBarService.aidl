@@ -109,7 +109,7 @@ interface IStatusBarService
     void toggleCameraFlash();
 
     void restartUI();
-    void toggleNavigationBar(boolean enable);
+
 
     // Start SmartNav methods
     void setAutoRotate(boolean enabled);
@@ -123,7 +123,4 @@ interface IStatusBarService
     void toggleFlashlight();
     void toggleNavigationEditor();
     void dispatchNavigationEditorResults(in Intent intent);
-
-    void handleSystemNavigationKey(in int key);
-
 }
