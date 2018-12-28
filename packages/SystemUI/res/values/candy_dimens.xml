@@ -55,4 +55,5 @@
 
     <!-- Screenrecord -->
     <dimen name="screenrecord_hint_size">48dp</dimen>
+
 </resources>
