@@ -187,6 +187,7 @@ public class CommandQueue extends IStatusBar.Stub {
         default void toggleNavigationEditor() {}
         default void dispatchNavigationEditorResults(Intent intent) {}
 
+        default void handleSystemNavigationKey(int key) {}
         default void toggleNavigationBar(boolean enable) { }
         default void setAutoRotate(boolean enabled) { }
     }
@@ -631,13 +632,6 @@ public class CommandQueue extends IStatusBar.Stub {
         synchronized (mLock) {
             mHandler.removeMessages(MSG_RESTART_UI);
             mHandler.obtainMessage(MSG_RESTART_UI).sendToTarget();
-        }
-    }
-
-    public void toggleNavigationBar(boolean enable) {
-        synchronized (mLock) {
-            mHandler.removeMessages(MSG_TOGGLE_NAVIGATION_BAR);
-            mHandler.obtainMessage(MSG_TOGGLE_NAVIGATION_BAR, enable ? 1 : 0, 0, null).sendToTarget();
         }
     }
 

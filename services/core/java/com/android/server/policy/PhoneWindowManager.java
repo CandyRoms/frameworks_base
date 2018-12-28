@@ -2856,7 +2856,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mContext.getResources().getBoolean(
                     com.android.internal.R.bool.config_showNavigationBar) ? 1 : 0,
                     UserHandle.USER_CURRENT) == 1;
-            IStatusBarService sbar = getStatusBarService();
             if (sbar != null) {
                 try {
                     sbar.toggleNavigationBar(mHasNavigationBar);
