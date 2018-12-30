@@ -4317,6 +4317,18 @@ public final class Settings {
         public static final String SYSTEM_THEME = "system_theme";
 
         /**
+         * Whether to hide the lockscreen clock
+         * @hide
+         */
+        public static final String LOCKSCREEN_CLOCK = "lockscreen_clock";
+
+        /**
+         * Whether to hide the items underneath the lockscreen clock
+         * @hide
+         */
+        public static final String LOCKSCREEN_INFO = "lockscreen_info";
+
+        /**
          * Select various accents to go along with system themes
          *
          * @hide
