@@ -4552,7 +4552,7 @@ public final class Settings {
          * @hide
          */
         public static final String ALWAYS_ON_DISPLAY_CONSTANTS_CUST = "always_on_display_constants_cust";
-        
+
         /**
          * @hide
          */
@@ -4767,7 +4767,7 @@ public final class Settings {
          * @hide
          */
         public static final String CUSTOM_AMBIENT_HANDWAVE_GESTURE = "custom_ambient_handwave_gesture";
-         /**
+        /**
          * Custom Ambient pocketmode gesture
          * @hide
          */
@@ -4785,6 +4785,12 @@ public final class Settings {
          * @hide
          */
         public static final String TOAST_ANIMATION = "toast_animation";
+
+        /**
+         * Select which lockscreen clock style to display
+         * @hide
+         */
+        public static final String LOCKSCREEN_CLOCK_SELECTION = "lockscreen_clock_selection";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
