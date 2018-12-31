@@ -534,6 +534,7 @@ public class StatusBar extends SystemUI implements DemoMode,
     private boolean mAutohideSuspended;
     private int mStatusBarMode;
     private int mMaxKeyguardNotifications;
+    private boolean mShowNavBar;
 
     private ViewMediatorCallback mKeyguardViewMediatorCallback;
     protected ScrimController mScrimController;
