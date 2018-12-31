@@ -318,9 +318,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.util.List;
-import java.lang.reflect.Constructor;
-
-import dalvik.system.PathClassLoader;
 
 import dalvik.system.PathClassLoader;
 
@@ -527,6 +524,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     WindowState mStatusBar = null;
     private final int[] mStatusBarHeightForRotation = new int[4];
     WindowState mNavigationBar = null;
+    boolean mHasNavigationBar = false;
     // User defined bar visibility, regardless of factory configuration
     boolean mNavbarVisible = false;
     boolean mNavigationBarCanMove = false; // can the navigation bar ever move to the side?
@@ -2635,17 +2633,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         // Allow the navigation bar to move on non-square small devices (phones).
         mNavigationBarCanMove = width != height && shortSizeDp < 600;
-
-        //mHasNavigationBar = res.getBoolean(com.android.internal.R.bool.config_showNavigationBar);
-
-        // Allow a system property to override this. Used by the emulator.
-        // See also hasNavigationBar().
-        //String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
-        //if ("1".equals(navBarOverride)) {
-        //    mHasNavigationBar = false;
-        //} else if ("0".equals(navBarOverride)) {
-        //    mHasNavigationBar = true;
-        //}
 
         // For demo purposes, allow the rotation of the HDMI display to be controlled.
         // By default, HDMI locks rotation to landscape.
