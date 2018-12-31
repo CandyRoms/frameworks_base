@@ -230,12 +230,10 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
                 backButton.setVisibility(View.INVISIBLE);
                 return;
             }
-            if (mFullGestureMode) {
-                backButton.setVisibility(View.INVISIBLE);
-                return;
+            if (backButton != null) {
+                backButton.setVisibility(alpha > 0 ? View.VISIBLE : View.INVISIBLE);
+                backButton.setAlpha(alpha, animate);
             }
-            backButton.setVisibility(alpha > 0 ? View.VISIBLE : View.INVISIBLE);
-            backButton.setAlpha(alpha, animate);
         }
     };
 
