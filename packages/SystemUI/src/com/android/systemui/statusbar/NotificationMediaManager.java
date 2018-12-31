@@ -23,6 +23,8 @@ import android.media.session.MediaSession;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.UserHandle;
+import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.systemui.statusbar.phone.StatusBar;
@@ -42,6 +44,8 @@ public class NotificationMediaManager implements Dumpable {
     private static final String TAG = "NotificationMediaManager";
     public static final boolean DEBUG_MEDIA = false;
 
+    private static final String NOWPLAYING_SERVICE = "com.google.intelligence.sense";
+
     private final Context mContext;
     private final MediaSessionManager mMediaSessionManager;
 
@@ -53,6 +57,10 @@ public class NotificationMediaManager implements Dumpable {
     private String mMediaNotificationKey;
     private MediaMetadata mMediaMetadata;
     private MediaUpdateListener mListener;
+
+    private String mNowPlayingNotificationKey;
+
+    private Set<String> mBlacklist = new HashSet<String>();
 
     // callback into NavigationFragment for Pulse
     public interface MediaUpdateListener {
@@ -113,6 +121,10 @@ public class NotificationMediaManager implements Dumpable {
             clearCurrentMediaNotification();
             mPresenter.updateMediaMetaData(true, true);
         }
+        if (key.equals(mNowPlayingNotificationKey)) {
+            mNowPlayingNotificationKey = null;
+            setMediaNotificationText(null, true);
+        }
     }
 
     public String getMediaNotificationKey() {
@@ -138,9 +150,29 @@ public class NotificationMediaManager implements Dumpable {
             // Promote the media notification with a controller in 'playing' state, if any.
             NotificationData.Entry mediaNotification = null;
             MediaController controller = null;
+
+            boolean isThereNowPlayingNotification = false;
             for (int i = 0; i < N; i++) {
                 final NotificationData.Entry entry = activeNotifications.get(i);
+                if (entry.notification.getPackageName().toLowerCase().equals(NOWPLAYING_SERVICE)) {
+                    isThereNowPlayingNotification = true;
+                    mNowPlayingNotificationKey = entry.notification.getKey();
+                    final Notification n = entry.notification.getNotification();
+                    String notificationText = null;
+                    final String title = n.extras.getString(Notification.EXTRA_TITLE);
+                    if (!TextUtils.isEmpty(title)) {
+                        notificationText = title;
+                    }
+                    setMediaNotificationText(notificationText, true);
+                    break;
+                }
+            }
+            if (!isThereNowPlayingNotification) {
+                setMediaNotificationText(null, true);
+            }
 
+            for (int i = 0; i < N; i++) {
+                final NotificationData.Entry entry = activeNotifications.get(i);
                 if (isMediaNotification(entry)) {
                     final MediaSession.Token token =
                             entry.notification.getNotification().extras.getParcelable(
@@ -228,7 +260,7 @@ public class NotificationMediaManager implements Dumpable {
 
     public void clearCurrentMediaNotification() {
         mMediaNotificationKey = null;
-        mPresenter.setAmbientMusicInfo(null, null);
+        mPresenter.setAmbientMusicInfo(null, null, false);
         clearCurrentMediaNotificationSession();
     }
 
@@ -341,7 +373,7 @@ public class NotificationMediaManager implements Dumpable {
                 // no notification for this mediacontroller thus no artwork or track info,
                 // clean up Ambient Music and Pulse albumart color
                 mEntryManager.setEntryToRefresh(null, true);
-                mPresenter.setAmbientMusicInfo(null, null);
+                mPresenter.setAmbientMusicInfo(null, null, false);
             }
 
             if (!dontPulse && mListener != null) {
@@ -352,7 +384,7 @@ public class NotificationMediaManager implements Dumpable {
             }
         } else {
             mEntryManager.setEntryToRefresh(null, true);
-            mPresenter.setAmbientMusicInfo(null, null);
+            mPresenter.setAmbientMusicInfo(null, null, false);
             if (mListener != null) {
                 mListener.onMediaUpdated(false);
             }
@@ -362,8 +394,8 @@ public class NotificationMediaManager implements Dumpable {
         }
     }
 
-    public void setMediaNotificationText(String notificationText) {
-        mPresenter.setAmbientMusicInfo(mMediaMetadata, notificationText);
+    public void setMediaNotificationText(String notificationText, boolean nowPlaying) {
+        mPresenter.setAmbientMusicInfo(mMediaMetadata, notificationText, nowPlaying);
     }
 
     public void setPulseColors(boolean isColorizedMEdia, int[] colors) {
