@@ -354,6 +354,15 @@ public class QuickStepController implements GestureHelper {
                         mHandler.postDelayed(mDoubleTapCancelTimeout,
                         /* if dt2s is disabled we don'need to wait a 2nd tap to call the home action */
                         mNavigationBarView.isDt2s() ? sDoubleTapTimeout : 0);
+                        mPreviousUpEventX = (int)event.getX();
+                        mPreviousUpEventY = (int)event.getY();
+                    }
+                    if (mBackActionScheduled) {
+                        endQuickScrub(true /* animate */);
+                        Utils.sendKeycode(KeyEvent.KEYCODE_BACK, mHandler);
+                        mNavigationBarView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                    } else {
+                        endQuickScrub(true /* animate */);
                     }
                }
 
@@ -368,8 +377,8 @@ public class QuickStepController implements GestureHelper {
 
         // Proxy motion events to launcher if not handled by quick scrub
         // Proxy motion events up/cancel that would be sent after long press on any nav button
-        if (!mQuickScrubActive && (mAllowGestureDetection || action == MotionEvent.ACTION_CANCEL
-                || action == MotionEvent.ACTION_UP)) {
+        if (!mQuickScrubActive && (mAllowGestureDetection || mBackActionScheduled
+                || action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP)) {
             proxyMotionEvents(event);
         }
         return mQuickScrubActive || mQuickStepStarted || deadZoneConsumed;
