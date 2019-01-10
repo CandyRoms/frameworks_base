@@ -41,7 +41,7 @@ public class BatterySaverTile extends QSTileImpl<BooleanState> implements
 
     private int mLevel;
     private boolean mPowerSave;
-    private static boolean mCharging;
+    private boolean mCharging;
     private boolean mPluggedIn;
 
     private Icon mIcon = ResourceIcon.get(com.android.internal.R.drawable.ic_qs_battery_saver);
@@ -102,12 +102,13 @@ public class BatterySaverTile extends QSTileImpl<BooleanState> implements
     protected void handleUpdateState(BooleanState state, Object arg) {
         state.state = mPluggedIn ? Tile.STATE_UNAVAILABLE
                 : mPowerSave ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE;
-        state.icon = mIcon;
-        state.label = mContext.getString(R.string.battery_detail_switch_title);
-        if (mCharging) {
+        BatterySaverIcon bsi = new BatterySaverIcon();
+        bsi.mState = state.state;
+        state.icon = bsi;
+        if (mCharging && mLevel != 100) {
             state.label = mContext.getString(R.string.keyguard_plugged_in, mLevel + "%");
         } else {
-            if (mLevel == 100) {
+            if (mCharging && mLevel == 100) {
                 state.label = mContext.getString(R.string.keyguard_charged);
             } else {
                 state.label = mLevel + "%";
@@ -157,11 +158,7 @@ public class BatterySaverTile extends QSTileImpl<BooleanState> implements
             // Show as full so it's always uniform color
             super.setBatteryLevel(MAX_BATTERY);
             setPowerSave(true);
-            if (mCharging) {
-                setCharging(true);
-            } else {
-                setCharging(false);
-            }
+            setCharging(false);
             setPowerSaveAsColorError(false);
             mPowerSaveAsColorError = true;
             mFramePaint.setColor(0);
