@@ -5496,8 +5496,6 @@ public class StatusBar extends SystemUI implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_QUICK_QS_PULLDOWN))) {
                 setStatusBarWindowViewOptions();
-            } else if (uri.equals(Settings.System.getUriFor(Settings.System.PULSE_APPS_BLACKLIST))) {
-                setPulseBlacklist();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.FORCE_AMBIENT_FOR_MEDIA))) {
                 setForceAmbient();
@@ -5532,27 +5530,9 @@ public class StatusBar extends SystemUI implements DemoMode,
         mNotificationPanel.updateKeyguardStatusSettings();
     }
 
-    private void setFpToDismissNotifications() {
-        mFpDismissNotifications = Settings.Secure.getIntForUser(mContext.getContentResolver(),
-                Settings.Secure.FP_SWIPE_TO_DISMISS_NOTIFICATIONS, 0,
-                UserHandle.USER_CURRENT) == 1;
-    }
-
     private void setLockscreenMediaMetadata() {
         mLockscreenMediaMetadata = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_MEDIA_METADATA, 0, UserHandle.USER_CURRENT) == 1;
-    }
-
-    private void setStatusBarWindowViewOptions() {
-        if (mStatusBarWindow != null) {
-            mStatusBarWindow.setStatusBarWindowViewOptions();
-        }
-    }
-
-    private void setPulseBlacklist() {
-        String blacklist = Settings.System.getStringForUser(mContext.getContentResolver(),
-                Settings.System.PULSE_APPS_BLACKLIST, UserHandle.USER_CURRENT);
-        getMediaManager().setPulseBlacklist(blacklist);
     }
 
     private void setForceAmbient() {

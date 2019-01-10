@@ -60,8 +60,6 @@ public class NotificationMediaManager implements Dumpable {
 
     private String mNowPlayingNotificationKey;
 
-    private Set<String> mBlacklist = new HashSet<String>();
-
     // callback into NavigationFragment for Pulse
     public interface MediaUpdateListener {
         public void onMediaUpdated(boolean playing);
@@ -352,10 +350,6 @@ public class NotificationMediaManager implements Dumpable {
             final String pkg = mMediaController.getPackageName();
 
             boolean dontPulse = false;
-            if (!mBlacklist.isEmpty() && mBlacklist.contains(pkg)) {
-                // don't play Pulse for this app
-                dontPulse = true;
-            }
 
             boolean mediaNotification= false;
             for (int i = 0; i < N; i++) {
