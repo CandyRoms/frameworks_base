@@ -103,7 +103,7 @@ import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_
 import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_ROTATION;
 
 public class NavigationBarView extends FrameLayout implements PluginListener<NavGesture>,
-        Navigator, PulseObserver {
+        PulseObserver {
     final static boolean DEBUG = false;
     final static String TAG = "StatusBar/NavBarView";
 
@@ -327,6 +327,7 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         mButtonDispatchers.put(R.id.menu_container,
                 new ButtonDispatcher(R.id.menu_container));
         mDeadZone = new DeadZone(this);
+
     }
 
     public BarTransitions getBarTransitions() {
@@ -360,15 +361,16 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         if (onehandedEnabled) {
             mSlideTouchEvent.handleTouchEvent(event);
         }
-        if (shouldDeadZoneConsumeTouchEvents(event)) {
-            return true;
-        }
+        final boolean deadZoneConsumed = shouldDeadZoneConsumeTouchEvents(event);
+
         switch (event.getActionMasked()) {
             case ACTION_DOWN:
                 int x = (int) event.getX();
                 int y = (int) event.getY();
                 mDownHitTarget = HIT_TARGET_NONE;
-                if (getBackButton().isVisible() && mBackButtonBounds.contains(x, y)) {
+                if (deadZoneConsumed) {
+                    mDownHitTarget = HIT_TARGET_DEAD_ZONE;
+                } else if (getBackButton().isVisible() && mBackButtonBounds.contains(x, y)) {
                     mDownHitTarget = HIT_TARGET_BACK;
                 } else if (getHomeButton().isVisible() && mHomeButtonBounds.contains(x, y)) {
                     mDownHitTarget = HIT_TARGET_HOME;
@@ -556,12 +558,15 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
 
     public KeyButtonDrawable getHomeDrawable(Context lightContext, Context darkContext) {
         final boolean quickStepEnabled = mOverviewProxyService.shouldShowSwipeUpUI();
-        KeyButtonDrawable drawable = quickStepEnabled
-                ? getDrawable(lightContext, darkContext, R.drawable.ic_sysbar_home_quick_step)
-                : getDrawable(lightContext, darkContext, R.drawable.ic_sysbar_home,
-                        false /* hasShadow */);
+        KeyButtonDrawable drawable = getDrawable(lightContext, darkContext, quickStepEnabled ?
+                                                    R.drawable.ic_sysbar_home_quick_step :
+                                                    R.drawable.ic_sysbar_home);
         orientHomeButton(drawable);
         return drawable;
+    }
+
+    public KeyButtonDrawable getRecentsDrawable(Context lightContext, Context darkContext) {
+        return getDrawable(lightContext, darkContext, R.drawable.ic_sysbar_recent);
     }
 
     private void orientBackButton(KeyButtonDrawable drawable) {
@@ -838,13 +843,8 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
                 showSwipeUpUI ? mQuickStepAccessibilityDelegate : null);
     }
 
-    private void updateSlippery() {
-        // temp hax for null mPanelView
-        if (mPanelView == null) {
-            mPanelView = SysUiServiceProvider.getComponent(getContext(), StatusBar.class).getPanel();
-        }
-        final boolean isExpanded = mPanelView != null ? mPanelView.isFullyExpanded() : false;
-        setSlippery(!isQuickStepSwipeUpEnabled() || isExpanded);
+    public void updateSlippery() {
+        setSlippery(!isQuickStepSwipeUpEnabled() || mPanelView.isFullyExpanded());
     }
 
     private void setSlippery(boolean slippery) {
@@ -1100,6 +1100,12 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
     public void sendIntentToPulse(Intent intent) {
         if (mPulse != null) {
             mPulse.onReceive(intent);
+        }
+    }
+
+    public final void dispose() {
+        if (mPulse != null) {
+            mPulse.doUnlinkVisualizer();
         }
     }
 
@@ -1404,14 +1410,4 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         mDockedStackExists = exists;
         updateRecentsIcon();
     });
-
-    @Override
-    public View getBaseView() {
-        return this;
-    }
-
-    @Override
-    public void dispose() {
-        removeAllViews();
-    }
 }

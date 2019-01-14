@@ -1179,9 +1179,6 @@ public class StatusBar extends SystemUI implements DemoMode,
             if (mLightBarController != null) {
                 mNavigationBar.setLightBarController(mLightBarController);
             }
-            if (!mNavigationBar.isUsingStockNav()) {
-                ((NavigationBarFrame)mNavigationBarView).disableDeadZone();
-            }
             mNavigationBar.setCurrentSysuiVisibility(mSystemUiVisibility);
         });
     }
@@ -2191,9 +2188,6 @@ public class StatusBar extends SystemUI implements DemoMode,
 
         if (!isExpanded) {
             mRemoteInputManager.removeRemoteInputEntriesKeptUntilCollapsed();
-        }
-        if (mNavigationBar != null) {
-            mNavigationBar.setPanelExpanded(isExpanded);
         }
     }
 
@@ -4419,9 +4413,9 @@ public class StatusBar extends SystemUI implements DemoMode,
         return getMaxNotificationsWhileLocked(false /* recompute */);
     }
 
-    // TODO: Figure out way to remove this.
-    public Navigator getNavigationBarView() {
-        return mNavigationBar != null ? mNavigationBar.getNavigator() : null;
+    // TODO: Figure out way to remove these.
+    public NavigationBarView getNavigationBarView() {
+        return (mNavigationBar != null ? (NavigationBarView) mNavigationBar.getView() : null);
     }
 
     public View getNavigationBarWindow() {
