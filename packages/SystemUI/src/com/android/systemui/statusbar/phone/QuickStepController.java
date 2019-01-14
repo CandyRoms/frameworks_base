@@ -397,7 +397,6 @@ public class QuickStepController implements GestureHelper {
                     }
                     if (mBackActionScheduled) {
                         endQuickScrub(true /* animate */);
-                        CandyUtils.sendKeycode(KeyEvent.KEYCODE_BACK, mHandler);
                         mNavigationBarView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                         CandyUtils.sendKeycode(KeyEvent.KEYCODE_BACK, mHandler);
                     } else {
