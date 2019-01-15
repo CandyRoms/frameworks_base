@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.android.internal.utils.ActionHandler.SystemAction;
-import com.android.internal.utils.Config.ActionConfig;
+import com.android.internal.util.hwkeys.Config.ActionConfig;
 
 import android.content.Context;
 import android.content.res.Resources;

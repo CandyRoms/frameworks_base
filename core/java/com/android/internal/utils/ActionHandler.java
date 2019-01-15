@@ -149,9 +149,15 @@ public class ActionHandler {
     // remove actions from here as they come back on deck
     static final Set<String> sDisabledActions = new HashSet<String>();
     static {
+        sDisabledActions.add(SYSTEMUI_TASK_SCREENRECORD);
+        sDisabledActions.add(SYSTEMUI_TASK_EXPANDED_DESKTOP);
         sDisabledActions.add(SYSTEMUI_TASK_ONE_HANDED_MODE_LEFT);
         sDisabledActions.add(SYSTEMUI_TASK_ONE_HANDED_MODE_RIGHT);
-        sDisabledActions.add(SYSTEMUI_TASK_EXPANDED_DESKTOP);
+        sDisabledActions.add(SYSTEMUI_TASK_REGION_SCREENSHOT);
+        sDisabledActions.add(SYSTEMUI_TASK_STOP_SCREENPINNING);
+        sDisabledActions.add(SYSTEMUI_TASK_ASSISTANT_SOUND_SEARCH);
+        sDisabledActions.add(SYSTEMUI_TASK_POWER_MENU);
+		sDisabledActions.add(SYSTEMUI_TASK_EXPANDED_DESKTOP);
         sDisabledActions.add(SYSTEMUI_TASK_KILL_PROCESS);
         sDisabledActions.add(SYSTEMUI_TASK_SCREENRECORD);
     }
@@ -309,7 +315,12 @@ public class ActionHandler {
                 continue;
             } else if (TextUtils.equals(action, SYSTEMUI_TASK_CAMERA)
                     && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-                continue;
+                continue;           
+            } else if (TextUtils.equals(action, SYSTEMUI_TASK_SCREENRECORD)) {
+                if (!ActionUtils.getBoolean(context, "config_enableScreenrecordChord",
+                        ActionUtils.PACKAGE_ANDROID)) {
+                    continue;
+                }
             } else if (TextUtils.equals(action, SYSTEMUI_TASK_EDITING_SMARTBAR)) {
                 // don't allow smartbar editor on Fling
                 if (Settings.Secure.getIntForUser(context.getContentResolver(),
@@ -546,9 +557,9 @@ public class ActionHandler {
             return;
             // } else if (action.equals(SYSTEMUI_TASK_AUDIORECORD)) {
             // takeAudiorecord();
-//        } else if (action.equals(SYSTEMUI_TASK_EXPANDED_DESKTOP)) {
+        } else if (action.equals(SYSTEMUI_TASK_EXPANDED_DESKTOP)) {
 //            toggleExpandedDesktop(context);
-//            return;
+            return;
         } else if (action.equals(SYSTEMUI_TASK_SCREENOFF)) {
             screenOff(context);
             return;
@@ -756,8 +767,8 @@ public class ActionHandler {
 
     private static ActivityOptions getAnimation(Context context) {
         return ActivityOptions.makeCustomAnimation(context,
-                com.android.internal.R.anim.inv_app_in,
-                com.android.internal.R.anim.inv_app_out);
+                com.android.internal.R.anim.custom_app_in,
+                com.android.internal.R.anim.custom_app_out);
     }
 
     private static ActivityManager.RunningTaskInfo getLastTask(Context context,

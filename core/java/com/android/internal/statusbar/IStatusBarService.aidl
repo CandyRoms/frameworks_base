@@ -108,8 +108,10 @@ interface IStatusBarService
      */
     void toggleCameraFlash();
     void restartUI();
+    void toggleNavigationBar(boolean enable);
 
     // Start SmartNav methods
+    void setAutoRotate(boolean enabled);
     void toggleRecentApps();
     void toggleSplitScreen();
     void preloadRecentApps();
@@ -123,8 +125,4 @@ interface IStatusBarService
 
     void handleSystemNavigationKey(in int key);
 
-    /**
-     * Candy
-     */
-    void toggleNavigationBar(boolean enable);
 }

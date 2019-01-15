@@ -30,9 +30,12 @@ import static android.view.WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG;
 
 import java.util.ArrayList;
 
-import com.android.internal.utils.du.Config;
-import com.android.internal.utils.du.ActionConstants;
-import com.android.internal.utils.du.ActionHandler;
+import com.android.internal.util.hwkeys.ActionConstants;
+import com.android.internal.util.hwkeys.ActionHandler;
+import com.android.internal.util.hwkeys.ActionUtils;
+import com.android.internal.util.hwkeys.Config;
+import com.android.internal.util.hwkeys.Config.ActionConfig;
+import com.android.internal.util.hwkeys.Config.ButtonConfig;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -48,7 +51,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
-import android.view.WindowManagerPolicy.WindowState;
+import com.android.server.policy.WindowManagerPolicy.WindowState;
 
 public class HardkeyActionHandler {
     private interface ActionReceiver {
@@ -82,6 +85,10 @@ public class HardkeyActionHandler {
     private HardKeyButton mMenuButton;
     private HardKeyButton mAssistButton;
 
+    // Behavior of HOME button during incomming call ring.
+    // (See Settings.Secure.RING_HOME_BUTTON_BEHAVIOR.)
+//    int mRingHomeBehavior;
+
     private ActionReceiver mActionReceiver = new ActionReceiver() {
         @Override
         public void onActionDispatched(HardKeyButton button, String task) {
@@ -110,8 +117,8 @@ public class HardkeyActionHandler {
         mHandler = handler;
 //        mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 
-        mDeviceHardwareKeys = DUActionUtils.getInt(context, "config_deviceHardwareKeys",
-                DUActionUtils.PACKAGE_ANDROID);
+        mDeviceHardwareKeys = ActionUtils.getInt(context, "config_deviceHardwareKeys",
+                ActionUtils.PACKAGE_ANDROID);
 
         mBackButton = new HardKeyButton(mActionReceiver, handler);
         mHomeButton = new HardKeyButton(mActionReceiver, handler);
@@ -202,12 +209,20 @@ public class HardkeyActionHandler {
 
             // If a system window has focus, then it doesn't make sense
             // right now to interact with applications.
+            //
+            // NOTE: I don't think this code block is reachable here anyways because
+            // we don't intercept any key events if keyguard is showing
+            // However, "WINDOW_TYPES_WHERE_HOME_DOESNT_WORK" is reachable
+            //
             WindowManager.LayoutParams attrs = win != null ? win.getAttrs() : null;
             if (attrs != null) {
                 final int type = attrs.type;
-                if (type == TYPE_KEYGUARD_DIALOG
+                if (type == WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG
                         || (attrs.privateFlags & PRIVATE_FLAG_KEYGUARD) != 0) {
                     // the "app" is keyguard, so give it the key
+                    // NOTE: if somehow we ever get here, send it back and let the event
+                    // pass through to AOSP handling. Which, in this case, does the same
+                    // thing we just did.
                     return false;
                 }
                 final int typeCount = WINDOW_TYPES_WHERE_HOME_DOESNT_WORK.length;
@@ -485,11 +500,13 @@ public class HardkeyActionHandler {
                 if (!keyguardOn
                         && !mBackButton.wasConsumed()) {
                     mBackButton.setPressed(true);
-                    if (ActionHandler.isLockTaskOn()) {
+ /*                   if (ActionHandler.isLockTaskOn()) {
                         ActionHandler.turnOffLockTask();
                         mHandler.sendEmptyMessage(MSG_DO_HAPTIC_FB);
                         mBackButton.setWasConsumed(true);
                     } else {
+*/
+
                         if (mBackButton.isLongTapEnabled()) {
                             if (!mBackButton.keyHasLongPressRecents()) {
                                 ActionHandler.cancelPreloadRecentApps();
@@ -498,7 +515,7 @@ public class HardkeyActionHandler {
                             mHandler.sendEmptyMessage(MSG_DO_HAPTIC_FB);
                             mBackButton.setWasConsumed(true);
                         }
-                    }
+ //                   }
                 }
             }
             return true;
@@ -649,6 +666,9 @@ public class HardkeyActionHandler {
             resolver.registerContentObserver(
                     Settings.Secure.getUriFor(Settings.Secure.HARDWARE_KEYS_DISABLE), false, this,
                     UserHandle.USER_ALL);
+//            resolver.registerContentObserver(Settings.System.getUriFor(
+//                    Settings.Secure.RING_HOME_BUTTON_BEHAVIOR), false, this,
+//                    UserHandle.USER_ALL);
             updateKeyAssignments();
         }
 
@@ -659,15 +679,16 @@ public class HardkeyActionHandler {
     }
 
     private void updateKeyAssignments() {
+        ContentResolver cr = mContext.getContentResolver();
         synchronized (mLock) {
-            mHwKeysDisabled = Settings.Secure.getIntForUser(mContext.getContentResolver(),
-                    Settings.Secure.HARDWARE_KEYS_DISABLE, 0,
-                    UserHandle.USER_CURRENT) != 0;
-
             final boolean hasMenu = (mDeviceHardwareKeys & KEY_MASK_MENU) != 0;
             final boolean hasHome = (mDeviceHardwareKeys & KEY_MASK_HOME) != 0;
             final boolean hasAssist = (mDeviceHardwareKeys & KEY_MASK_ASSIST) != 0;
             final boolean hasAppSwitch = (mDeviceHardwareKeys & KEY_MASK_APP_SWITCH) != 0;
+
+            mHwKeysDisabled = Settings.Secure.getIntForUser(mContext.getContentResolver(),
+                    Settings.Secure.HARDWARE_KEYS_DISABLE, 0,
+                    UserHandle.USER_CURRENT) != 0;
 
             ArrayList<ButtonConfig> configs = Config.getConfig(mContext,
                     ActionConstants.getDefaults(ActionConstants.HWKEYS));
@@ -707,6 +728,11 @@ public class HardkeyActionHandler {
             Message msg = mHandler.obtainMessage(MSG_UPDATE_MENU_KEY);
             msg.arg1 = hasMenuKeyEnabled ? 1 : 0;
             mHandler.sendMessage(msg);
+
+//            mRingHomeBehavior = Settings.Secure.getIntForUser(cr,
+//                    Settings.Secure.RING_HOME_BUTTON_BEHAVIOR,
+//                    Settings.Secure.RING_HOME_BUTTON_BEHAVIOR_DEFAULT,
+//                    UserHandle.USER_CURRENT);
         }
     }
 }

@@ -291,6 +291,8 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.candy.CandyUtils;
 import com.android.internal.util.candy.DeviceUtils;
 import com.android.internal.util.ArrayUtils;
+import com.android.internal.util.hwkeys.ActionHandler;
+import com.android.internal.util.hwkeys.ActionUtils;
 import com.android.internal.util.ScreenshotHelper;
 import com.android.internal.utils.ActionHandler;
 import com.android.internal.utils.ActionUtils;
@@ -308,8 +310,6 @@ import com.android.server.wm.AppTransition;
 import com.android.server.wm.DisplayFrames;
 import com.android.server.wm.WindowManagerInternal;
 import com.android.server.wm.WindowManagerInternal.AppTransitionListener;
-
-import dalvik.system.PathClassLoader;
 
 import java.io.File;
 import java.io.FileReader;
@@ -656,6 +656,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mAllowStartActivityForLongPressOnPowerDuringSetup;
     MetricsLogger mLogger;
     private DeviceKeyHandler mDeviceKeyHandler;
+    private HardkeyActionHandler mKeyHandler;
 
     private boolean mHandleVolumeKeysInWM;
 
@@ -906,7 +907,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private boolean mUseGestureButton;
     private GestureButton mGestureButton;
     private boolean mGestureButtonRegistered;
-    private HardkeyActionHandler mKeyHandler;
 
     private boolean mClearedBecauseOfForceShow;
     private boolean mTopWindowIsKeyguard;
@@ -2271,13 +2271,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         try {
             mOrientationListener.setCurrentRotation(windowManager.getDefaultDisplayRotation());
         } catch (RemoteException ex) { }
-
         // only for hwkey devices
         if (!mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_showNavigationBar)) {
             mKeyHandler = new HardkeyActionHandler(mContext, mHandler);
         }
-
         mSettingsObserver = new SettingsObserver(mHandler);
         mSettingsObserver.observe();
         mShortcutManager = new ShortcutManager(context);
@@ -6604,18 +6602,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 && (!isNavBarVirtKey || mNavBarVirtualKeyHapticFeedbackEnabled)
                 && event.getRepeatCount() == 0
                 && !isHwKeysDisabled();
-
-        // Specific device key handling
-        if (mDeviceKeyHandler != null) {
-            try {
-                // The device only should consume known keys.
-                if (mDeviceKeyHandler.handleKeyEvent(event)) {
-                    return 0;
-                }
-            } catch (Exception e) {
-                Slog.w(TAG, "Could not dispatch event to device key handler", e);
-            }
-        }
 
         if (mDeviceKeyHandler != null) {
             try {

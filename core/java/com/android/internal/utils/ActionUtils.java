@@ -149,6 +149,9 @@ public final class ActionUtils {
         }
         return needsNav;
     }
+    public static boolean isHWKeysSupported(Context context) {
+        return getInt(context, "config_deviceHardwareKeys", PACKAGE_ANDROID) != 64;
+    }
 
     public static boolean deviceSupportsLte(Context ctx) {
         final TelephonyManager tm = (TelephonyManager)
