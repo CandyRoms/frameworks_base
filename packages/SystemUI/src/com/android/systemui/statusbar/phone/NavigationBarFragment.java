@@ -50,11 +50,13 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.inputmethodservice.InputMethodService;
+import android.media.AudioManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.provider.Settings;
@@ -85,6 +87,7 @@ import com.android.systemui.Interpolators;
 import com.android.systemui.OverviewProxyService;
 import com.android.systemui.R;
 import com.android.systemui.SysUiServiceProvider;
+import com.android.systemui.pulse.PulseController;
 import com.android.systemui.assist.AssistManager;
 import com.android.systemui.fragments.FragmentHostManager;
 import com.android.systemui.fragments.FragmentHostManager.FragmentListener;
@@ -350,6 +353,7 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         } else {
             mNavigationBarView.setMediaPlaying(mMediaManager.isPlaybackActive());
         }
+        mNavigationBarView.setMediaPlaying(mMediaManager.isPlaybackActive());
         if (savedInstanceState != null) {
             mNavigationBarView.getLightTransitionsController().restoreState(savedInstanceState);
         }
@@ -362,6 +366,9 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_USER_SWITCHED);
+        filter.addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGING);
+        filter.addAction(AudioManager.STREAM_MUTE_CHANGED_ACTION);
+        filter.addAction(AudioManager.VOLUME_CHANGED_ACTION);
         getContext().registerReceiverAsUser(mBroadcastReceiver, UserHandle.ALL, filter, null, null);
         notifyNavigationBarScreenOn();
         mOverviewProxyService.addCallback(mOverviewProxyListener);
@@ -1216,14 +1223,17 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (Intent.ACTION_SCREEN_OFF.equals(action)
-                    || Intent.ACTION_SCREEN_ON.equals(action)) {
+            if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 notifyNavigationBarScreenOn();
-            }
-            if (Intent.ACTION_USER_SWITCHED.equals(action)) {
+                notifyPulseScreenOn(false);
+            } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
+                notifyNavigationBarScreenOn();
+                notifyPulseScreenOn(true);
+            } else if (Intent.ACTION_USER_SWITCHED.equals(action)) {
                 // The accessibility settings may be different for the new user
                 updateAccessibilityServicesState(mAccessibilityManager);
-            };
+            }
+            sendIntentToPulse(intent);
         }
     };
 
@@ -1368,9 +1378,17 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
             mNavigationBarView.updateNavbarThemedResources(res);
         }
     }
-
+ 
     public boolean isUsingStockNav() {
         return mBarMode == NAVIGATION_MODE_DEFAULT || mScreenPinningEnabled;
+    }
+
+    private void notifyPulseScreenOn(boolean on) {
+        mNavigationBarView.notifyPulseScreenOn(on);
+    }
+
+    private void sendIntentToPulse(Intent intent) {
+        mNavigationBarView.sendIntentToPulse(intent);
     }
 
     @Override
@@ -1381,6 +1399,12 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
             changeNavigator();
             mNeedsBarRefresh = false;
         }
+    }
+
+    @Override
+    public void onDetach() {
+        mNavigationBarView.dispose();
+        super.onDetach();
     }
 
     public void setPanelExpanded(boolean expanded) {
