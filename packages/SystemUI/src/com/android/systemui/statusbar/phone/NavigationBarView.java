@@ -70,8 +70,8 @@ import com.android.systemui.RecentsComponent;
 import com.android.systemui.SysUiServiceProvider;
 import com.android.systemui.onehand.SlideTouchEvent;
 import com.android.systemui.navigation.Navigator;
-import com.android.systemui.pulse.PulseController;
-import com.android.systemui.pulse.PulseController.PulseObserver;
+import com.android.systemui.navigation.pulse.PulseController;
+import com.android.systemui.navigation.pulse.PulseController.PulseObserver;
 import com.android.systemui.plugins.PluginListener;
 import com.android.systemui.plugins.PluginManager;
 import com.android.systemui.plugins.statusbar.phone.NavGesture;
@@ -1065,6 +1065,77 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
 
     public boolean isVertical() {
         return mVertical;
+    }
+
+    public void setPulseController(PulseController pc) {
+        mPulse = pc;
+        mPulse.setPulseObserver(this);
+    }
+
+    public final void setKeyguardShowing(boolean showing) {
+        if (mKeyguardShowing != showing) {
+            mKeyguardShowing = showing;
+            if (mPulse != null) {
+                mPulse.setKeyguardShowing(showing);
+            }
+            //onKeyguardShowing(showing);
+        }
+    }
+
+    public void notifyPulseScreenOn(boolean screenOn) {
+        if (mPulse != null) {
+            mPulse.notifyScreenOn(screenOn);
+        }
+    }
+
+    public void sendIntentToPulse(Intent intent) {
+        if (mPulse != null) {
+            mPulse.onReceive(intent);
+        }
+    }
+
+    public final void notifyInflateFromUser() {
+        if (mPulse != null) {
+            mPulse.notifyScreenOn(true);
+        }
+    }
+
+    public void setLeftInLandscape(boolean leftInLandscape) {
+        if (mPulse != null) {
+            mPulse.setLeftInLandscape(leftInLandscape);
+        }
+    }
+
+    public void setPulseColors(boolean colorizedMedia, int[] colors) {
+        if (mPulse != null) {
+            mPulse.setPulseColors(colorizedMedia, colors);
+        }
+    }
+
+    @Override
+    public boolean onStartPulse(Animation animatePulseIn) {
+        // TODO add buttons alpha animation
+        mPulse.turnOnPulse();
+        return true;
+    }
+
+    @Override
+    public void onStopPulse(Animation animatePulseOut) {
+        // TODO add buttons alpha animation
+    }
+
+    public boolean isBarPulseFaded() {
+        if (mPulse == null) {
+            return false;
+        } else {
+            return mPulse.shouldDrawPulse();
+        }
+    }
+
+    public void setMediaPlaying(boolean playing) {
+        if (mPulse != null) {
+            mPulse.setMediaPlaying(playing);
+        }
     }
 
     public void reorient() {
