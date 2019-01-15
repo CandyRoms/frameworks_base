@@ -30,14 +30,9 @@ import static android.view.WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG;
 
 import java.util.ArrayList;
 
+import com.android.internal.utils.du.Config;
 import com.android.internal.utils.du.ActionConstants;
 import com.android.internal.utils.du.ActionHandler;
-import com.android.internal.utils.du.DUActionUtils;
-import com.android.internal.utils.du.Config;
-import com.android.internal.utils.du.Config.ActionConfig;
-import com.android.internal.utils.du.Config.ButtonConfig;
-
-import org.dirtyunicorns.utils;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -152,7 +147,6 @@ public class HardkeyActionHandler {
         if (filterDisabledKey(keyCode)) {
             return true;
         }
-
         if (keyCode == KeyEvent.KEYCODE_HOME) {
             if (!down && mHomeButton.isPressed()) {
                 mHomeButton.setPressed(false);
