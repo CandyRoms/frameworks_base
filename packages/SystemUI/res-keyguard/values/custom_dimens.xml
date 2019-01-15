@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Weather condition icon  -->
+    <dimen name="weather_icon_size">17dp</dimen>
+
+    <!-- Weather condition icon  -->
+    <dimen name="custom_analog_clock_bottom_padding">7dp</dimen>
+
+</resources>
