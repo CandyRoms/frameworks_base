@@ -829,7 +829,7 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
                 showSwipeUpUI ? mQuickStepAccessibilityDelegate : null);
     }
 
-    public void updateSlippery() {
+    private void updateSlippery() {
         // temp hax for null mPanelView
         if (mPanelView == null) {
             mPanelView = SysUiServiceProvider.getComponent(getContext(), StatusBar.class).getPanel();
