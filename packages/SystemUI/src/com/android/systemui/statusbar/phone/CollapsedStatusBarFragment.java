@@ -303,7 +303,7 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
 
     public void hideCarrierName(boolean animate) {
         if (mCustomCarrierLabel != null) {
-            animateHide(mCustomCarrierLabel, animate, true);
+            animateHide(mCustomCarrierLabel, animate, false);
         }
     }
 
@@ -314,11 +314,22 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
     }
 
     public void hideClock(boolean animate) {
-        animateHiddenState(mClockView, clockHiddenMode(), animate);
+        animateHide(mClockView, animate, false);
     }
 
     public void showClock(boolean animate) {
         animateShow(mClockView, animate);
+    }
+
+    /**
+     * If panel is expanded/expanding it usually means QS shade is opening, so
+     * don't set the clock GONE otherwise it'll mess up the animation.
+     */
+    private int clockHiddenMode() {
+        if (!mStatusBar.isClosed() && !mKeyguardMonitor.isShowing()) {
+            return View.INVISIBLE;
+        }
+        return View.GONE;
     }
 
     /**
