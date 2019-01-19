@@ -240,7 +240,7 @@ public class ScreenPinningRequest implements View.OnClickListener {
             }
 
             StatusBar statusBar = SysUiServiceProvider.getComponent(mContext, StatusBar.class);
-            Navigator navigationBarView =
+            NavigationBarView  navigationBarView =
                     statusBar != null ? statusBar.getNavigationBarView() : null;
             final boolean recentsVisible = navigationBarView != null
                     && navigationBarView.isRecentsButtonVisible();

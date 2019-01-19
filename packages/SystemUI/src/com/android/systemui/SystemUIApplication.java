@@ -204,9 +204,8 @@ public class SystemUIApplication extends Application implements SysUiServiceProv
                     public void onPluginConnected(OverlayPlugin plugin, Context pluginContext) {
                         StatusBar statusBar = getComponent(StatusBar.class);
                         if (statusBar != null) {
-                            Navigator navbar = statusBar.getNavigationBarView();                            
                             plugin.setup(statusBar.getStatusBarWindow(),
-                                    navbar != null ? navbar.getBaseView() : null);
+                                    statusBar.getNavigationBarView());
                         }
                         // Lazy init.
                         if (mOverlays == null) mOverlays = new ArraySet<>();

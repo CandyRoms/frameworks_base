@@ -295,8 +295,6 @@ import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.hwkeys.ActionHandler;
 import com.android.internal.util.hwkeys.ActionUtils;
 import com.android.internal.util.ScreenshotHelper;
-import com.android.internal.utils.ActionHandler;
-import com.android.internal.utils.ActionUtils;
 import com.android.internal.util.ScreenShapeHelper;
 import com.android.internal.widget.PointerLocationView;
 import com.android.server.GestureLauncherService;
