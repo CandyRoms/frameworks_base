@@ -20806,12 +20806,6 @@ Slog.v(TAG, ":: stepped forward, applying functor at tag " + parser.getName());
             int newState, int flags, int userId) {
         if (!sUserManager.exists(userId)) return;
         if (componentName == null) return;
-        // Don't allow to enable components marked for disabling at build-time
-        if (mDisabledComponentsList.contains(componentName)) {
-            Slog.d(TAG, "Ignoring attempt to set enabled state of disabled component "
-                    + componentName.flattenToString());
-            return;
-        }
         setEnabledSetting(componentName.getPackageName(),
                 componentName.getClassName(), newState, flags, userId, null);
     }

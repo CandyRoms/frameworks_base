@@ -4819,9 +4819,11 @@ public class NotificationManagerService extends SystemService {
         }
 
         if (aboveThreshold && isNotificationForCurrentUser(record)) {
-
-            if (mSystemReady && mAudioManager != null && !mScreenOn
-                    || (mScreenOn && mSoundVibScreenOn)) {
+            boolean notificationIsAnnoying = notificationIsAnnoying(key, pkg);
+            boolean beNoisy = (!mScreenOn && !notificationIsAnnoying)
+                    // if mScreenOn && !mSoundVibScreenOn never be noisy
+                    || (mScreenOn && mSoundVibScreenOn && !notificationIsAnnoying);
+            if (mSystemReady && mAudioManager != null && beNoisy) {
                 Uri soundUri = record.getSound();
                 hasValidSound = soundUri != null && !Uri.EMPTY.equals(soundUri);
                 long[] vibration = record.getVibration();
