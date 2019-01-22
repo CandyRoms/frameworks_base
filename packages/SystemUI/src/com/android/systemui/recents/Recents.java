@@ -23,17 +23,22 @@ import static com.android.systemui.statusbar.phone.StatusBar.SYSTEM_DIALOG_REASO
 
 import android.app.ActivityManager;
 import android.app.trust.TrustManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -175,6 +180,26 @@ public class Recents extends SystemUI
         }
     };
 
+    // Broadcast receiver for RecentsIconPack
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if(action.equals(Intent.ACTION_PACKAGE_REMOVED)) {
+                // Get packageName from Uri
+                String packageName = intent.getData().getSchemeSpecificPart();
+                // Get iconPack currently set as default
+                String currentIconPack = Settings.System.getString/*ForUser*/(mContext.getContentResolver(),
+                Settings.System.RECENTS_ICON_PACK/*, UserHandle.myUserId()*/);
+                // If the uninstalled package equals to our currently set iconPack
+                if(packageName.equals(currentIconPack)) {
+                    // Assert the iconPack to be strongly sure that the package got uninstalled
+                    assertIconPack(packageName);
+                }
+            }
+        }
+    };
+
     /**
      * Returns the callbacks interface that non-system users can call.
      */
@@ -241,6 +266,13 @@ public class Recents extends SystemUI
         putComponent(Recents.class, this);
 
         mTrustManager = (TrustManager) mContext.getSystemService(Context.TRUST_SERVICE);
+
+        // Intent for applications that get uninstalled
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addDataScheme("package");
+        // Register our BroadcastReceiver
+        mContext.registerReceiver(mBroadcastReceiver, filter);
     }
 
     @Override
@@ -890,5 +922,34 @@ public class Recents extends SystemUI
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
         pw.println("Recents");
         pw.println("  currentUserId=" + SystemServicesProxy.getInstance(mContext).getCurrentUser());
+    }
+
+    public static boolean isPackageInstalled(Context context, String pkg, boolean ignoreState) {
+        if (pkg != null) {
+            try {
+                PackageInfo pi = context.getPackageManager().getPackageInfo(pkg, 0);
+                if (!pi.applicationInfo.enabled && !ignoreState) {
+                    return false;
+                }
+            } catch (NameNotFoundException e) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * This method checks whether a passed iconPack is still available, if it's not
+     * the system will fall back to the android default icon pack.
+     */
+    private void assertIconPack(String packageName) {
+        // We need to verify whether the iconPack is still installed
+        if(!isPackageInstalled(mContext, packageName, true)) {
+            // The icon pack is not available anymore, let's fallback to the default iconPack
+            Settings.System.putString(mContext.getContentResolver(),
+                    Settings.System.RECENTS_ICON_PACK, /* defaultIconPack */ "");
+            // Quickstep settings observer will now refresh the icon pack
+        }
     }
 }
