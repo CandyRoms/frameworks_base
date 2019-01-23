@@ -84,6 +84,33 @@
     <!-- Whether or not swipe up gesture's opt-in setting is available on this device -->
     <java-symbol type="bool" name="config_custom_swipe_up_gesture_setting_available" />
 
+    <!-- True if the notifications should dynamically tint the app icon -->
+    <java-symbol type="bool" name="config_allowNotificationIconTinting" />
+    <!-- True if the notification's dynamic app icon tint should be optimised for dark
+       backgrounds (requires config_allowNotificationIconTinting to be true)-->
+    <java-symbol type="bool" name="config_useDarkBgNotificationIconTinting" />
+
+    <!-- Ambient notification icon tint -->
+    <java-symbol type="color" name="notification_ambient_icon_default_color" />
+    <java-symbol type="color" name="notification_ambient_default_color" />
+
+    <!-- Notification sender text color -->
+    <java-symbol type="color" name="sender_text_color" />
+
+    <!-- Toast text and bg colors -->
+    <java-symbol type="color" name="toast_bg_color" />
+    <java-symbol type="color" name="toast_text_color" />
+
+    <!-- Exposed resolver style -->
+    <java-symbol type="style" name="Theme.DeviceDefault.Resolver.Exposed" />
+    <!-- Exposed resolver color -->
+    <java-symbol type="color" name="chooser_service_row_background_color_exposed" />
+
+    <!-- Exposed resolver style -->
+    <java-symbol type="style" name="Theme.DeviceDefault.Resolver.Exposed" />
+    <!-- Exposed resolver color -->
+    <java-symbol type="color" name="chooser_service_row_background_color_exposed" />
+
     <!-- Forcefully tint notification icon text -->
     <java-symbol type="bool" name="config_useDarkBgNotificationIconTextTinting" />
     <java-symbol type="bool" name="config_useDarkBgNotificationTinting_override" />
@@ -92,10 +119,6 @@
     <!-- Notification icon/text dynamic tint -->
     <java-symbol type="bool" name="config_allowNotificationIconTextTinting" />
     <java-symbol type="color" name="notification_text_default_color" />
-    <java-symbol type="color" name="notification_icon_default_color" />
-
-    <!-- Notification sender text color -->
-    <java-symbol type="color" name="sender_text_color" />
 
     <!-- Notification app name tint -->
     <java-symbol type="bool" name="config_allowNotificationAppNameTextTinting" />

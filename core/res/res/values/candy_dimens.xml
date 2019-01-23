@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Copyright (c) 2016-2018 Projekt Substratum
+    Copyright (c) 2018 CandyRoms
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,11 +15,6 @@
     limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-
-    <!-- True if the notifications should dynamically tint the app icon -->
-    <bool name="config_allowNotificationIconTinting">true</bool>
-    <!-- True if the notification's dynamic app icon tint should be optimised for dark
-         backgrounds (requires config_allowNotificationIconTinting to be true)-->
-    <bool name="config_useDarkBgNotificationIconTinting">false</bool>
-
+    <dimen name="nav_gesture_swipe_min_length">50dp</dimen>
+    <dimen name="nav_gesture_long_press_max_length">45dp</dimen>
 </resources>

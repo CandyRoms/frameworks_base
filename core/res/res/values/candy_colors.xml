@@ -23,6 +23,30 @@
     <!-- Two target preference vertical divider color -->
     <color name="list_divider_dark">#64000000</color>
 
+    <!-- Toast text and bg colors -->
+    <color name="toast_bg_color">#E6EEEEEE</color>
+    <color name="toast_text_color">@color/primary_text_default_material_light</color>
+
+    <!-- tooltip light text color -->
+    <color name="tooltip_text_light">@color/foreground_material_light</color>
+    <!-- tooltip dark text color -->
+    <color name="tooltip_text_dark">@color/foreground_material_dark</color>
+
+    <!-- Resolver -->
+    <color name="resolver_list_bg">@color/white</color>
+
+    <!-- Immersive cling -->
+    <color name="immersive_cling_bg_color">@color/accent_device_default_light</color>
+    <color name="immersive_cling_text_color">@color/primary_text_default_material_light</color>
+    <color name="immersive_cling_button_text_color">@android:color/white</color>
+
+    <!-- App permission tint -->
+    <color name="app_permission_icon_tint">@android:color/black</color>
+
+    <!-- chooser_service_row_background_color for devices with exposures.
+        See also Theme.DeviceDefault.Resolver.Exposed. -->
+    <color name="chooser_service_row_background_color_exposed">@color/chooser_service_row_background_color</color>
+
     <!-- Misc colors -->
     <color name="theme_color1">@color/black</color>
     <color name="theme_color2">@color/black</color>
@@ -48,6 +72,10 @@
     <color name="notification_gear_color">#ff757575</color>
     <color name="notification_guts_bg_color">#f8f9fa</color>
     <color name="notification_snooze_text">#dd000000</color>
+
+    <!-- Ambient notification icon tint -->
+    <color name="notification_ambient_default_color">@color/notification_icon_default_color</color>
+    <color name="notification_ambient_icon_default_color">@color/notification_ambient_icon_default_color</color>
 
     <!-- Notification icon/text dynamic tint -->
     <color name="notification_text_default_color">@android:color/notification_default_color</color>
