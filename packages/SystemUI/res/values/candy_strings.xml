@@ -76,7 +76,7 @@
     <string name="system_theme_style_auto">Automatic</string>
     <string name="system_theme_style_light">White Chocolate</string>
     <string name="system_theme_style_dark">Dark Chocolate</string>
-    <string name="system_theme_style_blackaf">Black Licorice</string>
+    <string name="system_theme_style_black">Black Licorice</string>
     <string name="quick_settings_theme_tile_title">Accent</string>
     <string name="quick_settings_theme_tile_accent_detail_title">Select color</string>
     <string name="quick_settings_theme_tile_style_detail_title">Select style</string>

@@ -34,11 +34,11 @@ public class ThemeAccentUtils {
         "com.android.settings.intelligence.theme.dark", // 2
     };
 
-    // BlackAF themes
-    private static final String[] BLACKAF_THEMES = {
-        "com.android.system.theme.blackaf", // 0
-        "com.android.settings.theme.blackaf", // 1
-        "com.android.settings.intelligence.theme.blackaf", // 2
+    // Black themes
+    private static final String[] BLACK_THEMES = {
+        "com.android.system.theme.black", // 0
+        "com.android.settings.theme.black", // 1
+        "com.android.settings.intelligence.theme.black", // 2
     };
 
     // Accents
@@ -110,11 +110,11 @@ public class ThemeAccentUtils {
         return themeInfo != null && themeInfo.isEnabled();
     }
 
-    // Check for the blackaf system theme
-    public static boolean isUsingBlackAFTheme(IOverlayManager om, int userId) {
+    // Check for the black system theme
+    public static boolean isUsingBlackTheme(IOverlayManager om, int userId) {
         OverlayInfo themeInfo = null;
         try {
-            themeInfo = om.getOverlayInfo(BLACKAF_THEMES[0],
+            themeInfo = om.getOverlayInfo(BLACK_THEMES[0],
                     userId);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -138,13 +138,13 @@ public class ThemeAccentUtils {
     }
 
     // Set black theme
-    public static void setLightBlackAFTheme(IOverlayManager om, int userId, boolean useBlackAFTheme) {
-        for (String theme : BLACKAF_THEMES) {
+    public static void setLightBlackTheme(IOverlayManager om, int userId, boolean useBlackTheme) {
+        for (String theme : BLACK_THEMES) {
             try {
                 om.setEnabled(theme,
-                        useBlackAFTheme, userId);
+                        useBlackTheme, userId);
                 unfuckBlackWhiteAccent(om, userId);
-                if (useBlackAFTheme) {
+                if (useBlackTheme) {
                     unloadStockDarkTheme(om, userId);
                 }
             } catch (RemoteException e) {
@@ -156,7 +156,7 @@ public class ThemeAccentUtils {
     public static void unfuckBlackWhiteAccent(IOverlayManager om, int userId) {
         OverlayInfo themeInfo = null;
         try {
-            if (isUsingDarkTheme (om, userId) || isUsingBlackAFTheme (om, userId)) {
+            if (isUsingDarkTheme (om, userId) || isUsingBlackTheme (om, userId)) {
                 themeInfo = om.getOverlayInfo(ACCENTS[20],
                         userId);
                 if (themeInfo != null && themeInfo.isEnabled()) {
@@ -211,7 +211,7 @@ public class ThemeAccentUtils {
         } else if (accentSetting == 20) {
             try {
                 // If using a dark theme we use the white accent, otherwise use the black accent
-                if (isUsingDarkTheme(om, userId) || isUsingBlackAFTheme(om, userId)) {
+                if (isUsingDarkTheme(om, userId) || isUsingBlackTheme(om, userId)) {
                     om.setEnabled(ACCENTS[21],
                             true, userId);
                 } else {
