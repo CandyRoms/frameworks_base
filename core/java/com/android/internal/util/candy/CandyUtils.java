@@ -17,6 +17,7 @@
 package com.android.internal.util.candy;
 
 import android.app.ActivityManager;
+import android.app.ActivityManagerNative;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.hardware.input.InputManager;
+import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
@@ -64,10 +66,23 @@ public class CandyUtils {
     private static final int DEVICE_HYBRID = 1;
     private static final int DEVICE_TABLET = 2;
 
+    private static IStatusBarService mStatusBarService = null;
+
+    private static IStatusBarService getStatusBarService() {
+        synchronized (CandyUtils.class) {
+            if (mStatusBarService == null) {
+                mStatusBarService = IStatusBarService.Stub.asInterface(
+                        ServiceManager.getService("statusbar"));
+            }
+            return mStatusBarService;
+        }
+    }
+
     public static boolean isChineseLanguage() {
        return Resources.getSystem().getConfiguration().locale.getLanguage().startsWith(
                Locale.CHINESE.getLanguage());
     }
+
     public static boolean deviceSupportsFlashLight(Context context) {
         CameraManager cameraManager = (CameraManager) context.getSystemService(
                 Context.CAMERA_SERVICE);
@@ -89,6 +104,7 @@ public class CandyUtils {
         }
         return false;
     }
+
     public static void sendKeycode(int keycode) {
         long when = SystemClock.uptimeMillis();
         final KeyEvent evDown = new KeyEvent(when, when, KeyEvent.ACTION_DOWN, keycode, 0,
@@ -112,6 +128,7 @@ public class CandyUtils {
             }
         }, 20);
     }
+
     public static void takeScreenshot(boolean full) {
         IWindowManager wm = WindowManagerGlobal.getWindowManagerService();
         try {
@@ -120,11 +137,13 @@ public class CandyUtils {
             e.printStackTrace();
         }
     }
+
     public static boolean isWifiOnly(Context context) {
         ConnectivityManager cm = (ConnectivityManager)context.getSystemService(
                 Context.CONNECTIVITY_SERVICE);
         return (cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE) == false);
     }
+
     public static boolean isPackageInstalled(Context context, String pkg, boolean ignoreState) {
         if (pkg != null) {
             try {
@@ -139,45 +158,55 @@ public class CandyUtils {
 
         return true;
     }
+
      // Check to see if device supports the Fingerprint scanner
     public static boolean hasFingerprintSupport(Context context) {
         FingerprintManager fingerprintManager = (FingerprintManager) context.getSystemService(Context.FINGERPRINT_SERVICE);
         return context.getApplicationContext().checkSelfPermission(Manifest.permission.USE_FINGERPRINT) == PackageManager.PERMISSION_GRANTED &&
                 (fingerprintManager != null && fingerprintManager.isHardwareDetected());
     }
+
      // Check to see if device not only supports the Fingerprint scanner but also if is enrolled
     public static boolean hasFingerprintEnrolled(Context context) {
         FingerprintManager fingerprintManager = (FingerprintManager) context.getSystemService(Context.FINGERPRINT_SERVICE);
         return context.getApplicationContext().checkSelfPermission(Manifest.permission.USE_FINGERPRINT) == PackageManager.PERMISSION_GRANTED &&
                 (fingerprintManager != null && fingerprintManager.isHardwareDetected() && fingerprintManager.hasEnrolledFingerprints());
     }
+
      // Check to see if device has a camera
     public static boolean hasCamera(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
+
      // Check to see if device supports NFC
     public static boolean hasNFC(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC);
     }
+
      // Check to see if device supports Wifi
     public static boolean hasWiFi(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI);
     }
+
      // Check to see if device supports Bluetooth
     public static boolean hasBluetooth(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH);
     }
+
      // Check to see if device supports an alterative ambient display package
     public static boolean hasAltAmbientDisplay(Context context) {
         return context.getResources().getBoolean(com.android.internal.R.bool.config_alt_ambient_display);
     }
+
      // Check to see if device supports A/B (seamless) system updates
     public static boolean isABdevice(Context context) {
         return SystemProperties.getBoolean("ro.build.ab_update", false);
     }
+
     public static boolean isPackageInstalled(Context context, String pkg) {
         return isPackageInstalled(context, pkg, true);
     }
+
     private static int getScreenType(Context context) {
         if (sDeviceType == -1) {
             WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -199,15 +228,19 @@ public class CandyUtils {
         }
         return sDeviceType;
     }
+
     public static boolean isPhone(Context context) {
         return getScreenType(context) == DEVICE_PHONE;
     }
+
     public static boolean isHybrid(Context context) {
         return getScreenType(context) == DEVICE_HYBRID;
     }
+
     public static boolean isTablet(Context context) {
         return getScreenType(context) == DEVICE_TABLET;
     }
+
     public static ActivityInfo getRunningActivityInfo(Context context) {
         final ActivityManager am = (ActivityManager) context
                 .getSystemService(Context.ACTIVITY_SERVICE);
@@ -223,18 +256,22 @@ public class CandyUtils {
         }
         return null;
     }
+
     /**
      * @hide
     */
     public static final String SYSTEMUI_PACKAGE_NAME = "com.android.systemui";
+
     /**
      * @hide
     */
     public static final String ACTION_DISMISS_KEYGUARD = SYSTEMUI_PACKAGE_NAME +".ACTION_DISMISS_KEYGUARD";
+
     /**
      * @hide
     */
     public static final String DISMISS_KEYGUARD_EXTRA_INTENT = "launch";
+
     /**
      * @hide
     */
@@ -244,12 +281,14 @@ public class CandyUtils {
         keyguardIntent.putExtra(DISMISS_KEYGUARD_EXTRA_INTENT, launchIntent);
         context.sendBroadcastAsUser(keyguardIntent, user);
     }
+
     public static void goToSleep(Context context) {
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         if(pm != null) {
             pm.goToSleep(SystemClock.uptimeMillis());
         }
     }
+
     public static boolean deviceHasFlashlight(Context ctx) {
         return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
@@ -288,6 +327,69 @@ public class CandyUtils {
         PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
         if (pm!= null) {
             pm.goToSleep(SystemClock.uptimeMillis());
+        }
+    }
+
+    // Volume panel
+    public static void toggleVolumePanel(Context context) {
+        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        am.adjustVolume(AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
+    }
+
+    // Clear notifications
+    public static void clearAllNotifications() {
+        IStatusBarService service = getStatusBarService();
+        if (service != null) {
+            try {
+                service.onClearAllNotifications(ActivityManager.getCurrentUser());
+            } catch (RemoteException e) {
+                // do nothing.
+            }
+        }
+    }
+
+    // Toggle notifications panel
+    public static void Notifications() {
+        IStatusBarService service = getStatusBarService();
+        if (service != null) {
+            try {
+                service.expandNotificationsPanel();
+            } catch (RemoteException e) {
+                // do nothing.
+            }
+        }
+    }
+
+    // Toggle notifications panel
+    public static void toggleNotifications() {
+        IStatusBarService service = getStatusBarService();
+        if (service != null) {
+            try {
+                service.expandNotificationsPanel();
+            } catch (RemoteException e) {
+                // do nothing.
+            }
+        }
+    }
+
+    // Toggle qs panel
+    public static void toggleQsPanel() {
+        IStatusBarService service = getStatusBarService();
+        if (service != null) {
+            try {
+                service.expandSettingsPanel(null);
+            } catch (RemoteException e) {
+                // do nothing.
+            }
+        }
+    }
+
+    // Check if task is in lock task mode
+    public static boolean isInLockTaskMode() {
+        try {
+            return ActivityManagerNative.getDefault().isInLockTaskMode();
+        } catch (RemoteException e) {
+            return false;
         }
     }
 
