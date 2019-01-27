@@ -4496,8 +4496,13 @@ public final class Settings {
         public static final String GESTURE_ANYWHERE_POSITION = "gesture_anywhere_position";
 
         /**
-         * Last time gestures were altered.
-         * Used to determine if gestures should be reloaded by the view.
+         * Ambient screen settings
+         * "screen_brightness_array=0:1:2:3:4"
+         * @hide
+         */
+        public static final String ALWAYS_ON_DISPLAY_CONSTANTS_CUST = "always_on_display_constants_cust";
+        
+        /**
          * @hide
          */
         @ChaosLab(name="GestureAnywhere", classification=Classification.NEW_FIELD)
