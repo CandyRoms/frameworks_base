@@ -161,7 +161,6 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mStatusContainer = findViewById(R.id.status_container);
         mStatusSeparator = findViewById(R.id.status_separator);
         mNextAlarmIcon = findViewById(R.id.next_alarm_icon);
-        mNextAlarmTextView = findViewById(R.id.next_alarm_text);
         mRingerModeIcon = findViewById(R.id.ringer_mode_icon);
         mRingerModeTextView = findViewById(R.id.ringer_mode_text);
 
@@ -184,6 +183,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mBatteryMeterView.setOnClickListener(this);
         mClockView = findViewById(R.id.clock);
         mClockView.setOnClickListener(this);
+        mClockView.setQsHeader();
         mDateView = findViewById(R.id.date);
     }
 
@@ -331,6 +331,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mExpanded = expanded;
         mHeaderQsPanel.setExpanded(expanded);
         mClockView.setVisibility(View.VISIBLE);
+        mDateView.setVisibility(View.VISIBLE);
         updateEverything();
     }
 

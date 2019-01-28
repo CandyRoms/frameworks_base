@@ -28,6 +28,7 @@ public class ClockRight extends Clock {
 
     private boolean mClockVisibleByPolicy = true;
     private boolean mClockVisibleByUser = true;
+    private boolean mQsHeader;
 
     public ClockRight(Context context) {
         this(context, null);
@@ -65,5 +66,17 @@ public class ClockRight extends Clock {
         if (clockVisibleByPolicy != mClockVisibleByPolicy) {
             setClockVisibilityByPolicy(clockVisibleByPolicy);
         }
+    }
+
+    public boolean isClockDateEnabled() {
+        return isClockVisible() && mClockDateDisplay != CLOCK_DATE_DISPLAY_GONE;
+    }
+
+    public boolean isClockVisible() {
+        return mClockVisibleByUser && mClockVisibleByPolicy;
+    }
+
+    public void setQsHeader() {
+        mQsHeader = true;
     }
 }

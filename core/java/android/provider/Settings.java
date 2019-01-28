@@ -4646,6 +4646,12 @@ public final class Settings {
         /** @hide */
         public static final Validator MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD_VALIDATOR = ANY_STRING_VALIDATOR;
 
+       /**
+         * Custom Ambient tilt gesture
+         * @hide
+         */
+        public static final String CUSTOM_AMBIENT_TILT_GESTURE = "custom_ambient_tilt_gesture";
+
         /**
          * Custom Ambient handwave gesture
          * @hide

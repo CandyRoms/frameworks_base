@@ -104,6 +104,7 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
     private boolean mShowSeconds;
     private Handler mSecondsHandler;
     private SettingsObserver mSettingsObserver;
+    private boolean mQsHeader;
 
     /**
      * Whether we should use colors that adapt based on wallpaper/the scrim behind quick settings
@@ -563,4 +564,16 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
             mSecondsHandler.postAtTime(this, SystemClock.uptimeMillis() / 1000 * 1000 + 1000);
         }
     };
+
+    public boolean isClockDateEnabled() {
+        return isClockVisible() && mClockDateDisplay != CLOCK_DATE_DISPLAY_GONE;
+    }
+
+    public boolean isClockVisible() {
+        return mClockVisibleByUser && mClockVisibleByPolicy;
+    }
+
+    public void setQsHeader() {
+        mQsHeader = true;
+    }
 }
