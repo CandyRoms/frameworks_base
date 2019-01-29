@@ -73,6 +73,7 @@ public class QSContainerImpl extends FrameLayout implements
     private StatusBarHeaderMachine mStatusBarHeaderMachine;
     private Drawable mCurrentBackground;
     private boolean mLandscape;
+    private boolean mQsBackgroundAlpha;
 
     public QSContainerImpl(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -96,8 +97,9 @@ public class QSContainerImpl extends FrameLayout implements
         mBackgroundImage = findViewById(R.id.qs_header_image_view);
         mSideMargins = getResources().getDimensionPixelSize(R.dimen.notification_side_paddings);
         mQsBackGround = getContext().getDrawable(R.drawable.qs_background_primary);
-        updateSettings();
+        mBackgroundImage.setClipToOutline(true);
         updateResources();
+        updateSettings();
         setClickable(true);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         setMargins();
@@ -123,7 +125,7 @@ public class QSContainerImpl extends FrameLayout implements
         // Hide the backgrounds when in landscape mode.
         if (mLandscape) {
             mBackgroundGradient.setVisibility(View.INVISIBLE);
-        } else {
+        } else if (!mQsBackgroundAlpha) {
             mBackgroundGradient.setVisibility(View.VISIBLE);
         }
 
@@ -211,16 +213,28 @@ public class QSContainerImpl extends FrameLayout implements
                 com.android.internal.R.dimen.quick_qs_offset_height) + (mHeaderImageEnabled ?
                 mContext.getResources().getDimensionPixelSize(R.dimen.qs_header_image_offset) : 0);
 
-        int statusBarSideMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.qs_header_image_side_margin);
+        int statusBarSideMargin = mHeaderImageEnabled ? mContext.getResources().getDimensionPixelSize(
+                R.dimen.qs_header_image_side_margin) : 0;
 
-        ((LayoutParams) mQSPanel.getLayoutParams()).topMargin = topMargin;
+        // always add the margin below the statusbar with or without image
+        int statusBarBottomMargin = mContext.getResources().getDimensionPixelSize(
+                R.dimen.qs_header_image_bottom_margin);
+
+        ((LayoutParams) mQSPanel.getLayoutParams()).topMargin = topMargin + statusBarBottomMargin;
         mQSPanel.setLayoutParams(mQSPanel.getLayoutParams());
 
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mStatusBarBackground.getLayoutParams();
         lp.height = topMargin;
         lp.setMargins(statusBarSideMargin, 0, statusBarSideMargin, 0);
         mStatusBarBackground.setLayoutParams(lp);
+
+        if (mHeaderImageEnabled) {
+            mQsBackgroundAlpha = false;
+            mStatusBarBackground.setBackgroundColor(Color.TRANSPARENT);
+        } else {
+            mQsBackgroundAlpha = true;
+            mStatusBarBackground.setBackgroundColor(getResources().getColor(R.color.quick_settings_status_bar_background_color));
+        }
     }
 
     /**
