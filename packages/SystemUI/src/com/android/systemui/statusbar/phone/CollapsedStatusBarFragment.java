@@ -86,8 +86,6 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
     private static final int SHOW_DURATION = 5*1000; // 5 seconds
     private boolean useSmartClock = false;
 
-    private SettingsObserver mSettingsObserver = new SettingsObserver(mHandler);
-
     // custom carrier label
     private View mCustomCarrierLabel;
     private int mShowCarrierLabel;
@@ -98,6 +96,8 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
 
     // Statusbar clock handling
     private int mShowClock;
+
+    private SettingsObserver mSettingsObserver = new SettingsObserver(mHandler);
 
     private class SettingsObserver extends ContentObserver {
        SettingsObserver(Handler handler) {
@@ -125,7 +125,7 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
        @Override
        public void onChange(boolean selfChange, Uri uri) {
            updateSettings(true);
-            if (uri.equals(Settings.System.getUriFor(Settings.System.SMART_CLOCK_ENABLE))) {
+           if (uri.equals(Settings.System.getUriFor(Settings.System.SMART_CLOCK_ENABLE))) {
                 updateSmartClockStatus();
                 if (useSmartClock) {
                     setupSmartClock();
@@ -179,11 +179,13 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
         mCustomCarrierLabel = mStatusBar.findViewById(R.id.statusbar_carrier_text);
         mCandyLogo = (ImageView)mStatusBar.findViewById(R.id.status_bar_logo);
         Dependency.get(DarkIconDispatcher.class).addDarkReceiver(mCandyLogo);
-        updateSettings(false);
         showSystemIconArea(false);
-        hideClock(false);
+        //hideClock(false);
+        updateSettings(false);
         initEmergencyCryptkeeperText();
         initOperatorName();
+        mSettingsObserver.observe();
+        updateSettings(true);
         setupSmartClock();
     }
 
@@ -302,15 +304,15 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
     public void hideSystemIconArea(boolean animate) {
         animateHide(mSystemIconArea, animate, true);
         if (mClockStyle == 1) {
-            animateHide(mRightClock, animate, true);
+            animateHide(mRightClock, animate, false);
         }
     }
 
     public void showSystemIconArea(boolean animate) {
         animateShow(mSystemIconArea, animate);
-        if (mClockStyle == 1) {
-            animateShow(mRightClock, animate);
-        }
+            if (mClockStyle == 1) {
+                animateShow(mRightClock, animate);
+            }
     }
 
     public void hideNotificationIconArea(boolean animate) {
@@ -352,8 +354,8 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
     }
 
     public void hideClock(boolean animate) {
-            animateHide(mRightClock, animate, false);
-            animateHide(mClockView, animate, false);
+        animateHide(mRightClock, animate, false);
+        animateHide(mClockView, animate, false);
     }
 
     public void showClock(boolean animate) {
@@ -458,7 +460,6 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
         setCarrierLabel(animate);
         mShowLogo = Settings.System.getIntForUser(mContentResolver,
                 Settings.System.STATUS_BAR_LOGO, 0, UserHandle.USER_CURRENT) == 1;
-
         if (mNotificationIconAreaInner != null) {
             if (mShowLogo) {
                 if (mNotificationIconAreaInner.getVisibility() == View.VISIBLE) {
@@ -468,6 +469,7 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
                     animateHide(mCandyLogo, animate, false);
             }
         }
+        setupSmartClock();
     }
 
     private void updateClockStyle(boolean animate) {
@@ -494,9 +496,13 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
     }
 
     private void displaySmartClock(boolean animate) {
-        animateShow(mClockView, animate);
-        if (useSmartClock) {
-            mHandler.postDelayed(()->animateHide(mClockView, animate, false), SHOW_DURATION);
+       if (useSmartClock) {
+            updateClockStyle(animate);
+            if (mClockStyle == 1) {
+                mHandler.postDelayed(()->animateHide(mRightClock, animate, false), SHOW_DURATION);
+            } else {
+                mHandler.postDelayed(()->animateHide(mClockView, animate, false), SHOW_DURATION);
+            }   
         }
     }
 
