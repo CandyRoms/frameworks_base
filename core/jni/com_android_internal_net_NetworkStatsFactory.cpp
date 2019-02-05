@@ -175,7 +175,7 @@ static int legacyReadNetworkStatsDetail(std::vector<stats_line>* lines,
             }
         }
         s.tag = rawTag >> 32;
-        if (limitTag != -1 && s.tag != limitTag) {
+         if (limitTag != -1 && s.tag != limitTag) {
             //ALOGI("skipping due to tag: %s", buffer);
             continue;
         }
