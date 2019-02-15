@@ -34,6 +34,7 @@ import android.os.UserHandle;
 import android.hardware.input.InputManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -59,7 +60,7 @@ import java.util.Locale;
 public class CandyUtils {
 
     public static final String TAG = "CandyUtils";
-   
+
     public static final String INTENT_SCREENSHOT = "action_take_screenshot";
     public static final String INTENT_REGION_SCREENSHOT = "action_take_region_screenshot";
 
@@ -244,10 +245,32 @@ public class CandyUtils {
     // Method to turn off the screen
     public static void switchScreenOff(Context ctx) {
         PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
-        if (pm!= null) {
+        if (pm!= null && pm.isScreenOn()) {
             pm.goToSleep(SystemClock.uptimeMillis());
         }
     }
+
+    // Screen on
+    public static void switchScreenOn(Context context) {
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        if (pm == null) return;
+        PowerManager.WakeLock wakeLock = pm.newWakeLock((
+                PowerManager.SCREEN_BRIGHT_WAKE_LOCK |
+                        PowerManager.ACQUIRE_CAUSES_WAKEUP), "wakeup:device");
+        boolean isScreenOn = pm.isScreenOn();
+        /* Wake up the device only when screen is off.
+         * Otherwise don't bother to do anything. */
+        if (!wakeLock.isHeld() && !isScreenOn) {
+            wakeLock.acquire();
+        }
+    }
+
+    // Volume panel
+    public static void toggleVolumePanel(Context context) {
+        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        am.adjustVolume(AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
+    }
+
    // Check if device has a notch
     public static boolean hasNotch(Context context) {
         int result = 0;
