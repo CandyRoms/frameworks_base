@@ -181,14 +181,14 @@ public class BrightnessMirrorController
         mIcon = (ImageView) mBrightnessMirror.findViewById(R.id.brightness_icon);
         if (mIcon != null) {
             mIcon.setImageResource(automatic ?
-                    com.android.systemui.R.drawable.ic_qs_brightness_auto_on :
-                    com.android.systemui.R.drawable.ic_qs_brightness_auto_off);
+                    com.android.systemui.R.drawable.ic_qs_brightness_auto_on_new :
+                    com.android.systemui.R.drawable.ic_qs_brightness_auto_off_new);
         }
         mIconLeft = (ImageView) mBrightnessMirror.findViewById(R.id.brightness_icon_left);
         if (mIconLeft != null) {
             mIconLeft.setImageResource(automatic ?
-                    com.android.systemui.R.drawable.ic_qs_brightness_auto_on :
-                    com.android.systemui.R.drawable.ic_qs_brightness_auto_off);
+                    com.android.systemui.R.drawable.ic_qs_brightness_auto_on_new :
+                    com.android.systemui.R.drawable.ic_qs_brightness_auto_off_new);
         }
     }
 

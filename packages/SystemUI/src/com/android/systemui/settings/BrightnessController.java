@@ -462,8 +462,8 @@ public class BrightnessController implements ToggleSlider.Listener {
         }
         if (mIconLeft != null) {
             mIconLeft.setImageResource(automatic ?
-                    com.android.systemui.R.drawable.ic_qs_brightness_auto_on :
-                    com.android.systemui.R.drawable.ic_qs_brightness_auto_off);
+                    com.android.systemui.R.drawable.ic_qs_brightness_auto_on_new :
+                    com.android.systemui.R.drawable.ic_qs_brightness_auto_off_new);
         }
     }
 
