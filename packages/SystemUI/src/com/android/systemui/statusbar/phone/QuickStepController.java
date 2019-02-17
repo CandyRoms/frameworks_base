@@ -327,6 +327,10 @@ public class QuickStepController implements GestureHelper {
                     break;
                 }
 
+                // Do not handle quick scrub if disabled
+                if (!mNavigationBarView.isQuickScrubEnabled()) {
+                    break;
+                }
 
                 if (!mDragPositive) {
                     offset -= mIsVertical ? mTrackRect.height() : mTrackRect.width();
@@ -340,11 +344,6 @@ public class QuickStepController implements GestureHelper {
                 if (!mQuickScrubActive && exceededScrubTouchSlop && allowBackAction) {
                     // schedule a back button action and skip quickscrub
                      mBackActionScheduled = true;
-                    break;
-                }
-
-                // Do not handle quick scrub if disabled
-                if (!mNavigationBarView.isQuickScrubEnabled()) {
                     break;
                 }
 
@@ -398,14 +397,20 @@ public class QuickStepController implements GestureHelper {
                     }
                     if (mBackActionScheduled) {
                         endQuickScrub(true /* animate */);
-                        CandyUtils.sendKeycode(KeyEvent.KEYCODE_BACK, mHandler);
                         mNavigationBarView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                        CandyUtils.sendKeycode(KeyEvent.KEYCODE_BACK, mHandler);
                     } else {
                         endQuickScrub(true /* animate */);
                     }
                     break;
                }
 
+                if (mBackActionScheduled) {
+                    mBackActionScheduled = false;
+                    CandyUtils.sendKeycode(KeyEvent.KEYCODE_BACK);
+                } else {
+                    endQuickScrub(true /* animate */);
+                }
                 endQuickScrub(true /* animate */);
                 break;
         }
@@ -416,7 +421,7 @@ public class QuickStepController implements GestureHelper {
                 || action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP)) {
             proxyMotionEvents(event);
         }
-        return mQuickScrubActive || mQuickStepStarted || deadZoneConsumed || mBackActionScheduled;
+        return mQuickScrubActive || mQuickStepStarted || deadZoneConsumed;
     }
 
     private Runnable mDoubleTapCancelTimeout = new Runnable() {
@@ -589,9 +594,6 @@ public class QuickStepController implements GestureHelper {
             mTrackAnimator = new AnimatorSet();
             mTrackAnimator.playTogether(trackAnimator, navBarAnimator);
             mTrackAnimator.start();
-
-            // Disable slippery for quick scrub to not cancel outside the nav bar
-            mNavigationBarView.updateSlippery();
 
             try {
                 mOverviewEventSender.getProxy().onQuickScrubStart();
