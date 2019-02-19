@@ -16,9 +16,14 @@
 ** limitations under the License.
 */
 -->
-
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-        android:detachWallpaper="true" android:shareInterpolator="false" android:zAdjustment="normal">
-    <alpha android:fromAlpha="1.0" android:toAlpha="1.0"
-            android:duration="275" />
+        android:detachWallpaper="true"
+        android:shareInterpolator="false"
+        android:zAdjustment="normal">
+
+    <alpha
+        android:fromAlpha="1.0"
+        android:toAlpha="1.0"
+        android:duration="275" />
 </set>
+

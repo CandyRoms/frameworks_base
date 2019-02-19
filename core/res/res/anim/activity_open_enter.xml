@@ -15,7 +15,6 @@
 ** limitations under the License.
 */
 -->
-
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:shareInterpolator="false">
     <translate
@@ -35,3 +34,4 @@
         android:interpolator="@interpolator/fast_out_extra_slow_in"
         android:duration="300"/>
 </set>
+

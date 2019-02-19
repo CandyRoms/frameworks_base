@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
 /*
 ** Copyright 2009, The Android Open Source Project
 **
@@ -15,7 +16,6 @@
 ** limitations under the License.
 */
 -->
-
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:shareInterpolator="false">
     <translate
@@ -29,3 +29,4 @@
         android:interpolator="@interpolator/linear"
         android:duration="117"/>
 </set>
+
