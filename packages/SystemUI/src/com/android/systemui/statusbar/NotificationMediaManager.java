@@ -256,6 +256,14 @@ public class NotificationMediaManager implements Dumpable {
         mPresenter.updateMediaMetaData(metaDataChanged, true);
     }
 
+    public void addCallback(MediaUpdateListener listener) {
+        mListener = listener;
+    }
+
+    public boolean isPlaybackActive() {
+        return isPlaybackActive(getMediaControllerPlaybackState(mMediaController));
+    }
+
     public void clearCurrentMediaNotification() {
         mMediaNotificationKey = null;
         mPresenter.setAmbientMusicInfo(null, null, false);
@@ -280,18 +288,6 @@ public class NotificationMediaManager implements Dumpable {
             pw.print(" title=" + mMediaMetadata.getText(MediaMetadata.METADATA_KEY_TITLE));
         }
         pw.println();
-    }
-
-    public void addCallback(MediaUpdateListener listener) {
-        mListener = listener;
-    }
-
-    public void addCallback(StatusBar statusBar) {
-        mStatusBar = statusBar;
-    }
-
-    public boolean isPlaybackActive() {
-        return isPlaybackActive(getMediaControllerPlaybackState(mMediaController));
     }
 
     private boolean isPlaybackActive(int state) {
