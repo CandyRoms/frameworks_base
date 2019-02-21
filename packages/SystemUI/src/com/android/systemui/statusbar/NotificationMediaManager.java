@@ -22,10 +22,12 @@ import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
+import android.os.Handler;
 import android.os.UserHandle;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.android.systemui.statusbar.phone.StatusBar;
 import com.android.systemui.Dumpable;
@@ -34,7 +36,9 @@ import com.android.systemui.SysUiServiceProvider;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Handles tasks and state related to media notifications. For example, there is a 'current' media
@@ -127,10 +131,6 @@ public class NotificationMediaManager implements Dumpable {
 
     public String getMediaNotificationKey() {
         return mMediaNotificationKey;
-    }
-
-    public MediaController getMediaController() {
-        return mMediaController;
     }
 
     public MediaMetadata getMediaMetadata() {
@@ -335,11 +335,45 @@ public class NotificationMediaManager implements Dumpable {
         mMediaController = null;
     }
 
+    private void triggerKeyEvents(int key, MediaController controller, final Handler h) {
+        long when = SystemClock.uptimeMillis();
+        final KeyEvent evDown = new KeyEvent(when, when, KeyEvent.ACTION_DOWN, key, 0);
+        final KeyEvent evUp = KeyEvent.changeAction(evDown, KeyEvent.ACTION_UP);
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                controller.dispatchMediaButtonEvent(evDown);
+            }
+        });
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                controller.dispatchMediaButtonEvent(evUp);
+            }
+        }, 20);
+    }
+
+    public void onSkipTrackEvent(int key, final Handler h) {
+        if (mMediaSessionManager != null) {
+            final List<MediaController> sessions
+                    = mMediaSessionManager.getActiveSessionsForUser(
+                    null, UserHandle.USER_ALL);
+            for (MediaController aController : sessions) {
+                if (PlaybackState.STATE_PLAYING ==
+                        getMediaControllerPlaybackState(aController)) {
+                    triggerKeyEvents(key, aController, h);
+                    break;
+                }
+            }
+        }
+    }
+
     public void setMediaPlaying() {
-        if (mMediaController != null && (PlaybackState.STATE_PLAYING ==
+        if (PlaybackState.STATE_PLAYING ==
                 getMediaControllerPlaybackState(mMediaController)
                 || PlaybackState.STATE_BUFFERING ==
-                getMediaControllerPlaybackState(mMediaController))) {
+                getMediaControllerPlaybackState(mMediaController)) {
+
             ArrayList<NotificationData.Entry> activeNotifications =
                     mEntryManager.getNotificationData().getAllNotifications();
             int N = activeNotifications.size();
