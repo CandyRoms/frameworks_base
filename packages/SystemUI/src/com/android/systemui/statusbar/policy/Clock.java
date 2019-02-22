@@ -73,6 +73,7 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
     private static final String VISIBLE_BY_USER = "visible_by_user";
     private static final String SHOW_SECONDS = "show_seconds";
     private static final String VISIBILITY = "visibility";
+    private static final String QSHEADER = "qsheader";
 
     private final CurrentUserTracker mCurrentUserTracker;
     private int mCurrentUserId;
@@ -117,6 +118,9 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
     private boolean mShowSeconds;
     private Handler mSecondsHandler;
     private SettingsObserver mSettingsObserver;
+    private int mClockDatePosition;
+    private String mClockDateFormat = null;
+    private Handler mHandler = new Handler();
 
     /**
      * Whether we should use colors that adapt based on wallpaper/the scrim behind quick settings
@@ -204,6 +208,7 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
         bundle.putBoolean(VISIBLE_BY_USER, mClockVisibleByUser);
         bundle.putBoolean(SHOW_SECONDS, mShowSeconds);
         bundle.putInt(VISIBILITY, getVisibility());
+        bundle.putBoolean(QSHEADER, mQsHeader);
 
         return bundle;
     }
@@ -227,6 +232,7 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
         if (bundle.containsKey(VISIBILITY)) {
             super.setVisibility(bundle.getInt(VISIBILITY));
         }
+        mQsHeader = bundle.getBoolean(QSHEADER, false);
     }
 
     @Override
@@ -327,6 +333,10 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
         }
 
         super.setVisibility(visibility);
+    }
+
+    public void setQsHeader() {
+        mQsHeader = true;
     }
 
     public void setClockVisibleByUser(boolean visible) {
@@ -492,7 +502,7 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
 
         String result = sdf.format(mCalendar.getTime());
 
-        if (mClockDateDisplay != CLOCK_DATE_DISPLAY_GONE) {
+        if (!mQsHeader && mClockDateDisplay != CLOCK_DATE_DISPLAY_GONE) {
             Date now = new Date();
 
             String clockDateFormat = Settings.System.getString(getContext().getContentResolver(),
@@ -600,10 +610,6 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
 
     public boolean isClockDateEnabled() {
         return isClockVisible() && mClockDateDisplay != CLOCK_DATE_DISPLAY_GONE;
-    }
-
-    public void setQsHeader() {
-        mQsHeader = true;
     }
 
     private boolean mDemoMode;
