@@ -3522,7 +3522,7 @@ public class Notification implements Parcelable
          */
         public Builder setSmallIcon(@DrawableRes int icon) {
             return setSmallIcon(icon != 0
-                    ? Icon.createWithResource(mThemeContext, icon)
+                    ? Icon.createWithResource(mContext, icon)
                     : null);
         }
 
@@ -4488,11 +4488,6 @@ public class Notification implements Parcelable
         private CharSequence processTextSpans(CharSequence text) {
             if (hasForegroundColor()) {
                 return NotificationColorUtil.clearColorSpans(text);
-            } else if (mThemeContext.getResources()
-                .getBoolean(R.bool.config_useDarkBgNotificationIconTinting)) {
-                // Some notifications have color spans, assuming a dark background,
-                // so let's remove them
-                return NotificationColorUtil.clearColorSpans(text);
             }
             return text;
         }
@@ -4681,15 +4676,15 @@ public class Notification implements Parcelable
 
         private int calculateMarginEnd(boolean largeIconShown, boolean replyIconShown) {
             int marginEnd = 0;
-            int contentMargin = mThemeContext.getResources().getDimensionPixelSize(
+            int contentMargin = mContext.getResources().getDimensionPixelSize(
                     R.dimen.notification_content_margin_end);
-            int iconSize = mThemeContext.getResources().getDimensionPixelSize(
+            int iconSize = mContext.getResources().getDimensionPixelSize(
                     R.dimen.notification_right_icon_size);
             if (replyIconShown) {
                 // The size of the reply icon
                 marginEnd += iconSize;
 
-                int replyInset = mThemeContext.getResources().getDimensionPixelSize(
+                int replyInset = mContext.getResources().getDimensionPixelSize(
                         R.dimen.notification_reply_inset);
                 // We're subtracting the inset of the reply icon to make sure it's
                 // aligned nicely on the right, and remove it from the following padding
@@ -5522,8 +5517,8 @@ public class Notification implements Parcelable
         }
 
         int resolveContrastColor() {
-            if (!mThemeContext.getResources().getBoolean(R.bool.config_allowNotificationIconTinting)) {
-                return mThemeContext.getColor(R.color.notification_icon_default_color);
+            if (!mAllowIconTextTint) {
+                return mThemeContext.getColor(R.color.notification_text_default_color);
             }
 
             if (mCachedContrastColorIsFor == mN.color && mCachedContrastColor != COLOR_INVALID) {
@@ -5539,7 +5534,7 @@ public class Notification implements Parcelable
             } else {
                 boolean isDark = mInNightMode || mContext.getResources()
                         .getBoolean(R.bool.config_useDarkBgNotificationIconTextTinting);
-                color = NotificationColorUtil.resolveContrastColor(mContext, mN.color,
+                color = NotificationColorUtil.resolveContrastColor(mThemeContext, mN.color,
                         background, isDark);
             }
             if (Color.alpha(color) < 255) {
@@ -5554,9 +5549,9 @@ public class Notification implements Parcelable
             if (mNeutralColor != COLOR_INVALID) {
                 return mNeutralColor;
             }
-            int background = mThemeContext.getColor(
+            int background = mContext.getColor(
                     com.android.internal.R.color.notification_material_background_color);
-            mNeutralColor = NotificationColorUtil.resolveDefaultColor(mThemeContext, background);
+            mNeutralColor = NotificationColorUtil.resolveDefaultColor(mContext, background);
             if (Color.alpha(mNeutralColor) < 255) {
                 // alpha doesn't go well for color filters, so let's blend it manually
                 mNeutralColor = NotificationColorUtil.compositeColors(mNeutralColor, background);
@@ -5565,8 +5560,8 @@ public class Notification implements Parcelable
         }
 
         int resolveAmbientColor() {
-            if (!mThemeContext.getResources().getBoolean(R.bool.config_allowNotificationIconTinting)) {
-                return mThemeContext.getColor(R.color.notification_ambient_icon_default_color);
+            if (!mContext.getResources().getBoolean(R.bool.config_allowNotificationIconTinting)) {
+                return mContext.getColor(R.color.notification_ambient_icon_default_color);
             }
             if (mCachedAmbientColorIsFor == mN.color && mCachedAmbientColorIsFor != COLOR_INVALID) {
                 return mCachedAmbientColor;
@@ -5825,7 +5820,7 @@ public class Notification implements Parcelable
         private int resolveBackgroundColor() {
             int backgroundColor = getBackgroundColor();
             if (backgroundColor == COLOR_DEFAULT) {
-                backgroundColor = mThemeContext.getColor(
+                backgroundColor = mContext.getColor(
                         com.android.internal.R.color.notification_material_background_color);
             }
             return backgroundColor;
@@ -7929,7 +7924,7 @@ public class Notification implements Parcelable
 
         private RemoteViews generateMediaActionButton(Action action, int color) {
             final boolean tombstone = (action.actionIntent == null);
-            RemoteViews button = new BuilderRemoteViews(mBuilder.mThemeContext.getApplicationInfo(),
+            RemoteViews button = new BuilderRemoteViews(mBuilder.mContext.getApplicationInfo(),
                     R.layout.notification_material_media_action);
             button.setImageViewIcon(R.id.action0, action.getIcon());
 
@@ -8133,7 +8128,7 @@ public class Notification implements Parcelable
                 remoteViews.setReapplyDisallowed();
             }
             // also update the end margin if there is an image
-            Resources resources = mBuilder.mThemeContext.getResources();
+            Resources resources = mBuilder.mContext.getResources();
             int endMargin = resources.getDimensionPixelSize(
                     R.dimen.notification_content_margin_end) + result.getIconMarginEnd();
             remoteViews.setViewLayoutMarginEnd(R.id.notification_main_column, endMargin);
