@@ -68,4 +68,6 @@
     <dimen name="qs_footer_padding_top">0dp</dimen>
     <dimen name="qs_page_indicator_margin_bottom">12dp</dimen>
     <dimen name="qs_paged_tile_layout_padding_bottom">4dp</dimen>
+
+    <dimen name="quick_status_bar_margin">4dp</dimen>
 </resources>
