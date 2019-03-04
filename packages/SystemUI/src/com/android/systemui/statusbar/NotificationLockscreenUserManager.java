@@ -82,7 +82,9 @@ public class NotificationLockscreenUserManager implements Dumpable {
                     isCurrentProfile(getSendingUserId())) {
                 mUsersAllowingPrivateNotifications.clear();
                 updateLockscreenNotificationSetting();
-                mEntryManager.updateNotifications();
+                if (mEntryManager != null) {
+                    mEntryManager.updateNotifications();
+                }
             } else if (Intent.ACTION_DEVICE_LOCKED_CHANGED.equals(action)) {
                 if (userId != mCurrentUserId && isCurrentProfile(userId)) {
                     mPresenter.onWorkChallengeChanged();
@@ -167,7 +169,9 @@ public class NotificationLockscreenUserManager implements Dumpable {
                 mUsersAllowingNotifications.clear();
                 // ... and refresh all the notifications
                 updateLockscreenNotificationSetting();
-                mEntryManager.updateNotifications();
+                if (mEntryManager != null) {
+                    mEntryManager.updateNotifications();
+                }
             }
         };
 
@@ -175,7 +179,7 @@ public class NotificationLockscreenUserManager implements Dumpable {
             @Override
             public void onChange(boolean selfChange) {
                 updateLockscreenNotificationSetting();
-                if (mDeviceProvisionedController.isDeviceProvisioned()) {
+                if (mDeviceProvisionedController.isDeviceProvisioned() && (mEntryManager != null)) {
                     mEntryManager.updateNotifications();
                 }
             }

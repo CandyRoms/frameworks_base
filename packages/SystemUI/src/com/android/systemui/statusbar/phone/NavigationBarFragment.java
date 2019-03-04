@@ -120,7 +120,7 @@ import java.util.Optional;
  * on clicks and view states of the nav bar.
  */
 public class NavigationBarFragment extends Fragment implements Callbacks,
-Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMediaManager.MediaUpdateListener {
+        Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMediaManager.MediaUpdateListener {
 
     public static final String TAG = "NavigationBar";
     private static final boolean DEBUG = false;
@@ -141,7 +141,6 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
     public static final int NAVIGATION_MODE_FLING = 2;
 
     protected Navigator mNavigationBarView = null;
-    protected NavigationBarView mOldNavBarView = null;
 
     protected AssistManager mAssistManager;
 
@@ -269,6 +268,9 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
             mDisabledFlags1 = savedInstanceState.getInt(EXTRA_DISABLE_STATE, 0);
             mDisabledFlags2 = savedInstanceState.getInt(EXTRA_DISABLE2_STATE, 0);
         }
+        // Respect the latest disabled-flags.
+        mCommandQueue.recomputeDisableFlags(false);
+
         mAssistManager = Dependency.get(AssistManager.class);
         mOverviewProxyService = Dependency.get(OverviewProxyService.class);
 
@@ -345,8 +347,6 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         mNavigationBarView.setOnVerticalChangedListener(this::onVerticalChanged);
         if (isUsingStockNav()) {
             mNavigationBarView.getBaseView().setOnTouchListener(this::onNavigationTouch);
-        } else {
-            mNavigationBarView.setMediaPlaying(mMediaManager.isPlaybackActive());
         }
         mNavigationBarView.setMediaPlaying(mMediaManager.isPlaybackActive());
         if (savedInstanceState != null) {
@@ -368,6 +368,7 @@ Navigator.OnVerticalChangedListener, KeyguardMonitor.Callback, NotificationMedia
         notifyNavigationBarScreenOn();
         mOverviewProxyService.addCallback(mOverviewProxyListener);
         mNavigationBarView.notifyInflateFromUser();
+
         setFullGestureMode();
     }
 
