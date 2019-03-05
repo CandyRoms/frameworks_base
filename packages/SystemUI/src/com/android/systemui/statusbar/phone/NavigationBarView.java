@@ -17,10 +17,15 @@
 package com.android.systemui.statusbar.phone;
 
 import static android.view.MotionEvent.ACTION_DOWN;
+import static com.android.systemui.shared.system.NavigationBarCompat.FLAG_DISABLE_QUICK_SCRUB;
+import static com.android.systemui.shared.system.NavigationBarCompat.FLAG_SHOW_OVERVIEW_BUTTON;
 import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_BACK;
 import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_DEAD_ZONE;
 import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_HOME;
+import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_IME_BUTTON;
+import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_OVERVIEW;
 import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_NONE;
+import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_ROTATION;
 
 import android.animation.LayoutTransition;
 import android.animation.LayoutTransition.TransitionListener;
@@ -97,11 +102,6 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.function.Consumer;
 
-import static com.android.systemui.shared.system.NavigationBarCompat.FLAG_DISABLE_QUICK_SCRUB;
-import static com.android.systemui.shared.system.NavigationBarCompat.FLAG_SHOW_OVERVIEW_BUTTON;
-import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_OVERVIEW;
-import static com.android.systemui.shared.system.NavigationBarCompat.HIT_TARGET_ROTATION;
-
 public class NavigationBarView extends FrameLayout implements PluginListener<NavGesture>,
         Navigator, PulseObserver {
     final static boolean DEBUG = false;
@@ -131,6 +131,7 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
     private Rect mBackButtonBounds = new Rect();
     private Rect mRecentsButtonBounds = new Rect();
     private Rect mRotationButtonBounds = new Rect();
+    private Rect mImeButtonBounds = new Rect();
     private int[] mTmpPosition = new int[2];
     private Rect mTmpRect = new Rect();
 
@@ -183,6 +184,13 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
     private boolean mKeyguardShowing;
 
     private int mRotateBtnStyle = R.style.RotateButtonCCWStart90;
+
+    private int mBasePaddingBottom;
+    private int mBasePaddingLeft;
+    private int mBasePaddingRight;
+    private int mBasePaddingTop;
+
+    private ViewGroup mNavigationBarContents;
 
     private class NavTransitionListener implements TransitionListener {
         private boolean mBackTransitioning;
@@ -360,15 +368,15 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         if (onehandedEnabled) {
             mSlideTouchEvent.handleTouchEvent(event);
         }
-        if (shouldDeadZoneConsumeTouchEvents(event)) {
-            return true;
-        }
+        final boolean deadZoneConsumed = shouldDeadZoneConsumeTouchEvents(event);
         switch (event.getActionMasked()) {
             case ACTION_DOWN:
                 int x = (int) event.getX();
                 int y = (int) event.getY();
                 mDownHitTarget = HIT_TARGET_NONE;
-                if (getBackButton().isVisible() && mBackButtonBounds.contains(x, y)) {
+                if (deadZoneConsumed) {
+                    mDownHitTarget = HIT_TARGET_DEAD_ZONE;
+                } else if (getBackButton().isVisible() && mBackButtonBounds.contains(x, y)) {
                     mDownHitTarget = HIT_TARGET_BACK;
                 } else if (getHomeButton().isVisible() && mHomeButtonBounds.contains(x, y)) {
                     mDownHitTarget = HIT_TARGET_HOME;
@@ -377,6 +385,9 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
                 } else if (getRotateSuggestionButton().isVisible()
                         && mRotationButtonBounds.contains(x, y)) {
                     mDownHitTarget = HIT_TARGET_ROTATION;
+                } else if (getImeSwitchButton().isVisible()
+                        && mImeButtonBounds.contains(x, y)) {
+                    mDownHitTarget = HIT_TARGET_IME_BUTTON;
                 }
                 break;
         }
@@ -390,9 +401,7 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         if (onehandEnabled) {
             mSlideTouchEvent.handleTouchEvent(event);
         }
-        if (shouldDeadZoneConsumeTouchEvents(event)) {
-            return true;
-        }
+        shouldDeadZoneConsumeTouchEvents(event);
         if (mGestureHelper.onTouchEvent(event)) {
             return true;
         }
@@ -556,12 +565,15 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
 
     public KeyButtonDrawable getHomeDrawable(Context lightContext, Context darkContext) {
         final boolean quickStepEnabled = mOverviewProxyService.shouldShowSwipeUpUI();
-        KeyButtonDrawable drawable = quickStepEnabled
-                ? getDrawable(lightContext, darkContext, R.drawable.ic_sysbar_home_quick_step)
-                : getDrawable(lightContext, darkContext, R.drawable.ic_sysbar_home,
-                        false /* hasShadow */);
+        KeyButtonDrawable drawable = getDrawable(lightContext, darkContext, quickStepEnabled ? 
+                                                    R.drawable.ic_sysbar_home_quick_step : 
+                                                    R.drawable.ic_sysbar_home);
         orientHomeButton(drawable);
         return drawable;
+    }
+
+    public KeyButtonDrawable getRecentsDrawable(Context lightContext, Context darkContext) {
+        return getDrawable(lightContext, darkContext, R.drawable.ic_sysbar_recent);
     }
 
     private void orientBackButton(KeyButtonDrawable drawable) {
@@ -766,11 +778,13 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         return mDt2s;
     }
 
+    @Override
     public void setLayoutTransitionsEnabled(boolean enabled) {
         mLayoutTransitionsEnabled = enabled;
         updateLayoutTransitionsEnabled();
     }
 
+    @Override
     public void setWakeAndUnlocking(boolean wakeAndUnlocking) {
         setUseFadingAnimations(!wakeAndUnlocking);
         mWakeAndUnlocking = wakeAndUnlocking;
@@ -838,7 +852,7 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
                 showSwipeUpUI ? mQuickStepAccessibilityDelegate : null);
     }
 
-    private void updateSlippery() {
+    public void updateSlippery() {
         // temp hax for null mPanelView
         if (mPanelView == null) {
             mPanelView = SysUiServiceProvider.getComponent(getContext(), StatusBar.class).getPanel();
@@ -983,12 +997,31 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         return null;
     }
 
+    public void swiftNavigationBarItems(int horizontalShift, int verticalShift) {
+        if (mNavigationBarContents == null) {
+            return;
+        }
+
+        mNavigationBarContents.setPaddingRelative(mBasePaddingLeft + horizontalShift,
+                                              mBasePaddingTop + verticalShift,
+                                              mBasePaddingRight + horizontalShift,
+                                              mBasePaddingBottom - verticalShift);
+        invalidate();
+    }
+
     @Override
     public void onFinishInflate() {
         mNavigationInflaterView = findViewById(R.id.navigation_inflater);
         mNavigationInflaterView.setButtonDispatchers(mButtonDispatchers);
 
         getImeSwitchButton().setOnClickListener(mImeSwitcherClickListener);
+
+        mNavigationBarContents = (ViewGroup) findViewById(R.id.nav_buttons);
+
+        mBasePaddingLeft = mNavigationBarContents.getPaddingStart();
+        mBasePaddingTop = mNavigationBarContents.getPaddingTop();
+        mBasePaddingRight = mNavigationBarContents.getPaddingEnd();
+        mBasePaddingBottom = mNavigationBarContents.getPaddingBottom();
 
         DockedStackExistsListener.register(mDockedListener);
         updateRotatedViews();
@@ -1017,6 +1050,7 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         updateButtonLocationOnScreen(getHomeButton(), mHomeButtonBounds);
         updateButtonLocationOnScreen(getRecentsButton(), mRecentsButtonBounds);
         updateButtonLocationOnScreen(getRotateSuggestionButton(), mRotationButtonBounds);
+        updateButtonLocationOnScreen(getImeSwitchButton(), mImeButtonBounds);
         mGestureHelper.onLayout(changed, left, top, right, bottom);
         mRecentsOnboarding.setNavBarHeight(getMeasuredHeight());
     }
@@ -1049,6 +1083,7 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         updateCurrentView();
     }
 
+    @Override
     public boolean needsReorient(int rotation) {
         return mCurrentRotation != rotation;
     }
@@ -1076,8 +1111,9 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         return mVertical;
     }
 
-    public void setPulseController(PulseController pc) {
-        mPulse = pc;
+    @Override
+    public void setControllers(PulseController pulseController) {
+        mPulse = pulseController;
         mPulse.setPulseObserver(this);
     }
 
@@ -1091,12 +1127,14 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         }
     }
 
+    @Override
     public void notifyPulseScreenOn(boolean screenOn) {
         if (mPulse != null) {
             mPulse.notifyScreenOn(screenOn);
         }
     }
 
+    @Override
     public void sendIntentToPulse(Intent intent) {
         if (mPulse != null) {
             mPulse.onReceive(intent);
@@ -1412,6 +1450,9 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
 
     @Override
     public void dispose() {
+        if (mPulse != null) {
+            mPulse.doUnlinkVisualizer();
+        }
         removeAllViews();
     }
 }
