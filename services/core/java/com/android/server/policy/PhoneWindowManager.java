@@ -1114,7 +1114,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private void toggleFlashLight() {
         performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, true);
-        AquaUtils.toggleCameraFlash();
+        CandyUtils.toggleCameraFlash();
     }
 
     private UEventObserver mHDMIObserver = new UEventObserver() {
@@ -4623,7 +4623,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 if (DEBUG_INPUT) {
                     Log.d(TAG, "Dispatching key event " + event + " to handler " + handler);
                 }
-                event = handler.handleKeyEvent(event);
+                //event = handler.handleKeyEvent(event);
                 if (event == null) {
                     return true;
                 }
