@@ -461,6 +461,8 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     private boolean mAmbientMediaPlaying;
 
+    private int mPreviousDarkMode;
+
     /**
      * Helper that is responsible for showing the right toast when a disallowed activity operation
      * occurred. In pinned mode, we show instructions on how to break out of this mode, whilst in
