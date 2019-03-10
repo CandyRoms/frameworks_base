@@ -32,7 +32,6 @@ public class ThemeAccentUtils {
         "com.android.system.theme.dark", // 0
         "com.android.settings.theme.dark", // 1
         "com.android.settings.intelligence.theme.dark", // 2
-        "com.android.gboard.theme.dark", // 3
     };
 
     // Black themes
@@ -40,12 +39,10 @@ public class ThemeAccentUtils {
         "com.android.system.theme.black", // 0
         "com.android.settings.theme.black", // 1
         "com.android.settings.intelligence.theme.black", // 2
-        "com.android.gboard.theme.dark", // 3
     };
 
     private static final String[] LIGHT_THEMES = {
         "com.google.intelligence.sense.theme.light", // 0
-        "com.android.gboard.theme.light", // 1
     };
 
     // Accents
