@@ -2274,6 +2274,48 @@ public class StatusBar extends SystemUI implements DemoMode,
         ThemeAccentUtils.unfuckBlackWhiteAccent(mOverlayManager, mLockscreenUserManager.getCurrentUserId());
     }
 
+    public boolean isCurrentRoundedSameAsFw() {
+        float density = Resources.getSystem().getDisplayMetrics().density;
+        // Resource IDs for framework properties
+        int resourceIdRadius = (int) mContext.getResources().getDimension(R.dimen.rounded_corner_radius);
+        int resourceIdPadding = (int) mContext.getResources().getDimension(R.dimen.rounded_corner_content_padding);
+        int resourceIdSBPadding = (int) mContext.getResources().getDimension(R.dimen.status_bar_extra_padding);
+
+        // Values on framework resources
+        int cornerRadiusRes = (int) (resourceIdRadius / density);
+        int contentPaddingRes = (int) (resourceIdPadding / density);
+        int sbPaddingRes = (int) (resourceIdSBPadding / density);
+
+        // Values in Settings DBs
+        int cornerRadius = Settings.Secure.getIntForUser(mContext.getContentResolver(),
+                Settings.Secure.SYSUI_ROUNDED_SIZE, cornerRadiusRes, UserHandle.USER_CURRENT);
+        int contentPadding = Settings.Secure.getIntForUser(mContext.getContentResolver(),
+                Settings.Secure.SYSUI_ROUNDED_CONTENT_PADDING, contentPaddingRes, UserHandle.USER_CURRENT);
+        int sbPadding = Settings.Secure.getIntForUser(mContext.getContentResolver(),
+                Settings.Secure.SYSUI_STATUS_BAR_PADDING, contentPaddingRes, UserHandle.USER_CURRENT);
+
+        return (cornerRadiusRes == cornerRadius) && (contentPaddingRes == contentPadding) &&
+                (sbPaddingRes == sbPadding);
+    }
+
+    private void setCutoutOverlay(boolean enable) {
+        try {
+            mOverlayManager.setEnabled("com.android.overlay.hidecutout",
+                        enable, mLockscreenUserManager.getCurrentUserId());
+        } catch (RemoteException e) {
+            Log.w(TAG, "Failed to handle cutout overlay", e);
+        }
+    }
+
+    private void setStatusBarStockOverlay(boolean enable) {
+        try {
+            mOverlayManager.setEnabled("com.android.overlay.statusbarstock",
+                        enable, mLockscreenUserManager.getCurrentUserId());
+        } catch (RemoteException e) {
+            Log.w(TAG, "Failed to handle statusbar height overlay", e);
+        }
+    }
+
     @Nullable
     public View getAmbientIndicationContainer() {
         return mAmbientIndicationContainer;
@@ -4209,6 +4251,23 @@ public class StatusBar extends SystemUI implements DemoMode,
     // Unload all the qs tile styles
     public void unlockQsTileStyles() {
         ThemeAccentUtils.unlockQsTileStyles(mOverlayManager, mLockscreenUserManager.getCurrentUserId());
+    }
+
+    private void updateCorners() {
+        boolean sysuiRoundedFwvals = Settings.Secure.getIntForUser(mContext.getContentResolver(),
+                    Settings.Secure.SYSUI_ROUNDED_FWVALS, 1, UserHandle.USER_CURRENT) == 1;
+        if (sysuiRoundedFwvals && !isCurrentRoundedSameAsFw()) {
+            float density = Resources.getSystem().getDisplayMetrics().density;
+            int resourceIdRadius = (int) mContext.getResources().getDimension(R.dimen.rounded_corner_radius);
+            Settings.Secure.putIntForUser(mContext.getContentResolver(),
+                Settings.Secure.SYSUI_ROUNDED_SIZE, (int) (resourceIdRadius / density), UserHandle.USER_CURRENT);
+            int resourceIdPadding = (int) mContext.getResources().getDimension(R.dimen.rounded_corner_content_padding);
+            Settings.Secure.putIntForUser(mContext.getContentResolver(),
+                Settings.Secure.SYSUI_ROUNDED_CONTENT_PADDING, (int) (resourceIdPadding / density), UserHandle.USER_CURRENT);
+            int resourceIdSBPadding = (int) mContext.getResources().getDimension(R.dimen.status_bar_extra_padding);
+            Settings.Secure.putIntForUser(mContext.getContentResolver(),
+                Settings.Secure.SYSUI_STATUS_BAR_PADDING, (int) (resourceIdSBPadding / density), UserHandle.USER_CURRENT);
+        }
     }
 
     private void updateDozingState() {

@@ -70,4 +70,7 @@
     <dimen name="qs_paged_tile_layout_padding_bottom">4dp</dimen>
 
     <dimen name="quick_status_bar_margin">4dp</dimen>
+
+    <!-- The padding on the start and the end of the statusbar -->
+    <dimen name="status_bar_extra_padding">0dp</dimen>
 </resources>
