@@ -85,6 +85,7 @@ public class ThemeAccentUtils {
         "com.accents.userfive", // 26
         "com.accents.usersix", // 27
         "com.accents.userseven", // 28
+        "com.accents.usereight", // 29
     };
 
     private static final String[] QS_TILE_THEMES = {
