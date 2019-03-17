@@ -71,6 +71,9 @@ public class KeyguardStatusView extends GridLayout implements
 
     private TextView mLogoutView;
     private CustomAnalogClock mCustomClockView;
+    private CustomAnalogClock mCustomClockView1;
+    private CustomAnalogClock mCustomClockView2;
+    private CustomAnalogClock mCustomClockView3;
     private TextClock mClockView;
     private View mClockSeparator;
     private TextView mOwnerInfo;
@@ -189,11 +192,17 @@ public class KeyguardStatusView extends GridLayout implements
         if (KeyguardClockAccessibilityDelegate.isNeeded(mContext)) {
             mClockView.setAccessibilityDelegate(new KeyguardClockAccessibilityDelegate(mContext));
         }
+
         mCustomClockView = findViewById(R.id.custom_clock_view);
+        mCustomClockView1 = findViewById(R.id.custom_clock_view1);
+        mCustomClockView2 = findViewById(R.id.custom_clock_view2);
+        mCustomClockView3 = findViewById(R.id.custom_clock_view3);
+
         mOwnerInfo = findViewById(R.id.owner_info);
         mKeyguardSlice = findViewById(R.id.keyguard_status_area);
         mClockSeparator = findViewById(R.id.clock_separator);
-        mVisibleInDoze = Sets.newArraySet(mClockView, mKeyguardSlice, mCustomClockView);
+        mVisibleInDoze = Sets.newArraySet(mClockView, mKeyguardSlice, mCustomClockView,
+                mCustomClockView1, mCustomClockView2, mCustomClockView3);
         mTextColor = mClockView.getCurrentTextColor();
 
         int clockStroke = getResources().getDimensionPixelSize(R.dimen.widget_small_font_stroke);
@@ -241,6 +250,27 @@ public class KeyguardStatusView extends GridLayout implements
         customlayoutParams.bottomMargin = getResources().getDimensionPixelSize(
                 R.dimen.keyguard_security_view_top_margin);
         mCustomClockView.setLayoutParams(customlayoutParams);
+
+        // Custom analog clock 1
+        RelativeLayout.LayoutParams customlayoutParams1 =
+                (RelativeLayout.LayoutParams) mCustomClockView1.getLayoutParams();
+        customlayoutParams1.bottomMargin = getResources().getDimensionPixelSize(
+                R.dimen.keyguard_security_view_top_margin);
+        mCustomClockView1.setLayoutParams(customlayoutParams1);
+
+        // Custom analog clock 2
+        RelativeLayout.LayoutParams customlayoutParams2 =
+                (RelativeLayout.LayoutParams) mCustomClockView2.getLayoutParams();
+        customlayoutParams2.bottomMargin = getResources().getDimensionPixelSize(
+                R.dimen.keyguard_security_view_top_margin);
+        mCustomClockView2.setLayoutParams(customlayoutParams2);
+
+        // Custom analog clock 3
+        RelativeLayout.LayoutParams customlayoutParams3 =
+                (RelativeLayout.LayoutParams) mCustomClockView3.getLayoutParams();
+        customlayoutParams3.bottomMargin = getResources().getDimensionPixelSize(
+                R.dimen.keyguard_security_view_top_margin);
+        mCustomClockView3.setLayoutParams(customlayoutParams3);
 
         layoutParams = (RelativeLayout.LayoutParams) mClockSeparator.getLayoutParams();
         layoutParams.topMargin = smallClock ? (int) mWidgetPadding : 0;
@@ -431,26 +461,65 @@ public class KeyguardStatusView extends GridLayout implements
                 mClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
                        View.GONE) : View.VISIBLE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomClockView1.setVisibility(View.GONE);
+                mCustomClockView2.setVisibility(View.GONE);
+                mCustomClockView3.setVisibility(View.GONE);
                 break;
             case 1: // digital (bold)
                 mClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
                        View.GONE) : View.VISIBLE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomClockView1.setVisibility(View.GONE);
+                mCustomClockView2.setVisibility(View.GONE);
+                mCustomClockView3.setVisibility(View.GONE);
                 break;
             case 2: // custom analog
                 mCustomClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
                        View.GONE) : View.VISIBLE);
                 mClockView.setVisibility(View.GONE);
+                mCustomClockView1.setVisibility(View.GONE);
+                mCustomClockView2.setVisibility(View.GONE);
+                mCustomClockView3.setVisibility(View.GONE);
                 break;
             case 3: // sammy
                 mClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
                        View.GONE) : View.VISIBLE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomClockView1.setVisibility(View.GONE);
+                mCustomClockView2.setVisibility(View.GONE);
+                mCustomClockView3.setVisibility(View.GONE);
                 break;
             case 4: // sammy (bold)
                 mClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
                        View.GONE) : View.VISIBLE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomClockView1.setVisibility(View.GONE);
+                mCustomClockView2.setVisibility(View.GONE);
+                mCustomClockView3.setVisibility(View.GONE);
+                break;
+            case 5: // Candy custom 1
+                mCustomClockView1.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
+                       View.GONE) : View.VISIBLE);
+                mClockView.setVisibility(View.GONE);
+                mCustomClockView.setVisibility(View.GONE);
+                mCustomClockView2.setVisibility(View.GONE);
+                mCustomClockView3.setVisibility(View.GONE);
+                break;
+            case 6: // Candy custom 2
+                mCustomClockView2.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
+                       View.GONE) : View.VISIBLE);
+                mClockView.setVisibility(View.GONE);
+                mCustomClockView.setVisibility(View.GONE);
+                mCustomClockView1.setVisibility(View.GONE);
+                mCustomClockView3.setVisibility(View.GONE);
+                break;
+            case 7: // Candy custom  3
+                mCustomClockView3.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
+                       View.GONE) : View.VISIBLE);
+                mClockView.setVisibility(View.GONE);
+                mCustomClockView.setVisibility(View.GONE);
+                mCustomClockView1.setVisibility(View.GONE);
+                mCustomClockView2.setVisibility(View.GONE);
                 break;
         }
     }
@@ -494,6 +563,15 @@ public class KeyguardStatusView extends GridLayout implements
                 mClockView.setSingleLine(false);
                 mClockView.setGravity(Gravity.CENTER);
                 break;
+            case 5: // custom analog
+                params.addRule(RelativeLayout.BELOW, R.id.custom_clock_view1);
+                break;
+            case 6: // custom analog
+                params.addRule(RelativeLayout.BELOW, R.id.custom_clock_view2);
+                break;
+            case 7: // custom analog
+                params.addRule(RelativeLayout.BELOW, R.id.custom_clock_view3);
+                break;
         }
 
         updateVisibilities();
@@ -512,7 +590,9 @@ public class KeyguardStatusView extends GridLayout implements
             mClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
                     View.GONE) : View.VISIBLE);
             mCustomClockView.setVisibility(View.GONE);
-            mCustomClockView.setVisibility(View.GONE);
+            mCustomClockView1.setVisibility(View.GONE);
+            mCustomClockView2.setVisibility(View.GONE);
+            mCustomClockView3.setVisibility(View.GONE);
         } else {
             setStyle();
             refreshTime();
@@ -583,7 +663,11 @@ public class KeyguardStatusView extends GridLayout implements
         mClockView.setTextColor(blendedTextColor);
         mClockSeparator.setBackgroundColor(blendedTextColor);
         mCustomClockView.setDark(dark);
+        mCustomClockView1.setDark(dark);
+        mCustomClockView2.setDark(dark);
+        mCustomClockView3.setDark(dark);
         updateVisibilities();
+        updateSettings();
     }
 
     private void layoutOwnerInfo() {

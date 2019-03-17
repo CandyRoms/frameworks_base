@@ -79,6 +79,45 @@
                 analog:custom_hand_hour="@drawable/custom_clock_hand_hour"
                 analog:custom_hand_minute="@drawable/custom_clock_hand_minute"
                 analog:custom_clock_dial_ambient="@drawable/custom_clock_dial_ambient"/>
+            <com.android.keyguard.clocks.CustomAnalogClock
+                android:id="@+id/custom_clock_view1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                analog:custom_dial="@drawable/custom_clock1_dial"
+                analog:custom_dial_dark="@drawable/custom_clock1_dial"
+                analog:custom_dial_buttons="@drawable/custom_dial_buttons"
+                analog:custom_hand_hour="@drawable/custom_clock1_hand_hour"
+                analog:custom_hand_minute="@drawable/custom_clock1_hand_minute"
+                analog:custom_clock_dial_ambient="@drawable/custom_clock1_dial"/>
+            <com.android.keyguard.clocks.CustomAnalogClock
+                android:id="@+id/custom_clock_view2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                analog:custom_dial="@drawable/custom_clock2_dial"
+                analog:custom_dial_dark="@drawable/custom_clock2_dial"
+                analog:custom_dial_buttons="@drawable/custom_dial_buttons"
+                analog:custom_hand_hour="@drawable/custom_clock2_hand_hour"
+                analog:custom_hand_minute="@drawable/custom_clock2_hand_minute"
+                analog:custom_clock_dial_ambient="@drawable/custom_clock2_dial"/>
+            <com.android.keyguard.clocks.CustomAnalogClock
+                android:id="@+id/custom_clock_view3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                analog:custom_dial="@drawable/custom_clock3_dial"
+                analog:custom_dial_dark="@drawable/custom_clock3_dial"
+                analog:custom_dial_buttons="@drawable/custom_dial_buttons"
+                analog:custom_hand_hour="@drawable/custom_clock3_hand_hour"
+                analog:custom_hand_minute="@drawable/custom_clock3_hand_minute"
+                analog:custom_clock_dial_ambient="@drawable/custom_clock3_dial"/>
             <View
                 android:id="@+id/clock_separator"
                 android:layout_width="@dimen/widget_separator_width"
