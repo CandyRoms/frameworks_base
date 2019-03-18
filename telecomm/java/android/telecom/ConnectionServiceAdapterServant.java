@@ -610,11 +610,6 @@ final class ConnectionServiceAdapterServant {
         public void onConnectionServiceFocusReleased(Session.Info sessionInfo) {
             mHandler.obtainMessage(MSG_CONNECTION_SERVICE_FOCUS_RELEASED).sendToTarget();
         }
-
-        @Override
-        public void resetCdmaConnectionTime(String callId, Session.Info sessionInfo) {
-            // Do nothing
-        }
     };
 
     public ConnectionServiceAdapterServant(IConnectionServiceAdapter delegate) {
