@@ -215,9 +215,9 @@
     <java-symbol type="style" name="Animation.Toast.SlideRightLeft" />
     <java-symbol type="style" name="Animation.Toast.SlideLeftRight" />
 
-    <!-- Device keyhandlers -->
+    <!-- Device keyhandlers
     <java-symbol type="array" name="config_deviceKeyHandlerLibs" />
-    <java-symbol type="array" name="config_deviceKeyHandlerClasses" />
+    <java-symbol type="array" name="config_deviceKeyHandlerClasses" /> -->
 
     <java-symbol type="integer" name="config_flashlightProximityTimeout" />
 

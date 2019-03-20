@@ -285,6 +285,7 @@ import com.android.internal.annotations.GuardedBy;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.nano.MetricsProto;
+import com.android.internal.policy.IKeyguardDismissCallback;
 import com.android.internal.os.DeviceKeyHandler;
 import com.android.internal.policy.IKeyguardDismissCallback;
 import com.android.internal.policy.PhoneWindow;
@@ -319,9 +320,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.List;
 
+import dalvik.system.DexClassLoader;
 import dalvik.system.PathClassLoader;
 
 /**
@@ -471,6 +472,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     /** Amount of time (in milliseconds) a toast window can be shown. */
     public static final int TOAST_WINDOW_TIMEOUT = 3500; // 3.5 seconds
+
+    private DeviceKeyHandler mDeviceKeyHandler;
 
     /**
      * Lock protecting internal state.  Must not call out into window
@@ -657,8 +660,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mVeryLongPressTimeout;
     boolean mAllowStartActivityForLongPressOnPowerDuringSetup;
     MetricsLogger mLogger;
-    private DeviceKeyHandler mDeviceKeyHandler;
-    private HardkeyActionHandler mKeyHandler;
 
     private boolean mHandleVolumeKeysInWM;
 
@@ -865,7 +866,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private final MutableBoolean mTmpBoolean = new MutableBoolean(false);
 
     private boolean mAodShowing;
-    private final List<DeviceKeyHandler> mDeviceKeyHandlers = new ArrayList<>();
 
     private int mTorchActionMode;
     private static final float PROXIMITY_DISTANCE_THRESHOLD = 5.0f;
@@ -915,6 +915,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
 
     // Candy additions start
+    private HardkeyActionHandler mKeyHandler;
+
     private boolean mUseGestureButton;
     private GestureButton mGestureButton;
     private boolean mGestureButtonRegistered;
@@ -1318,9 +1320,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     };
 
     private ImmersiveModeConfirmation mImmersiveModeConfirmation;
+    private OPGesturesListener mOPGestures;
 
-//    @VisibleForTesting
-//    SystemGesturesPointerEventListener mSystemGestures;
+    @VisibleForTesting
+    SystemGesturesPointerEventListener mSystemGestures;
 
     private void handleRingerChordGesture() {
         if (mRingerToggleChord == VOLUME_HUSH_OFF) {
@@ -1331,8 +1334,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         Settings.Secure.putInt(mContext.getContentResolver(), Settings.Secure.HUSH_GESTURE_USED, 1);
         mLogger.action(MetricsProto.MetricsEvent.ACTION_HUSH_GESTURE, mRingerToggleChord);
     }
-    private SystemGesturesPointerEventListener mSystemGestures;
-    private OPGesturesListener mOPGestures;
 
     IStatusBarService getStatusBarService() {
         synchronized (mServiceAquireLock) {
@@ -1608,7 +1609,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         msg.setAsynchronous(true);
                         mHandler.sendMessageDelayed(msg,
                                 ViewConfiguration.get(mContext).getDeviceGlobalActionKeyTimeout());
-                        mBeganFromNonInteractive = true;
 
                         if (hasVeryLongPressOnPowerBehavior()) {
                             Message longMsg = mHandler.obtainMessage(MSG_POWER_VERY_LONG_PRESS);
@@ -1616,6 +1616,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             mHandler.sendMessageDelayed(longMsg, mVeryLongPressTimeout);
                         }
                     }
+
+                    mBeganFromNonInteractive = true;
                 } else {
                     if ((mTorchActionMode != 1) ||
                             (mTorchActionMode == 1 && isScreenOn() && !isDozeMode())) {
@@ -1637,7 +1639,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private boolean isDozeMode() {
         IDreamManager dreamManager = getDreamManager();
         try {
-            if (dreamManager != null && dreamManager.isDozing()) {
+            if (dreamManager != null && dreamManager.isDreaming()) {
                 return true;
             }
         } catch (RemoteException e) {
@@ -2339,11 +2341,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         try {
             mOrientationListener.setCurrentRotation(windowManager.getDefaultDisplayRotation());
         } catch (RemoteException ex) { }
+
         // only for hwkey devices
         if (!mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_showNavigationBar)) {
             mKeyHandler = new HardkeyActionHandler(mContext, mHandler);
         }
+
         mSettingsObserver = new SettingsObserver(mHandler);
         mSettingsObserver.observe();
         mShortcutManager = new ShortcutManager(context);
@@ -2595,34 +2599,27 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 });
         mScreenshotHelper = new ScreenshotHelper(mContext);
 
-        mProximityTimeOut = mContext.getResources().getInteger(
-                com.android.internal.R.integer.config_flashlightProximityTimeout);
-        mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-        mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-        mProximityWakeLock = mContext.getSystemService(PowerManager.class)
-                .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ProximityWakeLock");
+        String deviceKeyHandlerLib = mContext.getResources().getString(
+                com.android.internal.R.string.config_deviceKeyHandlerLib);
 
-        final Resources res = mContext.getResources();
-        final String[] deviceKeyHandlerLibs = res.getStringArray(
-                com.android.internal.R.array.config_deviceKeyHandlerLibs);
-        final String[] deviceKeyHandlerClasses = res.getStringArray(
-                com.android.internal.R.array.config_deviceKeyHandlerClasses);
+        String deviceKeyHandlerClass = mContext.getResources().getString(
+                com.android.internal.R.string.config_deviceKeyHandlerClass);
 
-        for (int i = 0;
-                i < deviceKeyHandlerLibs.length && i < deviceKeyHandlerClasses.length; i++) {
+         if (!deviceKeyHandlerLib.isEmpty() && !deviceKeyHandlerClass.isEmpty()) {
+            PathClassLoader loader =  new PathClassLoader(deviceKeyHandlerLib,
+                    getClass().getClassLoader());
             try {
-                PathClassLoader loader = new PathClassLoader(
-                        deviceKeyHandlerLibs[i], getClass().getClassLoader());
-                Class<?> klass = loader.loadClass(deviceKeyHandlerClasses[i]);
+                Class<?> klass = loader.loadClass(deviceKeyHandlerClass);
                 Constructor<?> constructor = klass.getConstructor(Context.class);
-                mDeviceKeyHandlers.add((DeviceKeyHandler) constructor.newInstance(mContext));
+                mDeviceKeyHandler = (DeviceKeyHandler) constructor.newInstance(
+                        mContext);
+                if(DEBUG) Slog.d(TAG, "Device key handler loaded");
             } catch (Exception e) {
                 Slog.w(TAG, "Could not instantiate device key handler "
-                        + deviceKeyHandlerLibs[i] + " from class "
-                        + deviceKeyHandlerClasses[i], e);
+                        + deviceKeyHandlerClass + " from class "
+                        + deviceKeyHandlerLib, e);
             }
         }
-        if (DEBUG) Slog.d(TAG, "" + mDeviceKeyHandlers.size() + " device key handlers loaded");
     }
 
     /**
@@ -4508,10 +4505,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
 
-        if (dispatchKeyToKeyHandlers(event)) {
-            return -1;
-        }
-
         if (down) {
             long shortcutCode = keyCode;
             if (event.isCtrlPressed()) {
@@ -4615,23 +4608,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 Slog.e(TAG, "Error taking bugreport", e);
             }
         }
-    }
-
-    private boolean dispatchKeyToKeyHandlers(KeyEvent event) {
-        for (DeviceKeyHandler handler : mDeviceKeyHandlers) {
-            try {
-                if (DEBUG_INPUT) {
-                    Log.d(TAG, "Dispatching key event " + event + " to handler " + handler);
-                }
-                //event = handler.handleKeyEvent(event);
-                if (event == null) {
-                    return true;
-                }
-            } catch (Exception e) {
-                Slog.w(TAG, "Could not dispatch event to device key handler", e);
-            }
-        }
-        return false;
     }
 
     /** {@inheritDoc} */
@@ -6720,6 +6696,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 && event.getRepeatCount() == 0
                 && !isHwKeysDisabled();
 
+        // Specific device key handling
         if (mDeviceKeyHandler != null) {
             try {
                 // The device says if we should ignore this event.
@@ -6764,11 +6741,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             } catch (Exception e) {
                 Slog.w(TAG, "Could not dispatch event to device key handler", e);
             }
-        }
-
-        // Specific device key handling
-        if (dispatchKeyToKeyHandlers(event)) {
-            return 0;
         }
 
         // Handle special keys.
