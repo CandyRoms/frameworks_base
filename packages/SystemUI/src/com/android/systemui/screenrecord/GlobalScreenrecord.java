@@ -111,6 +111,8 @@ class GlobalScreenrecord {
     private long mRecordingTotalTime = 0;
     private long mFileSize = 0;
 
+    private boolean mHigherAspectRatio;
+
     private void setFinisher(Runnable finisher) {
         mFinisher = finisher;
     }
