@@ -98,8 +98,6 @@
     <string-array name="config_deviceKeyHandlerClasses" translatable="false">
     </string-array> -->
 
-    <integer name="config_flashlightProximityTimeout">300</integer>
-
     <!-- Power menu -->
     <string-array translatable="false" name="config_custom_globalActionsList">
         <item>power</item>
