@@ -105,5 +105,6 @@
         <item>advanced</item>
         <item>lockdown</item>
         <item>screenshot</item>
+        <item>emergency</item>
     </string-array>
 </resources>
