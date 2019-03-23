@@ -557,7 +557,6 @@ class GlobalActionsDialog implements DialogInterface.OnDismissListener,
                     mItems.add(new LogoutAction());
                     mHasLogoutButton = true;
                 }
-<<<<<<< HEAD
             } else if (GLOBAL_ACTION_KEY_AIRPLANE.equals(actionKey)) {
                 //if (Settings.System.getIntForUser(mContext.getContentResolver(),
                 //        Settings.System.POWERMENU_AIRPLANE, 0, UserHandle.USER_CURRENT) != 0) {
@@ -579,20 +578,16 @@ class GlobalActionsDialog implements DialogInterface.OnDismissListener,
             } else if (GLOBAL_ACTION_KEY_SETTINGS.equals(actionKey)) {
                 //mItems.add(getSettingsAction());
             } else if (GLOBAL_ACTION_KEY_LOCKDOWN.equals(actionKey)) {
-                //if (Settings.Secure.getIntForUser(mContext.getContentResolver(),
-                //            Settings.Secure.LOCKDOWN_IN_POWER_MENU, 0, getCurrentUser().id) != 0
-                //       && shouldDisplayLockdown()) {
-                //   mItems.add(getLockdownAction());
-                //   mHasLockdownButton = true;
-                //}
+                if (Settings.Secure.getIntForUser(mContext.getContentResolver(),
+                            Settings.Secure.LOCKDOWN_IN_POWER_MENU, 0, getCurrentUser().id) != 0
+                       && shouldDisplayLockdown()) {
+                   mItems.add(getLockdownAction());
+                   mHasLockdownButton = true;
+                }
             } else if (GLOBAL_ACTION_KEY_VOICEASSIST.equals(actionKey)) {
                 //mItems.add(getVoiceAssistAction());
             } else if (GLOBAL_ACTION_KEY_ASSIST.equals(actionKey)) {
                 //mItems.add(getAssistAction());
-=======
-            } else if (GLOBAL_ACTION_KEY_ADVANCED.equals(actionKey)) {
-                mItems.add(mShowAdvancedToggles);
->>>>>>> d3b5f4529e4... Add soft reboot option
             } else {
                 Log.e(TAG, "Invalid global action key " + actionKey);
             }
