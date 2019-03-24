@@ -380,7 +380,6 @@ class GlobalActionsDialog implements DialogInterface.OnDismissListener,
                 && !(mAdapter.getItem(0) instanceof LongPressAction)) {
             ((SinglePressAction) mAdapter.getItem(0)).onPress();
         } else {
-            WindowManager.LayoutParams attrs = mDialog.getWindow().getAttributes();
             attrs.setTitle("ActionsDialog");
             attrs.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
             mDialog.getWindow().setAttributes(attrs);
