@@ -4419,7 +4419,13 @@ public final class Settings {
         public static final String ACCELEROMETER_ROTATION_ANGLES = "accelerometer_rotation_angles";
 
         /**
-         * Volume rocker wake
+         * Whether to show network traffic indicator in expanded header
+         * @hide
+         */
+        public static final String NETWORK_TRAFFIC_VIEW_LOCATION = "network_traffic_view_location";
+
+        /**
+         * Allow all rotations.
          * @hide
          */
         public static final String VOLUME_ROCKER_WAKE = "volume_rocker_wake";
