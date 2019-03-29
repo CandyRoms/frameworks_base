@@ -1,8 +1,45 @@
-<!-- drawable/format_font.xml -->
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2019 AquariOS
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+          http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+
+     Vector image designed and created by @calebcabob
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:height="24dp"
-    android:width="24dp"
+    android:width="64dp"
+    android:height="64dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path android:fillColor="#000" android:pathData="M17,8H20V20H21V21H17V20H18V17H14L12.5,20H14V21H10V20H11L17,8M18,9L14.5,16H18V9M5,3H10C11.11,3 12,3.89 12,5V16H9V11H6V16H3V5C3,3.89 3.89,3 5,3M6,5V9H9V5H6Z" />
+    <path
+        android:pathData="M7.4 19.3v-0.8C8.5 18.2 8.5 18 8.3 17c-0.2 -0.7 -0.5 -1.7 -0.7 -2.6H4.2C4 15.1 3.8 16 3.6 16.7c-0.4 1.4 0.1 1.6 1.4 1.8v0.8H0.7v-0.8c1.1 -0.2 1.4 -0.4 2 -2.3L6.3 4.4l0.8 -0.2c1.1 4 2.3 8 3.4 11.8c0.6 2.1 0.8 2.3 1.9 2.5v0.8H7.4zM5.9 8.4c-0.5 1.6 -1 3.2 -1.4 4.8h2.8L5.9 8.4z"
+        android:fillColor="#000000" />
+    <group
+        android:scaleX="0.8"
+        android:scaleY="1.12"
+        android:translateX="9.8656"
+        android:translateY="16.4102">
+        <path
+            android:pathData="M5.145508 -5.457031L5.145508 -5.457031Q5.145508 -6.117676 4.731934 -6.418457Q4.318359 -6.719238 3.38916 -6.719238L3.38916 -6.719238L2.277344 -6.719238L2.277344 -3.996094L3.453613 -3.996094Q4.32373 -3.996094 4.734619 -4.339844Q5.145508 -4.683594 5.145508 -5.457031ZM5.687988 -2.051758L5.687988 -2.051758Q5.687988 -2.809082 5.183105 -3.160889Q4.678223 -3.512695 3.566406 -3.512695L3.566406 -3.512695L2.277344 -3.512695L2.277344 -0.4833984Q3.018555 -0.4511719 3.856445 -0.4511719L3.856445 -0.4511719Q4.774902 -0.4511719 5.231445 -0.8405762Q5.687988 -1.22998 5.687988 -2.051758ZM1.691895 0L0.3168945 0L0.3168945 -0.284668L1.240723 -0.4296875L1.240723 -6.77832L0.3168945 -6.917969L0.3168945 -7.202637L3.609375 -7.202637Q4.979004 -7.202637 5.612793 -6.797119Q6.246582 -6.391602 6.246582 -5.510742L6.246582 -5.510742Q6.246582 -4.876953 5.857178 -4.431152Q5.467773 -3.985352 4.76416 -3.834961L4.76416 -3.834961Q5.736328 -3.73291 6.268066 -3.268311Q6.799805 -2.803711 6.799805 -2.073242L6.799805 -2.073242Q6.799805 -1.036621 6.082764 -0.5021973Q5.365723 0.03222656 3.990723 0.03222656L3.990723 0.03222656L1.691895 0Z"
+            android:fillColor="#000000" />
+    </group>
+    <group
+        android:rotation="69.99556"
+        android:scaleX="1.13005"
+        android:translateX="16.7542"
+        android:translateY="20.3519">
+        <group
+            android:rotation="-89.99498">
+            <path
+                android:pathData="M3.779297 0.09765625L3.779297 0.09765625Q2.1875 0.09765625 1.298828 -0.769043Q0.4101563 -1.635742 0.4101563 -3.198242L0.4101563 -3.198242Q0.4101563 -4.887695 1.264648 -5.754395Q2.119141 -6.621094 3.798828 -6.621094L3.798828 -6.621094Q4.819336 -6.621094 5.991211 -6.37207L5.991211 -6.37207L6.020508 -4.941406L5.698242 -4.941406L5.551758 -5.791016Q5.209961 -6.000977 4.758301 -6.115723Q4.306641 -6.230469 3.837891 -6.230469L3.837891 -6.230469Q2.583008 -6.230469 2.006836 -5.493164Q1.430664 -4.755859 1.430664 -3.208008L1.430664 -3.208008Q1.430664 -1.782227 2.033691 -1.030273Q2.636719 -0.2783203 3.789063 -0.2783203L3.789063 -0.2783203Q4.345703 -0.2783203 4.838867 -0.4125977Q5.332031 -0.546875 5.620117 -0.7714844L5.620117 -0.7714844L5.800781 -1.748047L6.118164 -1.748047L6.088867 -0.2099609Q5.014648 0.09765625 3.779297 0.09765625Z"
+                android:fillColor="#000000" />
+        </group>
+    </group>
 </vector>
