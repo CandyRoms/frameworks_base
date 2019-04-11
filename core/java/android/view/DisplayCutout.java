@@ -423,11 +423,8 @@ public final class DisplayCutout {
         m.postTranslate(offsetX, 0);
         p.transform(m);
 
-        final Rect tmpRect = new Rect();
-        toRectAndAddToRegion(p, r, tmpRect);
-        final int topInset = tmpRect.bottom;
+        addToRegion(p, r);
 
-        final int bottomInset;
         if (bottomSpec != null) {
             final Path bottomPath;
             try {
@@ -440,17 +437,10 @@ public final class DisplayCutout {
             m.postTranslate(0, displayHeight);
             bottomPath.transform(m);
             p.addPath(bottomPath);
-            toRectAndAddToRegion(bottomPath, r, tmpRect);
-            bottomInset = displayHeight - tmpRect.top;
-        } else {
-            bottomInset = 0;
+            addToRegion(bottomPath, r);
         }
 
-        // Reuse tmpRect as the inset rect we store into the DisplayCutout instance.
-        tmpRect.set(0, topInset, 0, bottomInset);
-        final DisplayCutout cutout = new DisplayCutout(tmpRect, r, false /* copyArguments */);
-
-        final Pair<Path, DisplayCutout> result = new Pair<>(p, cutout);
+        final Pair<Path, DisplayCutout> result = new Pair<>(p, fromBounds(r));
         synchronized (CACHE_LOCK) {
             sCachedSpec = spec;
             sCachedDisplayWidth = displayWidth;
@@ -461,11 +451,12 @@ public final class DisplayCutout {
         return result;
     }
 
-    private static void toRectAndAddToRegion(Path p, Region inoutRegion, Rect inoutRect) {
+    private static void addToRegion(Path p, Region r) {
         final RectF rectF = new RectF();
+        final Rect rect = new Rect();
         p.computeBounds(rectF, false /* unused */);
-        rectF.round(inoutRect);
-        inoutRegion.op(inoutRect, Op.UNION);
+        rectF.round(rect);
+        r.op(rect, Op.UNION);
     }
 
     private static Region boundingRectsToRegion(List<Rect> rects) {
