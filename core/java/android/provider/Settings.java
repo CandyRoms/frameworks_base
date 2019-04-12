@@ -4197,6 +4197,15 @@ public final class Settings {
                 ANY_STRING_VALIDATOR;
 
         /**
+         * @hide
+         */
+        public static final String OMNI_CUSTOM_FP_ICON = "custom_fingerprint_icon";
+
+        /** @hide */
+        private static final Validator OMNI_CUSTOM_FP_ICON_VALIDATOR =
+                ANY_STRING_VALIDATOR;
+
+        /**
          * Enable proxi check for wake keys - must be implemented in a device
          * KeyHandler
          * @hide
@@ -5007,6 +5016,7 @@ public final class Settings {
             DISPLAY_CUTOUT_MODE,
 	        STOCK_STATUSBAR_IN_HIDE,
             OMNI_FINGERPRINT_SUCCESS_VIB,
+            OMNI_CUSTOM_FP_ICON,
         };
 
         /**
@@ -5154,6 +5164,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(DISPLAY_CUTOUT_MODE);
             PRIVATE_SETTINGS.add(STOCK_STATUSBAR_IN_HIDE);
             PRIVATE_SETTINGS.add(OMNI_FINGERPRINT_SUCCESS_VIB);
+            PRIVATE_SETTINGS.add(OMNI_CUSTOM_FP_ICON);
         }
 
         /**
