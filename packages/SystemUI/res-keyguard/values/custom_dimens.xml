@@ -6,4 +6,8 @@
     <!-- Weather condition icon  -->
     <dimen name="custom_analog_clock_bottom_padding">7dp</dimen>
 
+    <!-- Custom text clock -->
+    <dimen name="customtextclock_fontsize">32dp</dimen>
+    <dimen name="custom_clock_left_padding">55dp</dimen>
+    <dimen name="custom_clock_top_margin">80dp</dimen>
 </resources>
