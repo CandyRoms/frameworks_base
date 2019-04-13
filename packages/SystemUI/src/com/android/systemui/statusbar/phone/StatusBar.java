@@ -1828,9 +1828,18 @@ public class StatusBar extends SystemUI implements DemoMode,
 
         final boolean keyguardVisible = (mState != StatusBarState.SHADE);
         final boolean hasArtwork = artworkDrawable != null;
+
         mColorExtractor.setHasBackdrop(hasArtwork);
         if (mScrimController != null) {
             mScrimController.setHasBackdrop(hasArtwork);
+        }
+
+        if (!mKeyguardFadingAway && keyguardVisible && hasArtwork && mScreenOn) {
+            // if there's album art, ensure visualizer is visible
+            mVisualizerView.setPlaying(mMediaManager.getMediaController() != null
+                    && mMediaManager.getMediaController().getPlaybackState() != null
+                    && mMediaManager.getMediaController().getPlaybackState().getState()
+                            == PlaybackState.STATE_PLAYING);
         }
 
         if (keyguardVisible && mKeyguardShowingMedia &&

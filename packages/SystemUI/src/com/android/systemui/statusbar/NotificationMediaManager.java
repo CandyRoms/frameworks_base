@@ -82,7 +82,13 @@ public class NotificationMediaManager implements Dumpable {
                     clearCurrentMediaNotification();
                     mPresenter.updateMediaMetaData(true, true);
                 }
-                setMediaPlaying();
+                if (mListener != null) {
+                    mListener.onMediaUpdated(isPlaybackActive(state.getState()));
+                }
+                if (mStatusBar != null) {
+                    mStatusBar.getVisualizer().setPlaying(state.getState()
+                            == PlaybackState.STATE_PLAYING);
+                }
             }
         }
 
@@ -110,6 +116,7 @@ public class NotificationMediaManager implements Dumpable {
                 = (MediaSessionManager) mContext.getSystemService(Context.MEDIA_SESSION_SERVICE);
         // TODO: use MediaSessionManager.SessionListener to hook us up to future updates
         // in session state
+        mStatusBar = SysUiServiceProvider.getComponent(mContext, StatusBar.class);
     }
 
     public void setUpWithPresenter(NotificationPresenter presenter,
@@ -131,6 +138,10 @@ public class NotificationMediaManager implements Dumpable {
 
     public String getMediaNotificationKey() {
         return mMediaNotificationKey;
+    }
+
+    public MediaController getMediaController() {
+        return mMediaController;
     }
 
     public MediaMetadata getMediaMetadata() {
