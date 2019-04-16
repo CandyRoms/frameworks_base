@@ -571,8 +571,19 @@ public class KeyguardStatusView extends GridLayout implements
                     getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding), 
                     getResources().getDisplayMetrics()),0,0
                 );
-                mTextClock.setVisibility(View.GONE);
                 break;
+            case 8: // custom text clock
+                mTextClock.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
+                       View.GONE) : View.VISIBLE);
+                mClockView.setVisibility(View.GONE);
+                mCustomClockView.setVisibility(View.GONE);
+                mCustomClockView1.setVisibility(View.GONE);
+                mCustomClockView2.setVisibility(View.GONE);
+                mCustomClockView3.setVisibility(View.GONE);
+                mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
+                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding), 
+                    getResources().getDisplayMetrics()),0,0
+                );
         }
     }
 
@@ -623,6 +634,9 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 7: // custom analog
                 params.addRule(RelativeLayout.BELOW, R.id.custom_clock_view3);
+                break;
+            case 8: // custom analog
+                params.addRule(RelativeLayout.BELOW, R.id.custom_textclock_view);
                 break;
         }
 
