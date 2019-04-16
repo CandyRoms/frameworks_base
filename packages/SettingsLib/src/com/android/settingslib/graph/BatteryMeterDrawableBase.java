@@ -41,7 +41,8 @@ import com.android.settingslib.Utils;
 
 public class BatteryMeterDrawableBase extends Drawable {
 
-    private static final float ASPECT_RATIO = .58f;
+    //private static final float ASPECT_RATIO = .58f;
+    private static final float ASPECT_RATIO = .40f;
     private static final float CIRCLE_ASPECT_RATIO = 1.0f;
     public static final String TAG = BatteryMeterDrawableBase.class.getSimpleName();
     private static final float RADIUS_RATIO = 1.0f / 17f;
