@@ -293,7 +293,7 @@ public class KeyguardStatusView extends GridLayout implements
         mTextClockV0.setTextAppearance(getContext(), R.style.customtextclock_big_thin);
         mTextClockV1.setTextAppearance(getContext(), R.style.customtextclock_big_thin);
         mTextClockV2.setTextAppearance(getContext(), R.style.customtextclock_big_thin);
-        
+
         layoutParams = (RelativeLayout.LayoutParams) mClockSeparator.getLayoutParams();
         layoutParams.topMargin = smallClock ? (int) mWidgetPadding : 0;
         layoutParams.bottomMargin = layoutParams.topMargin;
@@ -505,8 +505,9 @@ public class KeyguardStatusView extends GridLayout implements
                 mCustomClockView1.setVisibility(View.GONE);
                 mCustomClockView2.setVisibility(View.GONE);
                 mCustomClockView3.setVisibility(View.GONE);
+                mTextClock.setVisibility(View.GONE);
                 mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding), 
+                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
                 break;
@@ -517,11 +518,11 @@ public class KeyguardStatusView extends GridLayout implements
                 mCustomClockView1.setVisibility(View.GONE);
                 mCustomClockView2.setVisibility(View.GONE);
                 mCustomClockView3.setVisibility(View.GONE);
+                mTextClock.setVisibility(View.GONE);
                 mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding), 
+                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
-                mTextClock.setVisibility(View.GONE);
                 break;
             case 4: // sammy (bold)
                 mClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
@@ -530,11 +531,11 @@ public class KeyguardStatusView extends GridLayout implements
                 mCustomClockView1.setVisibility(View.GONE);
                 mCustomClockView2.setVisibility(View.GONE);
                 mCustomClockView3.setVisibility(View.GONE);
+                mTextClock.setVisibility(View.GONE);
                 mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding), 
+                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
-                mTextClock.setVisibility(View.GONE);
                 break;
             case 5: // Candy custom 1
                 mCustomClockView1.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
@@ -543,8 +544,9 @@ public class KeyguardStatusView extends GridLayout implements
                 mCustomClockView.setVisibility(View.GONE);
                 mCustomClockView2.setVisibility(View.GONE);
                 mCustomClockView3.setVisibility(View.GONE);
+                mTextClock.setVisibility(View.GONE);
                 mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding), 
+                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
                 break;
@@ -555,8 +557,9 @@ public class KeyguardStatusView extends GridLayout implements
                 mCustomClockView.setVisibility(View.GONE);
                 mCustomClockView1.setVisibility(View.GONE);
                 mCustomClockView3.setVisibility(View.GONE);
+                mTextClock.setVisibility(View.GONE);
                 mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding), 
+                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
                 break;
@@ -567,8 +570,9 @@ public class KeyguardStatusView extends GridLayout implements
                 mCustomClockView.setVisibility(View.GONE);
                 mCustomClockView1.setVisibility(View.GONE);
                 mCustomClockView2.setVisibility(View.GONE);
+                mTextClock.setVisibility(View.GONE);
                 mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding), 
+                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
                 break;
@@ -581,7 +585,7 @@ public class KeyguardStatusView extends GridLayout implements
                 mCustomClockView2.setVisibility(View.GONE);
                 mCustomClockView3.setVisibility(View.GONE);
                 mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding), 
+                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
         }
