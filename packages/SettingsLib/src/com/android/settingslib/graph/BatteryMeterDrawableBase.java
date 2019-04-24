@@ -55,6 +55,7 @@ public class BatteryMeterDrawableBase extends Drawable {
     public static final int BATTERY_STYLE_TEXT = 5;
     public static final int BATTERY_STYLE_HIDDEN = 6;
     public static final int BATTERY_STYLE_BIG_DOTTED_CIRCLE = 7;
+    public static final int BATTERY_STYLE_Q = 8;
 
     protected final Context mContext;
     protected final Paint mFramePaint;
@@ -693,7 +694,7 @@ public class BatteryMeterDrawableBase extends Drawable {
     }
 
     protected float getAspectRatio() {
-        if (mMeterStyle != BATTERY_STYLE_PORTRAIT) {
+        if (mMeterStyle != BATTERY_STYLE_PORTRAIT && mMeterStyle != BATTERY_STYLE_Q) {
             return CIRCLE_ASPECT_RATIO;
         }
         return ASPECT_RATIO;
