@@ -6,8 +6,11 @@
     <!-- Weather condition icon  -->
     <dimen name="custom_analog_clock_bottom_padding">7dp</dimen>
 
+    <!-- Our custom clock values -->
+    <dimen name="widget_sammy_accent_font_size">62dp</dimen>
+
     <!-- Custom text clock -->
-    <dimen name="customtextclock_fontsize">40dp</dimen>
-    <dimen name="custom_clock_left_padding">64dp</dimen>
-    <dimen name="custom_clock_top_margin">72dp</dimen>
+    <dimen name="customtextclock_fontsize">38dp</dimen>
+    <dimen name="custom_clock_left_padding">55dp</dimen>
+    <dimen name="custom_clock_top_margin">80dp</dimen>
 </resources>
