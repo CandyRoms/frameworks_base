@@ -18,7 +18,9 @@ package com.android.systemui.qs;
 
 import static android.app.StatusBarManager.DISABLE2_QUICK_SETTINGS;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.graphics.Point;
@@ -29,16 +31,20 @@ import android.graphics.Rect;
 import android.graphics.PorterDuff.Mode;
 import android.os.Handler;
 import android.os.UserHandle;
-import android.provider.Settings;;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.android.systemui.Dependency;
 import com.android.systemui.R;
 import com.android.systemui.SysUiServiceProvider;
 import com.android.systemui.omni.StatusBarHeaderMachine;
+import com.android.systemui.plugins.ActivityStarter;
 import com.android.systemui.qs.customize.QSCustomizer;
 import com.android.systemui.statusbar.CommandQueue;
 
@@ -47,6 +53,9 @@ import com.android.systemui.statusbar.CommandQueue;
  */
 public class QSContainerImpl extends FrameLayout implements
         StatusBarHeaderMachine.IStatusBarHeaderMachineObserver {
+
+    private static final ComponentName CUSTOM_HEADERS_SETTING_COMPONENT = new ComponentName(
+            "com.android.settings", "com.android.settings.Settings$CustomHeadersActivity");
 
     private final Point mSizePoint = new Point();
 
@@ -74,6 +83,7 @@ public class QSContainerImpl extends FrameLayout implements
     private Drawable mCurrentBackground;
     private boolean mLandscape;
     private boolean mQsBackgroundAlpha;
+    private final Vibrator mVibrator;
 
     public QSContainerImpl(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -81,6 +91,7 @@ public class QSContainerImpl extends FrameLayout implements
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
         mStatusBarHeaderMachine = new StatusBarHeaderMachine(context);
+        mVibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     @Override
@@ -98,6 +109,18 @@ public class QSContainerImpl extends FrameLayout implements
         mSideMargins = getResources().getDimensionPixelSize(R.dimen.notification_side_paddings);
         mQsBackGround = getContext().getDrawable(R.drawable.qs_background_primary);
         mBackgroundImage.setClipToOutline(true);
+        mBackgroundImage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Dependency.get(ActivityStarter.class).startActivity(
+                        new Intent().setComponent(CUSTOM_HEADERS_SETTING_COMPONENT),
+                        true /* dismissShade */);
+                mVibrator.vibrate(
+                        VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
+                return false;
+            }
+
+        });
         updateResources();
         updateSettings();
         setClickable(true);
