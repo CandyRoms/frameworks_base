@@ -592,9 +592,14 @@ interface IActivityManager {
      * unlockProgressListener can be null if monitoring progress is not necessary.
      */
     boolean startUserInForegroundWithListener(int userid, IProgressListener unlockProgressListener);
-   
+  
     /**
      *  Should disable touch if three fingers to screen shot is active?
      */
     boolean isSwipeToScreenshotGestureActive();
+
+    /**
+     *  Force full screen for devices with cutout
+     */
+    boolean shouldForceCutoutFullscreen(in String packageName);
 }
