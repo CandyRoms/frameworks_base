@@ -26,48 +26,5 @@ public interface DeviceKeyHandler {
      * @param event The key event to be handled
      * @return If the event is consume
      */
-    public boolean handleKeyEvent(KeyEvent event);
-
-    /**
-     * Invoked when an unknown key was detected by the system,
-     * this should NOT handle the key just return if it WOULD be handled
-     *
-     * @param event The key event to be handled
-     * @return If the event will be consumed
-     */
-    public boolean canHandleKeyEvent(KeyEvent event);
-
-    /**
-     * Special key event that should be treated as
-     * a camera launch event
-     *
-     * @param event The key event to be handled
-     * @return If the event is a camera launch event
-     */
-    public boolean isCameraLaunchEvent(KeyEvent event);
-
-    /**
-     * Special key event that should be treated as
-     * a wake event
-     *
-     * @param event The key event to be handled
-     * @return If the event is a wake event
-     */
-    public boolean isWakeEvent(KeyEvent event);
-
-    /**
-     * Return false if this event should be ignored
-     *
-     * @param event The key event to be handled
-     * @return If the event should be ignored
-     */
-    public boolean isDisabledKeyEvent(KeyEvent event);
-
-    /**
-     * Return an Intent that should be launched for that KeyEvent
-     *
-     * @param event The key event to be handled
-     * @return an Intent or null
-     */
-    public Intent isActivityLaunchEvent(KeyEvent event);
+    public KeyEvent handleKeyEvent(KeyEvent event);
 }
