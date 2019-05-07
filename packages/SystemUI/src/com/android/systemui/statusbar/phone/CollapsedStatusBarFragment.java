@@ -18,6 +18,8 @@ import static android.app.StatusBarManager.DISABLE_CLOCK;
 import static android.app.StatusBarManager.DISABLE_NOTIFICATION_ICONS;
 import static android.app.StatusBarManager.DISABLE_SYSTEM_INFO;
 
+import android.util.Log;
+import android.provider.Settings;
 import android.annotation.Nullable;
 import android.app.Fragment;
 import android.app.StatusBarManager;
