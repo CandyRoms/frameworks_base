@@ -4977,6 +4977,18 @@ public final class Settings {
         public static final String MULTI_TOUCH_CUSTOM_GESTURE_PACKAGE_DOWN = "multi_touch_custom_gesture_package_down";
 
         /**
+         * Enable blocking wakelock
+         * @hide
+         */
+        public static final String WAKELOCK_BLOCKING_ENABLED = "wakelock_blocking_enabled";
+
+        /**
+         * List of wakelock blocks selected
+         * @hide
+         */
+        public static final String WAKELOCK_BLOCKING_LIST = "wakelock_blocking_list";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
