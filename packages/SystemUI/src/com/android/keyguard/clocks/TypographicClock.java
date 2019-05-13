@@ -16,7 +16,6 @@ import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-
 import android.util.Log;
 import android.widget.TextView;
 
@@ -61,6 +60,7 @@ public class TypographicClock extends TextView implements ColorExtractor.OnColor
             }
         }
     };
+
     public TypographicClock(Context context) {
         this(context, null);
     }
@@ -79,8 +79,7 @@ public class TypographicClock extends TextView implements ColorExtractor.OnColor
         mResources = context.getResources();
         mHours = mResources.getStringArray(R.array.type_clock_hours);
         mMinutes = mResources.getStringArray(R.array.type_clock_minutes);
-        mSystemAccent = AccentUtils.getAccentColor(mResources
-                .getColor(R.color.custom_text_clock_top_color, null));
+        mSystemAccent = mResources.getColor(R.color.custom_text_clock_top_color, null);
         mFallbackColor = mResources.getColor(R.color.custom_text_clock_top_fallback_color, null);
         onColorsChanged(mColorExtractor, 0);
     }
