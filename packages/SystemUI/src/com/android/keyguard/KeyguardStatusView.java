@@ -58,7 +58,7 @@ import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.util.wakelock.KeepAwakeAnimationListener;
 
 import com.google.android.collect.Sets;
-
+import java.lang.Math;
 import java.util.Locale;
 
 public class KeyguardStatusView extends GridLayout implements
@@ -76,11 +76,8 @@ public class KeyguardStatusView extends GridLayout implements
     private CustomAnalogClock mCustomClockView1;
     private CustomAnalogClock mCustomClockView2;
     private CustomAnalogClock mCustomClockView3;
-    private TextClock mClockView;
     private LinearLayout mTextClock;
-    private TextView mTextClockV0;
-    private TextView mTextClockV1;
-    private TextView mTextClockV2;
+    private TextClock mClockView;
     private View mClockSeparator;
     private TextView mOwnerInfo;
     private KeyguardSliceView mKeyguardSlice;
@@ -205,8 +202,6 @@ public class KeyguardStatusView extends GridLayout implements
         mCustomClockView3 = findViewById(R.id.custom_clock_view3);
 
         mTextClock = findViewById(R.id.custom_textclock_view);
-        mTextClockV1 = findViewById(R.id.custom_textclock_view1);
-        mTextClockV2 = findViewById(R.id.custom_textclock_view2);
         mOwnerInfo = findViewById(R.id.owner_info);
         mKeyguardSlice = findViewById(R.id.keyguard_status_area);
         mClockSeparator = findViewById(R.id.clock_separator);
@@ -287,11 +282,6 @@ public class KeyguardStatusView extends GridLayout implements
         textlayoutParams.bottomMargin = getResources().getDimensionPixelSize(
                 R.dimen.keyguard_security_view_top_margin);
         mTextClock.setLayoutParams(textlayoutParams);
-
-        /* TODO: Switch case for diff clock variants */
-        mTextClockV0.setTextAppearance(getContext(), R.style.customtextclock_big_thin);
-        mTextClockV1.setTextAppearance(getContext(), R.style.customtextclock_big_thin);
-        mTextClockV2.setTextAppearance(getContext(), R.style.customtextclock_big_thin);
 
         layoutParams = (RelativeLayout.LayoutParams) mClockSeparator.getLayoutParams();
         layoutParams.topMargin = smallClock ? (int) mWidgetPadding : 0;
@@ -638,10 +628,11 @@ public class KeyguardStatusView extends GridLayout implements
             case 7: // custom analog
                 params.addRule(RelativeLayout.BELOW, R.id.custom_clock_view3);
                 break;
-            case 8: // custom analog
+            case 8: // custom text clock
                 params.addRule(RelativeLayout.BELOW, R.id.custom_textclock_view);
                 break;
         }
+        mKeyguardSlice.setLayoutParams(params);
 
         updateVisibilities();
         updateDozeVisibleViews();
@@ -800,6 +791,10 @@ public class KeyguardStatusView extends GridLayout implements
         } catch (RemoteException re) {
             Log.e(TAG, "Failed to logout user", re);
         }
+    }
+
+    public KeyguardSliceView getSliceView() {
+        return mKeyguardSlice;
     }
 
     private class ClipChildrenAnimationListener extends AnimatorListenerAdapter implements

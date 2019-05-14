@@ -88,9 +88,8 @@ public class CustomTextClock extends TextView {
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CustomTextClock);
         mHandType = a.getInteger(R.styleable.CustomTextClock_handType, 2);
         a.recycle();
+        mContext = context;
         mCalendar = new Time();
-
-
     }
 
     @Override
@@ -105,7 +104,7 @@ public class CustomTextClock extends TextView {
             filter.addAction(Intent.ACTION_TIME_CHANGED);
             filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
             filter.addAction(Intent.ACTION_LOCALE_CHANGED);
-            
+
             // OK, this is gross but needed. This class is supported by the
             // remote views machanism and as a part of that the remote views
             // can be inflated by a context for another user without the app
@@ -136,18 +135,6 @@ public class CustomTextClock extends TextView {
         }
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        if (mHandType == 2) {
-            if (langHasChanged) {
-                setText(topText);
-                langHasChanged = false;
-            }
-            setTextColor(ColorText.getWallColor(mContext));
-        }
-    }
-
     private void onTimeChanged() {
         mCalendar.setToNow();
         h24 = DateFormat.is24HourFormat(getContext());
@@ -163,7 +150,7 @@ public class CustomTextClock extends TextView {
             }
         }
 
-        switch(mHandType){
+        switch (mHandType) {
             case 0:
                 if (hour == 12 && minute == 0) {
                     setText(highNoonFirstRow);
