@@ -72,7 +72,7 @@ public class CustomTextClock extends TextView {
 
     private boolean mAttached;
 
-    private int handType;
+    private int mHandType;
 
     private Context mContext;
 
@@ -85,12 +85,9 @@ public class CustomTextClock extends TextView {
     public CustomTextClock(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        final TypedArray a = context.obtainStyledAttributes(
-                attrs, R.styleable.CustomTextClock);
-
-        handType = a.getInteger(R.styleable.CustomTextClock_HandType, 2);
-
-        mContext = context;
+        final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CustomTextClock);
+        mHandType = a.getInteger(R.styleable.CustomTextClock_handType, 2);
+        a.recycle();
         mCalendar = new Time();
 
 
@@ -142,7 +139,7 @@ public class CustomTextClock extends TextView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (handType == 2) {
+        if (mHandType == 2) {
             if (langHasChanged) {
                 setText(topText);
                 langHasChanged = false;
@@ -166,7 +163,7 @@ public class CustomTextClock extends TextView {
             }
         }
 
-        switch(handType){
+        switch(mHandType){
             case 0:
                 if (hour == 12 && minute == 0) {
                     setText(highNoonFirstRow);

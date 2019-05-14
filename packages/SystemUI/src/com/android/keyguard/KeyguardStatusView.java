@@ -205,7 +205,6 @@ public class KeyguardStatusView extends GridLayout implements
         mCustomClockView3 = findViewById(R.id.custom_clock_view3);
 
         mTextClock = findViewById(R.id.custom_textclock_view);
-        mTextClockV0 = findViewById(R.id.custom_textclock_view0);
         mTextClockV1 = findViewById(R.id.custom_textclock_view1);
         mTextClockV2 = findViewById(R.id.custom_textclock_view2);
         mOwnerInfo = findViewById(R.id.owner_info);
