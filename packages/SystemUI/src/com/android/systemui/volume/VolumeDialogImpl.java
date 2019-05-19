@@ -303,7 +303,7 @@ public class VolumeDialogImpl implements VolumeDialog {
 
         LinearLayout.LayoutParams paramsRinger = (LinearLayout.LayoutParams) mRinger.getLayoutParams();
         FrameLayout.LayoutParams paramsExpandRows = (FrameLayout.LayoutParams) mExpandRows.getLayoutParams();
-        if(!isRightPosition()) {            
+        if(isRightPosition) {            
             paramsRinger.gravity = Gravity.RIGHT|Gravity.CENTER_VERTICAL;
             paramsExpandRows.gravity = Gravity.RIGHT;
             mExpandRows.setRotation(90);
