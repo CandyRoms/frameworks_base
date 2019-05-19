@@ -262,19 +262,19 @@ public class VolumeDialogImpl implements VolumeDialog {
         mDialog.setContentView(R.layout.volume_dialog);
         mDialog.setOnShowListener(dialog -> {
 
-            if (!isLandscape()) mDialogView.setTranslationX((mDialogView.getWidth() / 2)*(isRightPosition ? 1 : -1));
-            mDialogView.setAlpha(0);
-            mDialogView.animate()
-                    .alpha(1)
-                    .translationX(0)
-                    .setDuration(300)
-                    .setInterpolator(new SystemUIInterpolators.LogDecelerateInterpolator())
-                    .withEndAction(() -> {
-                        if (!Prefs.getBoolean(mContext, Prefs.Key.TOUCHED_RINGER_TOGGLE, false)) {
-                            mRingerIcon.postOnAnimationDelayed(mSinglePress, 1500);
-                        }
-                    })
-                    .start();
+        if (!isLandscape()) mDialogView.setTranslationX((mDialogView.getWidth() / 2)*(isRightPosition ? 1 : -1));
+        mDialogView.setAlpha(0);
+        mDialogView.animate()
+                .alpha(1)
+                .translationX(0)
+                .setDuration(300)
+                .setInterpolator(new SystemUIInterpolators.LogDecelerateInterpolator())
+                .withEndAction(() -> {
+                    if (!Prefs.getBoolean(mContext, Prefs.Key.TOUCHED_RINGER_TOGGLE, false)) {
+                        mRingerIcon.postOnAnimationDelayed(mSinglePress, 1500);
+                    }
+                })
+                .start();
         });
         mDialogView = mDialog.findViewById(R.id.volume_dialog);
         mDialogView.setOnHoverListener((v, event) -> {
@@ -662,7 +662,7 @@ public class VolumeDialogImpl implements VolumeDialog {
                     if (D.BUG) Log.d(TAG, "mDialog.dismiss()");
                     mDialog.dismiss();
                 }, 50));
-        if (!isLandscape()) animator.translationX((mDialogView.getWidth() / 2)*(!isRightPosition ? 1 : -1));
+        if (!isLandscape()) animator.translationX((mDialogView.getWidth() / 2)*(isRightPosition ? 1 : -1));
         animator.start();
 
         Events.writeEvent(mContext, Events.EVENT_DISMISS_DIALOG, reason);
