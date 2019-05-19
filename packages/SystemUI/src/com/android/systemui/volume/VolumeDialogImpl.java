@@ -248,6 +248,7 @@ public class VolumeDialogImpl implements VolumeDialog {
         final WindowManager.LayoutParams lp = mWindow.getAttributes();
         lp.format = PixelFormat.TRANSLUCENT;
         lp.setTitle(VolumeDialogImpl.class.getSimpleName());
+
         if(isRightPosition){
             lp.gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
             mDialog.setContentView(R.layout.volume_dialog);
@@ -261,20 +262,21 @@ public class VolumeDialogImpl implements VolumeDialog {
 
         mDialog.setCanceledOnTouchOutside(true);
         mDialog.setOnShowListener(dialog -> {
-                if (!isLandscape()) mDialogView.setTranslationX((mDialogView.getWidth() / 2)*(isRightPosition ? 1 : -1));
-                mDialogView.setAlpha(0);
-                mDialogView.animate()
-                        .alpha(1)
-                        .translationX(0)
-                        .setDuration(300)
-                        .setInterpolator(new SystemUIInterpolators.LogDecelerateInterpolator())
-                        .withEndAction(() -> {
-                            if (!Prefs.getBoolean(mContext, Prefs.Key.TOUCHED_RINGER_TOGGLE, false)) {
-                                mRingerIcon.postOnAnimationDelayed(mSinglePress, 1500);
-                            }
-                        })
-                        .start();
-            });
+
+            if (!isLandscape()) mDialogView.setTranslationX((mDialogView.getWidth() / 2)*(isRightPosition ? 1 : -1));
+            mDialogView.setAlpha(0);
+            mDialogView.animate()
+                    .alpha(1)
+                    .translationX(0)
+                    .setDuration(300)
+                    .setInterpolator(new SystemUIInterpolators.LogDecelerateInterpolator())
+                    .withEndAction(() -> {
+                        if (!Prefs.getBoolean(mContext, Prefs.Key.TOUCHED_RINGER_TOGGLE, false)) {
+                            mRingerIcon.postOnAnimationDelayed(mSinglePress, 1500);
+                        }
+                    })
+                    .start();
+        });
         mDialogView = mDialog.findViewById(R.id.volume_dialog);
         mDialogView.setOnHoverListener((v, event) -> {
             int action = event.getActionMasked();
@@ -292,6 +294,17 @@ public class VolumeDialogImpl implements VolumeDialog {
 
         mDialogRowsView = mDialog.findViewById(R.id.volume_dialog_rows);
         mRinger = mDialog.findViewById(R.id.ringer);
+        mExpandRowsView = mDialog.findViewById(R.id.expandable_indicator_container);
+        mExpandRows = mDialog.findViewById(R.id.expandable_indicator);
+        if(isRightPosition) {
+            mRinger.setForegroundGravity(Gravity.RIGHT);
+            mExpandRows.setForegroundGravity(Gravity.RIGHT);
+            mExpandRows.setRotation(90);
+        } else {
+            mRinger.setForegroundGravity(Gravity.LEFT);
+            mExpandRows.setForegroundGravity(Gravity.LEFT);
+            mExpandRows.setRotation(-90);
+        }
         mRingerIcon = mRinger.findViewById(R.id.ringer_icon);
         mZenIcon = mRinger.findViewById(R.id.dnd_icon);
         mSettingsView = mDialog.findViewById(R.id.settings_container);
@@ -650,7 +663,7 @@ public class VolumeDialogImpl implements VolumeDialog {
                     if (D.BUG) Log.d(TAG, "mDialog.dismiss()");
                     mDialog.dismiss();
                 }, 50));
-        if (!isLandscape()) animator.translationX((mDialogView.getWidth() / 2)*(isRightPosition ? 1 : -1));
+        if (!isLandscape()) animator.translationX((mDialogView.getWidth() / 2)*(!isRightPosition ? 1 : -1));
         animator.start();
 
         Events.writeEvent(mContext, Events.EVENT_DISMISS_DIALOG, reason);
