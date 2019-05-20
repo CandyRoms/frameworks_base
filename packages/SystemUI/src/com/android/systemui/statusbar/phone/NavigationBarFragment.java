@@ -851,20 +851,6 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
         mNavigationBarView.updateNavButtonIcons();
     }
 
-    private void notifyPulseScreenOn(boolean on) {
-        mNavigationBarView.notifyPulseScreenOn(on);
-    }
-
-    private void sendIntentToPulse(Intent intent) {
-        mNavigationBarView.sendIntentToPulse(intent);
-    }
-
-    @Override
-    public void onDetach() {
-        mNavigationBarView.dispose();
-        super.onDetach();
-    }
-
     private void prepareNavigationBarView() {
         mNavigationBarView.reorient();
         if (!isUsingStockNav()) return;
@@ -1258,19 +1244,15 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
             String action = intent.getAction();
             if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 notifyNavigationBarScreenOn();
-                notifyPulseScreenOn(false);
+                mPulseController.notifyScreenOn(false);
             } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 notifyNavigationBarScreenOn();
-                notifyPulseScreenOn(true);
+                mPulseController.notifyScreenOn(true);
             } else if (Intent.ACTION_USER_SWITCHED.equals(action)) {
                 // The accessibility settings may be different for the new user
                 updateAccessibilityServicesState(mAccessibilityManager);
             }
-            sendIntentToPulse(intent);
             mPulseController.onReceive(intent);
-            if (mNavigationBarView != null) {
-                mNavigationBarView.onReceive(intent);
-            }
         }
     };
 
@@ -1428,6 +1410,13 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
             changeNavigator();
             mNeedsBarRefresh = false;
         }
+    }
+
+    @Override
+    public void onDetach() {
+        mIsAttached = false;
+        mNavigationBarView.dispose();
+        super.onDetach();
     }
 
     public void setPanelExpanded(boolean expanded) {

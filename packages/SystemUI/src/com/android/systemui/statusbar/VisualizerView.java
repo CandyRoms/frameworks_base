@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Settings;
@@ -37,10 +38,10 @@ import android.util.Log;
 import android.view.View;
 
 import com.android.systemui.Dependency;
-import com.android.systemui.UiOffloadThread;
+import com.android.systemui.tuner.TunerService;
 
 public class VisualizerView extends View
-        implements Palette.PaletteAsyncListener {
+        implements Palette.PaletteAsyncListener, TunerService.Tunable {
 
     private static final String TAG = VisualizerView.class.getSimpleName();
     private static final boolean DEBUG = false;
@@ -164,8 +165,6 @@ public class VisualizerView extends View
                 }
             });
         }
-
-        mUiOffloadThread = Dependency.get(UiOffloadThread.class);
     }
 
     public VisualizerView(Context context, AttributeSet attrs) {
@@ -362,7 +361,7 @@ public class VisualizerView extends View
                 && mVisualizerEnabled && !mOccluded) {
             if (!mDisplaying) {
                 mDisplaying = true;
-                dolink();
+                AsyncTask.execute(mLinkVisualizer);
                 animate()
                         .alpha(1f)
                         .withEndAction(null)
@@ -372,7 +371,7 @@ public class VisualizerView extends View
             if (mDisplaying) {
                 unlink();
                 mDisplaying = false;
-                if (isVisible) {
+                if (mVisible) {
                     animate()
                             .alpha(0f)
                             .setDuration(600);
