@@ -96,7 +96,6 @@ import com.android.systemui.plugins.VolumeDialog;
 import com.android.systemui.plugins.VolumeDialogController;
 import com.android.systemui.plugins.VolumeDialogController.State;
 import com.android.systemui.plugins.VolumeDialogController.StreamState;
-import com.android.systemui.statusbar.phone.ExpandableIndicator;
 import com.android.systemui.statusbar.phone.StatusBar;
 import com.android.systemui.statusbar.policy.AccessibilityManagerWrapper;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
@@ -130,7 +129,7 @@ public class VolumeDialogImpl implements VolumeDialog {
     private FrameLayout mRinger;
     private ImageButton mRingerIcon;
     private View mExpandRowsView;
-    private ExpandableIndicator mExpandRows;
+    private ImageButton mExpandRows;
     private FrameLayout mZenIcon;
     private final List<VolumeRow> mRows = new ArrayList<>();
     private ConfigurableTexts mConfigurableTexts;
@@ -285,14 +284,11 @@ public class VolumeDialogImpl implements VolumeDialog {
 
         LinearLayout.LayoutParams paramsRinger = (LinearLayout.LayoutParams) mRinger.getLayoutParams();
         FrameLayout.LayoutParams paramsExpandRows = (FrameLayout.LayoutParams) mExpandRows.getLayoutParams();
+        paramsExpandRows.gravity = Gravity.CENTER_HORIZONTAL;
         if(isRightPosition) {            
             paramsRinger.gravity = Gravity.RIGHT|Gravity.CENTER_VERTICAL;
-            paramsExpandRows.gravity = Gravity.RIGHT;
-            mExpandRows.setRotation(90);
         } else {
             paramsRinger.gravity = Gravity.LEFT|Gravity.CENTER_VERTICAL;
-            paramsExpandRows.gravity = Gravity.LEFT;
-            mExpandRows.setRotation(-90);
         }
         mRinger.setLayoutParams(paramsRinger);
         mExpandRows.setLayoutParams(paramsExpandRows);
@@ -573,7 +569,7 @@ public class VolumeDialogImpl implements VolumeDialog {
                 cleanExpandRows();
                 mExpanded = false;
             }
-            mExpandRows.setExpanded(mExpanded);
+            //mExpandRows.setExpanded(mExpanded);
         });
     }
 
@@ -738,7 +734,7 @@ public class VolumeDialogImpl implements VolumeDialog {
 
         cleanExpandRows();
         mExpanded = false;
-        mExpandRows.setExpanded(mExpanded);
+        //mExpandRows.setExpanded(mExpanded);
     }
 
     private boolean shouldBeVisibleH(VolumeRow row, VolumeRow activeRow) {
