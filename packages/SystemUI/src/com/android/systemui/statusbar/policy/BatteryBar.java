@@ -152,12 +152,16 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             // charger
             mChargerLayout = new LinearLayout(mContext);
 
-            if (vertical)
+            if (vertical) {
+                if (mBarGradient != null) {
+                    mBarGradient.setOrientation(GradientDrawable.Orientation.TOP_BOTTOM);
+                }
                 addView(mChargerLayout, new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         pixels));
-            else
+            } else {
                 addView(mChargerLayout, new RelativeLayout.LayoutParams(pixels,
                         LayoutParams.MATCH_PARENT));
+            }
 
             mCharger = new View(mContext);
             mChargerLayout.setVisibility(View.GONE);
