@@ -1127,20 +1127,6 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
         }
     }
 
-    @Override
-    public void notifyPulseScreenOn(boolean screenOn) {
-        if (mPulse != null) {
-            mPulse.notifyScreenOn(screenOn);
-        }
-    }
-
-    @Override
-    public void sendIntentToPulse(Intent intent) {
-        if (mPulse != null) {
-            mPulse.onReceive(intent);
-        }
-    }
-
     public final void notifyInflateFromUser() {
         if (mPulse != null) {
             mPulse.notifyScreenOn(true);

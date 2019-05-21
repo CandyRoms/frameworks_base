@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Settings;
@@ -37,10 +38,10 @@ import android.util.Log;
 import android.view.View;
 
 import com.android.systemui.Dependency;
-import com.android.systemui.UiOffloadThread;
+import com.android.systemui.tuner.TunerService;
 
 public class VisualizerView extends View
-        implements Palette.PaletteAsyncListener {
+        implements Palette.PaletteAsyncListener, TunerService.Tunable {
 
     private static final String TAG = VisualizerView.class.getSimpleName();
     private static final boolean DEBUG = false;
@@ -73,8 +74,6 @@ public class VisualizerView extends View
     private int mCustomColor;
     private Bitmap mCurrentBitmap;
 
-    private final UiOffloadThread mUiOffloadThread;
-
     private Visualizer.OnDataCaptureListener mVisualizerListener =
             new Visualizer.OnDataCaptureListener() {
         byte rfk, ifk;
@@ -101,9 +100,13 @@ public class VisualizerView extends View
         }
     };
 
-    public void dolink() {
-        mUiOffloadThread.submit(() -> {
-            if (mVisualizer != null) return;
+    private final Runnable mLinkVisualizer = new Runnable() {
+        @Override
+        public void run() {
+            if (DEBUG) {
+                Log.w(TAG, "+++ mLinkVisualizer run()");
+            }
+
             try {
                 mVisualizer = new Visualizer(0);
             } catch (Exception e) {
@@ -116,17 +119,24 @@ public class VisualizerView extends View
             mVisualizer.setDataCaptureListener(mVisualizerListener,Visualizer.getMaxCaptureRate(),
                     false, true);
             mVisualizer.setEnabled(true);
-        });
-    }
+            if (DEBUG) {
+                Log.w(TAG, "--- mLinkVisualizer run()");
+            }
+        }
+    };
 
     private void unlink() {
-        mUiOffloadThread.submit(() -> {
-            if (mVisualizer != null) {
-                mVisualizer.setEnabled(false);
-                mVisualizer.release();
-                mVisualizer = null;
-            }
-        });
+        if (DEBUG) {
+            Log.w(TAG, "+++ mUnlinkVisualizer run(), mVisualizer: " + mVisualizer);
+        }
+        if (mVisualizer != null) {
+            mVisualizer.setEnabled(false);
+            mVisualizer.release();
+            mVisualizer = null;
+        }
+        if (DEBUG) {
+            Log.w(TAG, "--- mUninkVisualizer run()");
+        }
     }
 
     public VisualizerView(Context context, AttributeSet attrs, int defStyle) {
@@ -155,8 +165,6 @@ public class VisualizerView extends View
                 }
             });
         }
-
-        mUiOffloadThread = Dependency.get(UiOffloadThread.class);
     }
 
     public VisualizerView(Context context, AttributeSet attrs) {
@@ -180,21 +188,24 @@ public class VisualizerView extends View
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-
-        if (mCurrentBitmap == null)
-            setColor(Color.TRANSPARENT);
-
-        mSettingObserver = new SettingsObserver(new Handler());
-        mSettingObserver.observe();
-        mSettingObserver.update();
+        Dependency.get(TunerService.class).addTunable(this, LOCKSCREEN_VISUALIZER_ENABLED);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mSettingObserver.unobserve();
-        mSettingObserver = null;
+        Dependency.get(TunerService.class).removeTunable(this);
         mCurrentBitmap = null;
+    }
+
+    @Override
+    public void onTuningChanged(String key, String newValue) {
+        if (!LOCKSCREEN_VISUALIZER_ENABLED.equals(key)) {
+            return;
+        }
+        mVisualizerEnabled = newValue == null || Integer.parseInt(newValue) != 0;
+        checkStateChanged();
+        updateViewVisibility();
     }
 
     @Override
@@ -346,12 +357,11 @@ public class VisualizerView extends View
     }
 
     private void checkStateChanged() {
-        boolean isVisible = getVisibility() == View.VISIBLE;
-        if (isVisible && mPlaying && !mDozing && !mPowerSaveMode
+        if (getVisibility() == View.VISIBLE && mVisible && mPlaying && !mDozing && !mPowerSaveMode
                 && mVisualizerEnabled && !mOccluded) {
             if (!mDisplaying) {
                 mDisplaying = true;
-                dolink();
+                AsyncTask.execute(mLinkVisualizer);
                 animate()
                         .alpha(1f)
                         .withEndAction(null)
@@ -361,7 +371,7 @@ public class VisualizerView extends View
             if (mDisplaying) {
                 unlink();
                 mDisplaying = false;
-                if (isVisible) {
+                if (mVisible) {
                     animate()
                             .alpha(0f)
                             .setDuration(600);
