@@ -49,13 +49,15 @@ public class BatteryBarController extends LinearLayout {
     boolean isVertical = false;
     boolean mIsLeftInLandscape = false;
 
+    SettingsObserver mObserver;
+
     class SettingsObserver extends ContentObserver {
 
         public SettingsObserver(Handler handler) {
             super(handler);
         }
 
-        void observer() {
+        void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.BATTERY_BAR_LOCATION), false, this, UserHandle.USER_ALL);
@@ -78,6 +80,7 @@ public class BatteryBarController extends LinearLayout {
             String ns = "http://schemas.android.com/apk/res/com.android.systemui";
             mLocationToLookFor = attrs.getAttributeIntValue(ns, "viewLocation", 0);
         }
+        mObserver = new SettingsObserver(new Handler());
     }
 
     @Override
@@ -91,9 +94,7 @@ public class BatteryBarController extends LinearLayout {
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_BATTERY_CHANGED);
             getContext().registerReceiver(mIntentReceiver, filter);
-
-            SettingsObserver observer = new SettingsObserver(new Handler());
-            observer.observer();
+            mObserver.observe();
             updateSettings();
         }
     }
@@ -115,6 +116,8 @@ public class BatteryBarController extends LinearLayout {
     protected void onDetachedFromWindow() {
         if (isAttached) {
             isAttached = false;
+            getContext().unregisterReceiver(mIntentReceiver);
+            getContext().getContentResolver().unregisterContentObserver(mObserver);
             removeBars();
         }
         super.onDetachedFromWindow();

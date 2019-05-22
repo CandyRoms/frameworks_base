@@ -64,13 +64,15 @@ public class BatteryBar extends RelativeLayout implements Animatable {
 
     boolean vertical = false;
 
+    SettingsObserver mObserver;
+
     class SettingsObserver extends ContentObserver {
 
         public SettingsObserver(Handler handler) {
             super(handler);
         }
 
-        void observer() {
+        void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.BATTERY_BAR_LOCATION), false, this, UserHandle.USER_ALL);
@@ -129,6 +131,7 @@ public class BatteryBar extends RelativeLayout implements Animatable {
         mGradientColors[1] = mHighColor;
 
         mBarGradient = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, mGradientColors);
+        mObserver = new SettingsObserver(mHandler);
     }
 
     @Override
@@ -174,8 +177,7 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             filter.addAction(Intent.ACTION_SCREEN_ON);
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
 
-            SettingsObserver observer = new SettingsObserver(mHandler);
-            observer.observer();
+            mObserver.observe();
             updateSettings();
         }
     }
@@ -186,6 +188,7 @@ public class BatteryBar extends RelativeLayout implements Animatable {
         if (mAttached) {
             mAttached = false;
             getContext().unregisterReceiver(mIntentReceiver);
+            getContext().getContentResolver().unregisterContentObserver(mObserver);
         }
     }
 
