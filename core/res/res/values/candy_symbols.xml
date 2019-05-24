@@ -66,10 +66,6 @@
     <java-symbol type="dimen" name="nav_gesture_swipe_min_length" />
     <java-symbol type="dimen" name="nav_gesture_long_press_max_length" />
 
-    <!-- Device keyhandlers -->
-    <java-symbol type="array" name="config_deviceKeyHandlerLibs" />
-    <java-symbol type="array" name="config_deviceKeyHandlerClasses" />
-
     <!-- HW keys binding -->
     <java-symbol type="anim" name="custom_app_in" />
     <java-symbol type="anim" name="custom_app_out" />
@@ -225,10 +221,6 @@
     <java-symbol type="style" name="Animation.Toast.Translucent" />
     <java-symbol type="style" name="Animation.Toast.SlideRightLeft" />
     <java-symbol type="style" name="Animation.Toast.SlideLeftRight" />
-
-    <!-- Device keyhandlers
-    <java-symbol type="array" name="config_deviceKeyHandlerLibs" />
-    <java-symbol type="array" name="config_deviceKeyHandlerClasses" /> -->
 
     <java-symbol type="integer" name="config_flashlightProximityTimeout" />
 

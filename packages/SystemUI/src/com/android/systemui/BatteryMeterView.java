@@ -377,9 +377,10 @@ public class BatteryMeterView extends LinearLayout implements
         if (mBatteryPercentView != null) {
             final Resources res = getContext().getResources();
             final int startPadding = res.getDimensionPixelSize(R.dimen.battery_level_padding_start);
+            final int endPadding = res.getDimensionPixelSize(R.dimen.battery_level_padding_end);
             mBatteryPercentView.setPaddingRelative(
                     getMeterStyle() == BatteryMeterDrawableBase.BATTERY_STYLE_TEXT ? 0 : startPadding,
-                    0, 0, 0);
+                    0, endPadding, 0);
         }
     }
 

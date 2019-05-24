@@ -26,5 +26,6 @@
         android:textColor="?android:attr/textColorPrimary"
         android:gravity="start|center"
         android:paddingStart="@dimen/battery_level_padding_start"
+        android:paddingEnd="@dimen/battery_level_padding_end"
         android:importantForAccessibility="no"
         />
