@@ -24,8 +24,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
-import com.android.systemui.Dependency;
-import com.android.systemui.navigation.pulse.PulseController;
 import com.android.systemui.statusbar.policy.DeadZone;
 
 public class NavigationBarFrame extends FrameLayout {
@@ -62,17 +60,5 @@ public class NavigationBarFrame extends FrameLayout {
             }
         }
         return super.dispatchTouchEvent(event);
-    }
-
-    @Override
-    public void onAttachedToWindow() {
-        Dependency.get(PulseController.class).attachPulseTo(this);
-        super.onAttachedToWindow();
-    }
-
-    @Override
-    public void onDetachedFromWindow() {
-        Dependency.get(PulseController.class).detachPulseFrom(this);
-        super.onDetachedFromWindow();
     }
 }

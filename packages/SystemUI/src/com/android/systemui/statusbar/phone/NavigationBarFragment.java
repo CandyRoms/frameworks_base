@@ -93,6 +93,7 @@ import com.android.systemui.fragments.FragmentHostManager.FragmentListener;
 import com.android.systemui.navigation.Editor;
 import com.android.systemui.navigation.NavbarOverlayResources;
 import com.android.systemui.navigation.Navigator;
+import com.android.systemui.navigation.pulse.PulseController;
 import com.android.systemui.navigation.smartbar.SmartBarView;
 import com.android.systemui.recents.Recents;
 import com.android.systemui.recents.misc.SysUiTaskStackChangeListener;
@@ -186,6 +187,7 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
     private Animator mRotateHideAnimator;
     private ViewRippler mViewRippler = new ViewRippler();
 
+    private PulseController mPulseController;
     private NavbarOverlayResources mResourceMap;
     private NavbarObserver mNavbarObserver;
     private KeyguardMonitor mKeyguardMonitor;
@@ -293,6 +295,7 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
         ActivityManagerWrapper.getInstance().registerTaskStackListener(mTaskStackListener);
         mConfiguration = new Configuration();
         mConfiguration.updateFrom(getContext().getResources().getConfiguration());
+        mPulseController = new PulseController(getContext(), new Handler());
         mMediaManager = mStatusBar.getMediaManager();
         mResourceMap = new NavbarOverlayResources(getContext(), getContext().getResources());
         mBarMode = Settings.Secure.getIntForUser(mContentResolver,
@@ -336,6 +339,7 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
         mNavigationBarView = (Navigator) view;
 
         mNavigationBarView.setResourceMap(mResourceMap);
+        mNavigationBarView.setControllers(mPulseController);
         mNavigationBarView.setLeftInLandscape(mLeftInLandscape);
 
         mNavigationBarView.setComponents(mRecents, mDivider, mStatusBar.getPanel());
@@ -366,6 +370,7 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
         notifyNavigationBarScreenOn();
         mOverviewProxyService.addCallback(mOverviewProxyListener);
         mNavigationBarView.notifyInflateFromUser();
+        mPulseController.notifyScreenOn(true);
         setFullGestureMode();
     }
 
@@ -781,6 +786,27 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
 
     private boolean hasDisable2RotateSuggestionFlag(int disable2Flags) {
         return (disable2Flags & StatusBarManager.DISABLE2_ROTATE_SUGGESTIONS) != 0;
+    }
+
+    @Override
+    public void leftInLandscapeChanged(boolean isLeft) {
+        mLeftInLandscape = isLeft;
+        if (mNavigationBarView != null) {
+            mNavigationBarView.setLeftInLandscape(isLeft);
+        }
+    }
+
+    public void setPulseColors(boolean colorizedMedia, int[] colors) {
+        if (mNavigationBarView != null) {
+            mNavigationBarView.setPulseColors(colorizedMedia, colors);
+        }
+    }
+
+    @Override
+    public void onMediaUpdated(boolean playing) {
+        if (mNavigationBarView != null) {
+            mNavigationBarView.setMediaPlaying(playing);
+        }
     }
 
     // ----- Internal stuffz -----
@@ -1218,15 +1244,15 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
             String action = intent.getAction();
             if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 notifyNavigationBarScreenOn();
+                mPulseController.notifyScreenOn(false);
             } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 notifyNavigationBarScreenOn();
+                mPulseController.notifyScreenOn(true);
             } else if (Intent.ACTION_USER_SWITCHED.equals(action)) {
                 // The accessibility settings may be different for the new user
                 updateAccessibilityServicesState(mAccessibilityManager);
             }
-            if (mNavigationBarView != null) {
-                mNavigationBarView.onReceive(intent);
-            }
+            mPulseController.onReceive(intent);
         }
     };
 
@@ -1407,16 +1433,18 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
             return;
         if (mIsAttached) {
             ViewGroup vg = (ViewGroup) mNavigationBarView.getBaseView().getParent();
-            vg.removeView(mNavigationBarView.getBaseView());
+            vg.removeAllViews();
             mNavigationBarView.dispose();
             mNavigationBarView = null;
             mNavigationBarView = createNavigator();
             mNavigationBarView.setResourceMap(mResourceMap);
+            mNavigationBarView.setControllers(mPulseController);
             mNavigationBarView.setLeftInLandscape(mLeftInLandscape);
             mNavigationBarView.setDisabledFlags(mDisabledFlags1);
             mNavigationBarView.setComponents(mRecents, mDivider, mStatusBar.getPanel());
             mNavigationBarView.setOnVerticalChangedListener(this::onVerticalChanged);
             mNavigationBarView.notifyInflateFromUser();
+            mPulseController.notifyScreenOn(true);
             mLightBarController
                     .setNavigationBar(mNavigationBarView.getLightTransitionsController());
             if (isUsingStockNav()) {
