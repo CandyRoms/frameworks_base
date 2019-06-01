@@ -28,7 +28,7 @@
 
     <com.android.keyguard.clocks.CustomTextClock
         android:id="@+id/textView"
-        style="@style/customtextclock_big_thin"
+        style="@style/customtextclock_top_text"
         androidprv:handType="2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,20 +39,20 @@
 
     <com.android.keyguard.clocks.CustomTextClock
         android:id="@+id/custom_textclock_view1"
-        style="@style/customtextclock_big_thin"
+        style="@style/customtextclock_time_text"
         androidprv:handType="0"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:letterSpacing="0.03"
-        android:textColor="@color/custom_text_clock_top_color" />
+        android:textColor="@color/custom_text_clock_middle_color" />
 
     <com.android.keyguard.clocks.CustomTextClock
         android:id="@+id/custom_textclock_view2"
-        style="@style/customtextclock_big_thin"
+        style="@style/customtextclock_time_text"
         androidprv:handType="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:letterSpacing="0.03"
-        android:textColor="@color/custom_text_clock_top_color" />
+        android:textColor="@color/custom_text_clock_bottom_color" />
 </LinearLayout>
