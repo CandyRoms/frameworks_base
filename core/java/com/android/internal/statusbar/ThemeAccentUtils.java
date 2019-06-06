@@ -32,6 +32,10 @@ public class ThemeAccentUtils {
         "com.android.system.theme.dark", // 0
         "com.android.settings.theme.dark", // 1
         "com.android.settings.intelligence.theme.dark", // 2
+        "com.android.gboard.theme.dark", // 3
+        "com.google.intelligence.sense.theme.dark", // 4
+        "com.android.systemui.theme.custom.dark", // 5
+        "com.android.wellbeing.theme.dark", // 6
     };
 
     // Black themes
@@ -39,10 +43,15 @@ public class ThemeAccentUtils {
         "com.android.system.theme.black", // 0
         "com.android.settings.theme.black", // 1
         "com.android.settings.intelligence.theme.black", // 2
+        "com.android.gboard.theme.black", // 3
+        "com.google.intelligence.sense.theme.black", // 4
+        "com.android.systemui.theme.custom.black", // 5
+        "com.android.wellbeing.theme.black", // 6
     };
 
     private static final String[] LIGHT_THEMES = {
         "com.google.intelligence.sense.theme.light", // 0
+        "com.android.gboard.theme.light", // 1
     };
 
     // Accents
@@ -135,6 +144,7 @@ public class ThemeAccentUtils {
             try {
                 om.setEnabled(theme,
                         useDarkTheme, userId);
+                unfuckBlackWhiteAccent(om, userId);
                 if (useDarkTheme) {
                     unloadStockDarkTheme(om, userId);
                 }
