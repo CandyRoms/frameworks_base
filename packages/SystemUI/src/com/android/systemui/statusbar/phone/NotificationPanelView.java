@@ -28,6 +28,7 @@ import android.app.StatusBarManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.om.IOverlayManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -65,6 +66,7 @@ import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardStatusView;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.systemui.DejankUtils;
+import com.android.systemui.Dependency;
 import com.android.systemui.Interpolators;
 import com.android.systemui.R;
 import com.android.systemui.classifier.FalsingManager;
@@ -371,15 +373,15 @@ public class NotificationPanelView extends PanelView implements
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mSettingsObserver.observe();
         FragmentHostManager.get(this).addTagListener(QS.TAG, mFragmentListener);
+        mSettingsObserver.observe();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mSettingsObserver.unobserve();
         FragmentHostManager.get(this).removeTagListener(QS.TAG, mFragmentListener);
+        mSettingsObserver.unobserve();
     }
 
     @Override

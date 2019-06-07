@@ -40,8 +40,10 @@ import static com.android.systemui.statusbar.phone.BarTransitions.MODE_WARNING;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.TimeInterpolator;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.AlarmManager;
@@ -76,6 +78,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
@@ -121,6 +124,7 @@ import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.IWindowManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -129,6 +133,7 @@ import android.view.RemoteAnimationAdapter;
 import android.view.ThreadedRenderer;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
@@ -5062,10 +5067,10 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     }
 
-         private void setQsRowsColumns() {
-            if (mQSPanel != null) {
-                mQSPanel.updateResources();
-         }
+    private void setQsRowsColumns() {
+        if (mQSPanel != null) {
+            mQSPanel.updateResources();
+        }
     }
 
     private void updateStatusBarColors(boolean enable) {
@@ -5806,6 +5811,12 @@ public class StatusBar extends SystemUI implements DemoMode,
             setOldMobileType();
             setPulseBlacklist();
             updateTheme(false);
+        }
+    }
+
+    private void updateQsPanelResources() {
+        if (mQSPanel != null) {
+            mQSPanel.updateResources();
         }
     }
 

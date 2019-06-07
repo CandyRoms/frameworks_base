@@ -115,6 +115,7 @@ public class NotificationMediaManager implements Dumpable {
                 = (MediaSessionManager) mContext.getSystemService(Context.MEDIA_SESSION_SERVICE);
         // TODO: use MediaSessionManager.SessionListener to hook us up to future updates
         // in session state
+
         mStatusBar = SysUiServiceProvider.getComponent(mContext, StatusBar.class);
     }
 
@@ -408,7 +409,7 @@ public class NotificationMediaManager implements Dumpable {
                 }
             }
             if (!mediaNotification) {
-                // no notification for this mediacontroller so no artwork or track info,
+                // no notification for this mediacontroller thus no artwork or track info,
                 // clean up Ambient Music and Pulse albumart color
                 mEntryManager.setEntryToRefresh(null, true);
                 setMediaNotificationText(null, false);
