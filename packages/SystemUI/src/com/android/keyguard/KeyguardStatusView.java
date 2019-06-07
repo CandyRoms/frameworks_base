@@ -22,6 +22,7 @@ import android.app.ActivityManager;
 import android.app.IActivityManager;
 import android.content.Context;
 import android.content.ContentResolver;
+import android.content.res.AccentUtils;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -398,6 +399,8 @@ public class KeyguardStatusView extends GridLayout implements
         } else if (mClockSelection == 4) {
             mClockView.setFormat12Hour(Html.fromHtml("<strong>hh</strong><br>mm"));
             mClockView.setFormat24Hour(Html.fromHtml("<strong>kk</strong><br>mm"));
+        } else if (mClockSelection == 8) {
+            mTextClock.onTimeChanged();
         } else {
             mClockView.setFormat12Hour("hh\nmm");
             mClockView.setFormat24Hour("kk\nmm");
@@ -748,7 +751,6 @@ public class KeyguardStatusView extends GridLayout implements
         mCustomClockView3.setDark(dark);
         if (mClockSelection == 8) {
             mTextClock.setTextColor(blendedTextColor);
-            mTextClock.setDarkAmount(mDarkAmount);
         }
         updateVisibilities();
         updateSettings();
