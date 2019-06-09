@@ -2331,7 +2331,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         updateTheme(false);
     }
 
-    // Check for the dark system theme
     public boolean isUsingDarkTheme() {
         return ThemeAccentUtils.isUsingDarkTheme(mOverlayManager, mLockscreenUserManager.getCurrentUserId());
     }
@@ -2344,11 +2343,6 @@ public class StatusBar extends SystemUI implements DemoMode,
     // Unloads the stock dark theme
     public void unloadStockDarkTheme() {
         ThemeAccentUtils.unloadStockDarkTheme(mOverlayManager, mLockscreenUserManager.getCurrentUserId());
-    }
-
-    // Check for black and white accent overlays
-    public void unfuckBlackWhiteAccent() {
-        ThemeAccentUtils.unfuckBlackWhiteAccent(mOverlayManager, mLockscreenUserManager.getCurrentUserId());
     }
 
     public boolean isCurrentRoundedSameAsFw() {
@@ -4293,14 +4287,12 @@ public class StatusBar extends SystemUI implements DemoMode,
 
         if (themeNeedsRefresh || isUsingDarkTheme() != useDarkTheme) {
             mUiOffloadThread.submit(() -> {
-                unfuckBlackWhiteAccent(); // Check for black and white accent
                 ThemeAccentUtils.setLightDarkTheme(mOverlayManager, mLockscreenUserManager.getCurrentUserId(), useDarkTheme);
                 mNotificationPanel.setLockscreenClockTheme(useDarkTheme);
             });
         }
         if (isUsingBlackTheme() != useBlackTheme) {
             mUiOffloadThread.submit(() -> {
-                unfuckBlackWhiteAccent(); // Check for black and white accent
                 ThemeAccentUtils.setLightBlackTheme(mOverlayManager, mLockscreenUserManager.getCurrentUserId(), useBlackTheme);
                 mNotificationPanel.setLockscreenClockTheme(useDarkTheme);
             });
@@ -4332,18 +4324,6 @@ public class StatusBar extends SystemUI implements DemoMode,
             // Make sure we have the correct navbar/statusbar colors.
             mStatusBarWindowManager.setKeyguardDark(useDarkText);
         }
-    }
-
-    // Switches theme accent from to another or back to stock
-    public void updateAccents() {
-        int accentSetting = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.ACCENT_PICKER, 0, mLockscreenUserManager.getCurrentUserId());
-        ThemeAccentUtils.updateAccents(mOverlayManager, mLockscreenUserManager.getCurrentUserId(), accentSetting);
-    }
-
-    // Unload all the theme accents
-    public void unloadAccents() {
-        ThemeAccentUtils.unloadAccents(mOverlayManager, mLockscreenUserManager.getCurrentUserId());
     }
 
     // Switches qs tile style from stock to custom
@@ -5665,9 +5645,6 @@ public class StatusBar extends SystemUI implements DemoMode,
                     Settings.System.SYSTEM_THEME),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.ACCENT_PICKER),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_TILE_STYLE),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -5741,10 +5718,6 @@ public class StatusBar extends SystemUI implements DemoMode,
             if (uri.equals(Settings.System.getUriFor(
                     Settings.System.SYSTEM_THEME))) {
                 updateTheme(false);
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.ACCENT_PICKER))) {
-                unloadAccents(); // Unload the accents when users request it
-                updateAccents(); // Update the accents when users request it
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.QS_TILE_STYLE))) {
                 unlockQsTileStyles();

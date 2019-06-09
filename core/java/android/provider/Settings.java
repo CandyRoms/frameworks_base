@@ -4377,16 +4377,6 @@ public final class Settings {
         public static final String LOCKSCREEN_INFO = "lockscreen_info";
 
         /**
-         * Select various accents to go along with system themes
-         *
-         * @hide
-         */
-        public static final String ACCENT_PICKER = "accent_picker";
-        /** @hide */
-        public static final Validator ACCENT_PICKER_VALIDATOR =
-                new SettingsValidators.InclusiveIntegerRangeValidator(0, 30);
-
-        /**
          * Toast icon
          * @hide
          */
