@@ -247,7 +247,6 @@ public class KeyguardStatusView extends GridLayout implements
         int height = mClockView.getHeight();
         layoutParams.bottomMargin = (int) -(height - (clockScale * height));
         mClockView.setLayoutParams(layoutParams);
-        updateSettings();
 
         // Custom analog clock
         RelativeLayout.LayoutParams customlayoutParams =
@@ -578,7 +577,6 @@ public class KeyguardStatusView extends GridLayout implements
                     getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
-                break;
         }
     }
 
