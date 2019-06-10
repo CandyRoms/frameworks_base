@@ -267,7 +267,7 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
             mDisabledFlags2 = savedInstanceState.getInt(EXTRA_DISABLE2_STATE, 0);
         }
         // Respect the latest disabled-flags.
-        mCommandQueue.recomputeDisableFlags(false);
+        //mCommandQueue.recomputeDisableFlags(false);
 
         mAssistManager = Dependency.get(AssistManager.class);
         mOverviewProxyService = Dependency.get(OverviewProxyService.class);
@@ -302,6 +302,7 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
         mNavbarObserver.observe();
         mKeyguardMonitor.addCallback(this);
         mMediaManager.addCallback(this);
+        setFullGestureMode();
     }
 
     @Override

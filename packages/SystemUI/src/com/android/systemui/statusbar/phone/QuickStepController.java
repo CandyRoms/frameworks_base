@@ -63,6 +63,7 @@ import com.android.systemui.shared.recents.utilities.Utilities;
 import com.android.systemui.shared.system.NavigationBarCompat;
 import com.android.internal.graphics.ColorUtils;
 import com.android.internal.util.candy.CandyUtils;
+import com.android.internal.utils.ActionHandler;
 
 /**
  * Class to detect gestures on the navigation bar and implement quick scrub.
