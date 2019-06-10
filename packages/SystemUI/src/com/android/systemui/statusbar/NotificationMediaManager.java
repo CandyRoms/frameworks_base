@@ -66,7 +66,6 @@ public class NotificationMediaManager implements Dumpable {
 
     private Set<String> mBlacklist = new HashSet<String>();
 
-    // callback into NavigationFragment for Pulse
     public interface MediaUpdateListener {
         public default void onMediaUpdated(boolean playing) {}
         public default void setPulseColors(boolean isColorizedMedia, int[] colors) {}
@@ -88,6 +87,7 @@ public class NotificationMediaManager implements Dumpable {
                     mStatusBar.getVisualizer().setPlaying(state.getState()
                             == PlaybackState.STATE_PLAYING);
                 }
+                setMediaPlaying();
             }
         }
 
@@ -115,6 +115,7 @@ public class NotificationMediaManager implements Dumpable {
                 = (MediaSessionManager) mContext.getSystemService(Context.MEDIA_SESSION_SERVICE);
         // TODO: use MediaSessionManager.SessionListener to hook us up to future updates
         // in session state
+
         mStatusBar = SysUiServiceProvider.getComponent(mContext, StatusBar.class);
     }
 
@@ -390,18 +391,15 @@ public class NotificationMediaManager implements Dumpable {
             final String pkg = mMediaController.getPackageName();
 
             boolean dontPulse = false;
-
-            boolean mediaNotification= false;
-            // check if the app supports new media notifications, if so then set it as entry
-            // to get metadata from
             if (!mBlacklist.isEmpty() && mBlacklist.contains(pkg)) {
                 // don't play Pulse for this app
-                return;
+                dontPulse = true;
             }
 
+            boolean mediaNotification= false;
             for (int i = 0; i < N; i++) {
                 final NotificationData.Entry entry = activeNotifications.get(i);
-                if (isMediaNotification(entry) && entry.notification.getPackageName().equals(pkg)) {
+                if (entry.notification.getPackageName().equals(pkg)) {
                     // NotificationEntryManager onAsyncInflationFinished will get called
                     // when colors and album are loaded for the notification, then we can send
                     // those info to Pulse
@@ -410,22 +408,8 @@ public class NotificationMediaManager implements Dumpable {
                     break;
                 }
             }
-            // the app doesn't support new media notifications but check if
-            // it has an old style notification for this media session, so we can use its
-            // notification title as track info fallback
             if (!mediaNotification) {
-                for (int i = 0; i < N; i++) {
-                    final NotificationData.Entry entry = activeNotifications.get(i);
-                    if  (entry.notification.getPackageName().equals(pkg)) {
-                        mEntryManager.setEntryToRefresh(entry, dontPulse);
-                        mediaNotification = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!mediaNotification) {
-                // no notification for this mediacontroller so no artwork or track info,
+                // no notification for this mediacontroller thus no artwork or track info,
                 // clean up Ambient Music and Pulse albumart color
                 mEntryManager.setEntryToRefresh(null, true);
                 setMediaNotificationText(null, false);
@@ -433,9 +417,6 @@ public class NotificationMediaManager implements Dumpable {
 
             if (!dontPulse) {
                 updateListenersMediaUpdated(true);
-            }
-            if (mStatusBar != null && mStatusBar.getVisualizer() != null) {
-                mStatusBar.getVisualizer().setPlaying(true);
             }
         } else {
             mEntryManager.setEntryToRefresh(null, true);

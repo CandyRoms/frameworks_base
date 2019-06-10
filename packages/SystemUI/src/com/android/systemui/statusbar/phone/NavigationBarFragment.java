@@ -267,7 +267,7 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
             mDisabledFlags2 = savedInstanceState.getInt(EXTRA_DISABLE2_STATE, 0);
         }
         // Respect the latest disabled-flags.
-        mCommandQueue.recomputeDisableFlags(false);
+        //mCommandQueue.recomputeDisableFlags(false);
 
         mAssistManager = Dependency.get(AssistManager.class);
         mOverviewProxyService = Dependency.get(OverviewProxyService.class);
@@ -302,6 +302,7 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
         mNavbarObserver.observe();
         mKeyguardMonitor.addCallback(this);
         mMediaManager.addCallback(this);
+        setFullGestureMode();
     }
 
     @Override
@@ -1358,6 +1359,14 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
     }
 
     @Override
+    public void leftInLandscapeChanged(boolean isLeft) {
+        mLeftInLandscape = isLeft;
+        if (mNavigationBarView != null) {
+            mNavigationBarView.setLeftInLandscape(isLeft);
+        }
+    }
+
+    @Override
     public void screenPinningStateChanged(boolean enabled) {
         mScreenPinningEnabled = enabled;
         changeNavigator();
@@ -1393,6 +1402,13 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
         super.onDetach();
     }
 
+    @Override
+    public void onMediaUpdated(boolean playing) {
+        if (mNavigationBarView != null) {
+            mNavigationBarView.setMediaPlaying(playing);
+        }
+    }
+
     public void setPanelExpanded(boolean expanded) {
         if (mNavigationBarView != null) {
             mNavigationBarView.setNotificationPanelExpanded(expanded);
@@ -1421,10 +1437,12 @@ public class NavigationBarFragment extends Fragment implements Callbacks,
                     .setNavigationBar(mNavigationBarView.getLightTransitionsController());
             if (isUsingStockNav()) {
                 mNavigationBarView.getBaseView().setOnTouchListener(this::onNavigationTouch);
+                setFullGestureMode();
+	            mNavigationBarView.updateNavButtonIcons();
             } else {
                 ((NavigationBarFrame) vg).disableDeadZone();
-                mNavigationBarView.setMediaPlaying(mMediaManager.isPlaybackActive());
             }
+            mNavigationBarView.setMediaPlaying(mMediaManager.isPlaybackActive());
             vg.addView(mNavigationBarView.getBaseView());
             prepareNavigationBarView();
             checkNavBarModes();
