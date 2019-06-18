@@ -21,10 +21,10 @@
      for different hardware and product builds.  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string-array name="wfcOperatorErrorAlertMessages">
-    <item msgid="6238990105876016549">"በWi-Fi ላይ ጥሪዎችን ለማድረግ እና መልዕክቶችን ለመላክ መጀመሪያ የአገልግሎት አቅራቢዎ ይህን አገልግሎት እንዲያዘጋጅልዎ ይጠይቁ። ከዚያ ከቅንብሮች ሆነው እንደገና የWi-Fi ጥሪን ያብሩ።"</item>
+    <item msgid="5217754856196352581">"Als je wilt bellen en berichten wilt verzenden via wifi, moet je eerst je provider vragen deze service in te stellen. Schakel bellen via wifi vervolgens opnieuw in via Instellingen."</item>
   </string-array>
   <string-array name="wfcOperatorErrorNotificationMessages">
-    <item msgid="2866631708941520085">"የአገልግሎት አቅራቢዎ ጋር ይመዝገቡ"</item>
+    <item msgid="4688475512286389971">"Registreren bij je provider"</item>
   </string-array>
-  <string name="wfcSpnFormat" msgid="3422704506272221128">"የ%s Wi-Fi ጥሪ"</string>
+  <string name="wfcSpnFormat" msgid="5475635312889002673">"Bellen via wifi van %s"</string>
 </resources>
