@@ -18,5 +18,5 @@
  */
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="toast_rotation_locked" msgid="7609673011431556092">"સ્ક્રીન હવે લેન્ડસ્કેપ ઓરિએન્ટેશનમાં લૉક કરેલ છે."</string>
+    <string name="toast_rotation_locked" msgid="7609673011431556092">"ขณะนี้หน้าจอถูกล็อกในแนวนอน"</string>
 </resources>
