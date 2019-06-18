@@ -21,10 +21,10 @@
      for different hardware and product builds.  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string-array name="wfcOperatorErrorAlertMessages">
-    <item msgid="3017901214286816293">"‏لإجراء مكالمات وإرسال رسائل عبر Wi-Fi، اطلب من مشغّل شبكة الجوّال أولاً إعداد هذا الجهاز، ثم شغّل الاتصال عبر Wi-Fi مرة أخرى من خلال الإعدادات."</item>
+    <item msgid="3017901214286816293">"Wi-Fi-ի միջոցով զանգեր կատարելու և հաղորդագրություններ ուղարկելու համար նախ դիմեք ձեր օպերատորին՝ ծառայությունը կարգավորելու համար: Ապա նորից միացրեք Wi-Fi զանգերը Կարգավորումներում:"</item>
   </string-array>
   <string-array name="wfcOperatorErrorNotificationMessages">
-    <item msgid="7068215934335709161">"التسجيل لدى مشغّل شبكة الجوّال"</item>
+    <item msgid="7068215934335709161">"Գրանցվեք օպերատորի մոտ"</item>
   </string-array>
-  <string name="wfcSpnFormat" msgid="2031160810542298336">"‏%s جارٍ الاتصال عبر Wi-Fi"</string>
+  <string name="wfcSpnFormat" msgid="2031160810542298336">"%s Wi-Fi զանգեր"</string>
 </resources>
