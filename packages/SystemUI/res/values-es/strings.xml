@@ -165,7 +165,7 @@
     <string name="cell_data_off_content_description" msgid="4356113230238585072">"Mobile data off"</string>
     <string name="cell_data_off" msgid="1051264981229902873">"Off"</string>
     <string name="accessibility_bluetooth_tether" msgid="4102784498140271969">"Bluetooth tethering"</string>
-    <string name="accessibility_airplane_mode" msgid="834748999790763092">"Airplane mode."</string>
+    <string name="accessibility_airplane_mode" msgid="834748999790763092">"Aeroplane mode"</string>
     <string name="accessibility_vpn_on" msgid="5993385083262856059">"VPN on."</string>
     <string name="accessibility_no_sims" msgid="3957997018324995781">"No SIM card."</string>
     <string name="carrier_network_change_mode" msgid="8149202439957837762">"Operator network changing"</string>
@@ -203,10 +203,10 @@
     <string name="accessibility_quick_settings_wifi_changed_on" msgid="6440117170789528622">"Wi-Fi turned on."</string>
     <string name="accessibility_quick_settings_mobile" msgid="4876806564086241341">"Mobile <xliff:g id="SIGNAL">%1$s</xliff:g>. <xliff:g id="TYPE">%2$s</xliff:g>. <xliff:g id="NETWORK">%3$s</xliff:g>."</string>
     <string name="accessibility_quick_settings_battery" msgid="1480931583381408972">"Battery <xliff:g id="STATE">%s</xliff:g>."</string>
-    <string name="accessibility_quick_settings_airplane_off" msgid="7786329360056634412">"Airplane mode off."</string>
-    <string name="accessibility_quick_settings_airplane_on" msgid="6406141469157599296">"Airplane mode on."</string>
-    <string name="accessibility_quick_settings_airplane_changed_off" msgid="66846307818850664">"Airplane mode off."</string>
-    <string name="accessibility_quick_settings_airplane_changed_on" msgid="8983005603505087728">"Airplane mode turned on."</string>
+    <string name="accessibility_quick_settings_airplane_off" msgid="7786329360056634412">"Aeroplane mode off."</string>
+    <string name="accessibility_quick_settings_airplane_on" msgid="6406141469157599296">"Aeroplane mode on."</string>
+    <string name="accessibility_quick_settings_airplane_changed_off" msgid="66846307818850664">"Aeroplane mode turned off."</string>
+    <string name="accessibility_quick_settings_airplane_changed_on" msgid="8983005603505087728">"Aeroplane mode turned on."</string>
     <string name="accessibility_quick_settings_dnd_none_on" msgid="2960643943620637020">"total silence"</string>
     <string name="accessibility_quick_settings_dnd_alarms_on" msgid="3357131899365865386">"alarms only"</string>
     <string name="accessibility_quick_settings_dnd" msgid="6607873236717185815">"Do not disturb"</string>
@@ -227,11 +227,11 @@
     <string name="accessibility_quick_settings_close" msgid="3115847794692516306">"Close panel."</string>
     <string name="accessibility_quick_settings_more_time" msgid="3659274935356197708">"More time."</string>
     <string name="accessibility_quick_settings_less_time" msgid="2404728746293515623">"Less time."</string>
-    <string name="accessibility_quick_settings_flashlight_off" msgid="4936432000069786988">"Flashlight off."</string>
-    <string name="accessibility_quick_settings_flashlight_unavailable" msgid="8012811023312280810">"Flashlight unavailable."</string>
-    <string name="accessibility_quick_settings_flashlight_on" msgid="2003479320007841077">"Flashlight on."</string>
-    <string name="accessibility_quick_settings_flashlight_changed_off" msgid="3303701786768224304">"Flashlight turned off."</string>
-    <string name="accessibility_quick_settings_flashlight_changed_on" msgid="6531793301533894686">"Flashlight turned on."</string>
+    <string name="accessibility_quick_settings_flashlight_off" msgid="4936432000069786988">"Torch off."</string>
+    <string name="accessibility_quick_settings_flashlight_unavailable" msgid="8012811023312280810">"Torch unavailable."</string>
+    <string name="accessibility_quick_settings_flashlight_on" msgid="2003479320007841077">"Torch on."</string>
+    <string name="accessibility_quick_settings_flashlight_changed_off" msgid="3303701786768224304">"Torch turned off."</string>
+    <string name="accessibility_quick_settings_flashlight_changed_on" msgid="6531793301533894686">"Torch turned on."</string>
     <string name="accessibility_quick_settings_color_inversion_changed_off" msgid="4406577213290173911">"Colour inversion turned off."</string>
     <string name="accessibility_quick_settings_color_inversion_changed_on" msgid="6897462320184911126">"Colour inversion turned on."</string>
     <string name="accessibility_quick_settings_hotspot_changed_off" msgid="5004708003447561394">"Mobile hotspot turned off."</string>
@@ -334,7 +334,7 @@
         <item quantity="one">%d device</item>
     </plurals>
     <string name="quick_settings_notifications_label" msgid="4818156442169154523">"Notifications"</string>
-    <string name="quick_settings_flashlight_label" msgid="2133093497691661546">"Flashlight"</string>
+    <string name="quick_settings_flashlight_label" msgid="2133093497691661546">"Torch"</string>
     <string name="quick_settings_cellular_detail_title" msgid="3661194685666477347">"Mobile data"</string>
     <string name="quick_settings_cellular_detail_data_usage" msgid="1964260360259312002">"Data usage"</string>
     <string name="quick_settings_cellular_detail_remaining_data" msgid="722715415543541249">"Remaining data"</string>
@@ -565,7 +565,7 @@
     <string name="status_bar_ethernet" msgid="5044290963549500128">"Ethernet"</string>
     <string name="status_bar_alarm" msgid="8536256753575881818">"Alarm"</string>
     <string name="status_bar_work" msgid="6022553324802866373">"Work profile"</string>
-    <string name="status_bar_airplane" msgid="7057575501472249002">"Airplane mode"</string>
+    <string name="status_bar_airplane" msgid="7057575501472249002">"Aeroplane mode"</string>
     <string name="add_tile" msgid="2995389510240786221">"Add tile"</string>
     <string name="broadcast_tile" msgid="3894036511763289383">"Broadcast Tile"</string>
     <string name="zen_alarm_warning_indef" msgid="3482966345578319605">"You won't hear your next alarm <xliff:g id="WHEN">%1$s</xliff:g> unless you turn this off before then"</string>
