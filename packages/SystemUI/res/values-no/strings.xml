@@ -18,5 +18,7 @@
  */
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="toast_rotation_locked" msgid="1716565836190665743">"ขณะนี้หน้าจอถูกล็อกการวางแนวในแนวตั้ง"</string>
+    <string name="status_bar_clear_all_button" msgid="4661583896803349732">"Futa zote"</string>
+    <string name="notifications_off_title" msgid="1860117696034775851">"Arifa imezimwa"</string>
+    <string name="notifications_off_text" msgid="1439152806320786912">"Gonga hapa ili kuwasha tena arifa."</string>
 </resources>
