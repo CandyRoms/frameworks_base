@@ -20,6 +20,6 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string-array name="wfcSpnFormats">
     <item msgid="5022384999749536798">"%s"</item>
-    <item msgid="8117276330682171665">"%s ୱାଇ-ଫାଇ"</item>
+    <item msgid="8117276330682171665">"Wi-Fi %s"</item>
   </string-array>
 </resources>
