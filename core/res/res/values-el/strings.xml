@@ -21,10 +21,10 @@
      for different hardware and product builds.  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string-array name="wfcOperatorErrorAlertMessages">
-    <item msgid="9107329079910661798">"Wi-Fi арқылы қоңырау шалу және хабарларды жіберу үшін алдымен жабдықтаушыңыздан осы қызметті орнатуды сұраңыз. Содан кейін \"Параметрлер\" тармағында Wi-Fi қоңырауларын қосыңыз."</item>
+    <item msgid="9107329079910661798">"如要透過 Wi-Fi 撥打電話及傳送訊息，請先要求您的行動通訊業者開通這項服務，然後再到「設定」啟用 Wi-Fi 通話功能。"</item>
   </string-array>
   <string-array name="wfcOperatorErrorNotificationMessages">
-    <item msgid="2841003137832065541">"Оператор арқылы тіркелу"</item>
+    <item msgid="2841003137832065541">"向您的行動通訊業者註冊"</item>
   </string-array>
-  <string name="wfcSpnFormat" msgid="6806975706640442517">"%s Wi-Fi қоңыраулары"</string>
+  <string name="wfcSpnFormat" msgid="6806975706640442517">"%s Wi-Fi 通話"</string>
 </resources>
