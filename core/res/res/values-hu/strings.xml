@@ -21,10 +21,10 @@
      for different hardware and product builds.  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string-array name="wfcOperatorErrorAlertMessages">
-    <item msgid="3017901214286816293">"Um über WLAN telefonieren und Nachrichten senden zu können, bitte zuerst deinen Mobilfunkanbieter, diesen Dienst einzurichten. Aktiviere die Option \"Anrufe über WLAN\" dann erneut über die Einstellungen."</item>
+    <item msgid="3017901214286816293">"Če želite klicati ali pošiljati sporočila prek omrežja Wi-Fi, se najprej obrnite na operaterja, da nastavi to storitev. Nato v nastavitvah znova vklopite klicanje prek omrežja Wi-Fi."</item>
   </string-array>
   <string-array name="wfcOperatorErrorNotificationMessages">
-    <item msgid="7068215934335709161">"Registriere dich bei deinem Mobilfunkanbieter."</item>
+    <item msgid="7068215934335709161">"Registracija pri operaterju"</item>
   </string-array>
-  <string name="wfcSpnFormat" msgid="2031160810542298336">"%s Anrufe über WLAN"</string>
+  <string name="wfcSpnFormat" msgid="2031160810542298336">"Klicanje prek Wi-Fi-ja (%s)"</string>
 </resources>
