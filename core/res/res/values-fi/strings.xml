@@ -21,10 +21,10 @@
      for different hardware and product builds.  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string-array name="wfcOperatorErrorAlertMessages">
-    <item msgid="9107329079910661798">"Du må be operatøren din om å konfigurere denne tjenesten før du kan ringe og sende meldinger via Wi-Fi. Deretter slår du på Wi-Fi-anrop igjen fra innstillingene."</item>
+    <item msgid="9107329079910661798">"To make calls and send messages over Wi-Fi, first ask your operator to set up this service. Then turn on Wi-Fi calling again from Settings."</item>
   </string-array>
   <string-array name="wfcOperatorErrorNotificationMessages">
-    <item msgid="2841003137832065541">"Registrer deg hos operatøren din"</item>
+    <item msgid="2841003137832065541">"Register with your operator"</item>
   </string-array>
-  <string name="wfcSpnFormat" msgid="6806975706640442517">"%s Wi-Fi-anrop"</string>
+  <string name="wfcSpnFormat" msgid="6806975706640442517">"%s Wi-Fi Calling"</string>
 </resources>
