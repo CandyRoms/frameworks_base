@@ -21,10 +21,10 @@
      for different hardware and product builds.  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string-array name="wfcOperatorErrorAlertMessages">
-    <item msgid="5217754856196352581">"Wi-Fi-ի միջոցով զանգեր կատարելու և հաղորդագրություններ ուղարկելու համար նախ դիմեք ձեր օպերատորին՝ ծառայությունը կարգավորելու համար: Ապա նորից միացրեք Wi-Fi զանգերը Կարգավորումներում:"</item>
+    <item msgid="5217754856196352581">"Wi-Fi дуудлага хийх болон зурвас илгээх бол эхлээд оператор компаниасаа энэ төхөөрөмжийг тохируулахыг хүснэ үү. Дараа нь Тохиргооноос Wi-Fi дуудлага хийх үйлдлийг асаана уу."</item>
   </string-array>
   <string-array name="wfcOperatorErrorNotificationMessages">
-    <item msgid="4688475512286389971">"Գրանցվեք օպերատորի մոտ"</item>
+    <item msgid="4688475512286389971">"Оператор компанидаа бүртгүүлэх"</item>
   </string-array>
-  <string name="wfcSpnFormat" msgid="5475635312889002673">"%s Wi-Fi զանգեր"</string>
+  <string name="wfcSpnFormat" msgid="5475635312889002673">"%s Wi-Fi Дуудлага"</string>
 </resources>
