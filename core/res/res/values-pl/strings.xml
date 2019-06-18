@@ -21,10 +21,10 @@
      for different hardware and product builds.  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string-array name="wfcOperatorErrorAlertMessages">
-    <item msgid="3017901214286816293">"หากต้องการโทรออกและส่งข้อความผ่าน Wi-Fi โปรดสอบถามผู้ให้บริการของคุณก่อนเพื่อตั้งค่าบริการนี้ แล้วเปิดการโทรผ่าน Wi-Fi อีกครั้งจากการตั้งค่า"</item>
+    <item msgid="3017901214286816293">"Да бисте упућивали позиве и слали поруке преко Wi-Fi-ја, прво затражите од мобилног оператера да вам омогући ову услугу. Затим у Подешавањима поново укључите Позивање преко Wi-Fi-ја."</item>
   </string-array>
   <string-array name="wfcOperatorErrorNotificationMessages">
-    <item msgid="7068215934335709161">"ลงทะเบียนกับผู้ให้บริการ"</item>
+    <item msgid="7068215934335709161">"Региструјте се код мобилног оператера"</item>
   </string-array>
-  <string name="wfcSpnFormat" msgid="2031160810542298336">"กำลังเรียก Wi-Fi ของ %s"</string>
+  <string name="wfcSpnFormat" msgid="2031160810542298336">"Wi-Fi позивање преко оператера %s"</string>
 </resources>
