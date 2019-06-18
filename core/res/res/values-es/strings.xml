@@ -21,10 +21,10 @@
      for different hardware and product builds.  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string-array name="wfcOperatorErrorAlertMessages">
-    <item msgid="5217754856196352581">"‏כדי להתקשר ולשלוח הודעות ברשת Wi-Fi, תחילה יש לבקש מהספק להגדיר את השירות. לאחר מכן, יש להפעיל שוב שיחות Wi-Fi ב'הגדרות'."</item>
+    <item msgid="9107329079910661798">"ವೈ-ಫೈ ಬಳಸಿಕೊಂಡು ಕರೆ ಮಾಡಲು ಮತ್ತು ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸಲು, ಮೊದಲು ಈ ಸಾಧನವನ್ನು ಹೊಂದಿಸಲು ನಿಮ್ಮ ವಾಹಕವನ್ನು ಕೇಳಿ. ತದನಂತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಮತ್ತೆ ವೈ-ಫೈ ಆನ್‌ ಮಾಡಿ."</item>
   </string-array>
   <string-array name="wfcOperatorErrorNotificationMessages">
-    <item msgid="4688475512286389971">"הירשם אצל הספק"</item>
+    <item msgid="2841003137832065541">"ನಿಮ್ಮ ವಾಹಕದಲ್ಲಿ ನೋಂದಾಯಿಸಿಕೊಳ್ಳಿ"</item>
   </string-array>
-  <string name="wfcSpnFormat" msgid="5475635312889002673">"‏שיחות Wi-Fi של %s"</string>
+  <string name="wfcSpnFormat" msgid="6806975706640442517">"%s ವೈ-ಫೈ ಕರೆ ಮಾಡುವಿಕೆ"</string>
 </resources>
