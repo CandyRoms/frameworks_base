@@ -3,7 +3,7 @@
 <!-- 
 /* //device/apps/common/assets/res/any/strings.xml
 **
-** Copyright 2015, The Android Open Source Project
+** Copyright 2006, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 */
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="android_upgrading_apk" msgid="1090732262010398759">"Program <xliff:g id="NUMBER_0">%1$d</xliff:g> van <xliff:g id="NUMBER_1">%2$d</xliff:g>."</string>
-    <string name="permgrouplab_sensors" msgid="202675452368612754">"Sensors"</string>
+    <string name="mmcc_imsi_unknown_in_hlr" msgid="210168420192421012">"SIM карта таанылган жок (MM#2)"</string>
+    <string name="mmcc_illegal_ms" msgid="1130721094178658338">"SIM картаны колдонууга тыюу салынган (MM#3)"</string>
+    <string name="mmcc_illegal_me" msgid="3173546391131606065">"Телефонду колдонууга тыюу салынган MM#6"</string>
 </resources>
