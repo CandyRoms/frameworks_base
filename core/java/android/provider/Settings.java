@@ -5136,6 +5136,18 @@ public final class Settings {
                 ANY_STRING_VALIDATOR;
 
         /**
+         * 0 - Default
+         * 1 - MD2
+         * 2 - OnePlus
+         * 3 - Narrow
+         * 4 - Contained
+         * 5 - Retro
+         * 6 - Stockish
+         * @hide
+         */
+        public static final String SWITCH_STYLER = "switch_styler";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *

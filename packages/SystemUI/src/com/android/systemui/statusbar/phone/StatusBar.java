@@ -4373,6 +4373,18 @@ public class StatusBar extends SystemUI implements DemoMode,
             Settings.Secure.putIntForUser(mContext.getContentResolver(),
                 Settings.Secure.SYSUI_STATUS_BAR_PADDING, (int) (resourceIdSBPadding / density), UserHandle.USER_CURRENT);
         }
+     }
+
+    // Changes system switch to user selected style.
+    public void updateSwitchStyle() {
+         int switchStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
+                 Settings.System.SWITCH_STYLER, 0, mLockscreenUserManager.getCurrentUserId());
+        ThemeAccentUtils.updateSwitchStyle(mOverlayManager, mLockscreenUserManager.getCurrentUserId(), switchStyle);
+    }
+
+     // Changes system switches back to stock.
+    public void stockSwitchStyle() {
+        ThemeAccentUtils.stockSwitchStyle(mOverlayManager, mLockscreenUserManager.getCurrentUserId());
     }
 
     private void updateDozingState() {
@@ -5733,6 +5745,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.LOCKSCREEN_ALBUM_ART_FILTER),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SWITCH_STYLER),
+                    false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -5796,6 +5811,12 @@ public class StatusBar extends SystemUI implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                 Settings.System.LOCKSCREEN_ALBUM_ART_FILTER))) {
                 updateLockscreenFilter();
+                  } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.SWITCH_STYLER))) {
+                mUiOffloadThread.submit(() -> {
+                    stockSwitchStyle();
+                    updateSwitchStyle();
+                });
             }
         }
 
