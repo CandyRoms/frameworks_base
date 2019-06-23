@@ -351,6 +351,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
                     break;
                 case MSG_FINGERPRINT_AUTHENTICATION_CONTINUE:
                     updateFingerprintListeningState();
+                    break;
                 case MSG_PROXIMITY_CHANGE:
                     handleProximityChange();
                     break;
@@ -1360,7 +1361,6 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
         if (mFingerprintRunningState == FINGERPRINT_STATE_RUNNING && !shouldListenForFingerprint) {
             stopListeningForFingerprint();
         } else if (mFingerprintRunningState != FINGERPRINT_STATE_RUNNING
-                && mFingerprintRunningState != FINGERPRINT_STATE_CANCELLING
                 && shouldListenForFingerprint) {
             startListeningForFingerprint();
         }
