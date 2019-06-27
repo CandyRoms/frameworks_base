@@ -2150,18 +2150,16 @@ public class SubscriptionManager {
      * @hide
      */
     @UnsupportedAppUsage
-    public @NonNull int[] getActiveSubscriptionIdList() {
-        return getActiveSubscriptionIdList(/* visibleOnly */ true);
+    public static @NonNull int[] getActiveSubscriptionIdList() {
+        return getActiveSubscriptionIdList(true);
     }
 
     /**
-     * TODO(b/137102918) Make this static, tests use this as an instance method currently.
-     *
      * @return a non-null list of subId's that are active.
      *
      * @hide
      */
-    public @NonNull int[] getActiveSubscriptionIdList(boolean visibleOnly) {
+    public static @NonNull int[] getActiveSubscriptionIdList(boolean visibleOnly) {
         try {
             ISub iSub = ISub.Stub.asInterface(ServiceManager.getService("isub"));
             if (iSub != null) {
