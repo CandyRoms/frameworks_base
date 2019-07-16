@@ -743,7 +743,7 @@ public class AudioService extends IAudioService.Stub
         mHasVibrator = mVibrator == null ? false : mVibrator.hasVibrator();
 
         mLaunchPlayer = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.HEADSET_CONNECT_PLAYER, 4, UserHandle.USER_CURRENT);
+                Settings.System.HEADSET_CONNECT_PLAYER, 0, UserHandle.USER_CURRENT);
 
         // Initialize volume
         int maxCallVolume = SystemProperties.getInt("ro.config.vc_call_vol_steps", -1);
@@ -5906,7 +5906,7 @@ public class AudioService extends IAudioService.Stub
                 setVolumeKeysControlRingTone();
             }
             mLaunchPlayer = Settings.System.getIntForUser(mContext.getContentResolver(),
-                    Settings.System.HEADSET_CONNECT_PLAYER, 4, UserHandle.USER_CURRENT);
+                    Settings.System.HEADSET_CONNECT_PLAYER, 0, UserHandle.USER_CURRENT);
         }
 
         private void updateEncodedSurroundOutput() {
