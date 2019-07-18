@@ -65,9 +65,9 @@
     <color name="quick_settings_theme_tile_user_eight">#B39DDB</color>
     <color name="quick_settings_theme_tile_user_nine">#1B873B</color>
 
-     <!-- Floating action button -->
-    <color name="fab_color">@*android:attr/panelColorBackground</color>
-    <color name="floating_action_button_icon_color">@*android:attr/colorControlNormal</color>
+    <!-- Floating action button -->
+    <color name="fab_color">?android:attr/panelColorBackground</color>
+    <color name="floating_action_button_icon_color">#ffffff</color>
 
     <!-- Screenshot action colors -->
     <color name="screenshot_flash_color">#b3adadad</color> <!-- light grey with some transparency -->

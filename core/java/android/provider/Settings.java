@@ -4199,20 +4199,21 @@ public final class Settings {
                 ANY_STRING_VALIDATOR;
 
         /**
-         * Change volume up and down handlign based on rotation
          * show clear all recents button
+         *
          * @hide
          */
         public static final String SHOW_CLEAR_ALL_RECENTS = "show_clear_all_recents";
 
         /**
          * location of the clear all rectents button
+         *
          * @hide
          */
-        public static final String  RECENTS_CLEAR_ALL_LOCATION = "recents_clear_all_location";
+        public static final String RECENTS_CLEAR_ALL_LOCATION = "recents_clear_all_location";
 
         /**
-         * Whether to display airplane in the power menu
+         * Change volume up and down handlign based on rotation
          *
          * @hide
          */
@@ -4221,6 +4222,7 @@ public final class Settings {
         /**
          * Screenshod sound enable, This is the noise made when taeking a screesnhot
          * Defaults to 1 - sounds enabled
+         *
          * @hide
          */
         public static final String SCREENSHOT_SHUTTER_SOUND = "screenshot_shutter_sound";
