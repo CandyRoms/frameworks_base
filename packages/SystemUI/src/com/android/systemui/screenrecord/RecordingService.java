@@ -68,8 +68,6 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static android.os.Environment.DIRECTORY_MOVIES;
-
 /**
  * A service which records the device screen and optionally microphone input.
  */
@@ -192,7 +190,41 @@ public class RecordingService extends Service {
 
             case ACTION_STOP:
                 stopRecording();
-                saveRecording(notificationManager);
+
+                String fileName = new SimpleDateFormat("'screen-'yyyyMMdd-HHmmss'.mp4'")
+                        .format(new Date());
+
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Video.Media.DISPLAY_NAME, fileName);
+                values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+                values.put(MediaStore.Video.Media.DATE_ADDED, System.currentTimeMillis());
+                values.put(MediaStore.Video.Media.DATE_TAKEN, System.currentTimeMillis());
+
+                ContentResolver resolver = getContentResolver();
+                Uri collectionUri = MediaStore.Video.Media.getContentUri(
+                        MediaStore.VOLUME_EXTERNAL_PRIMARY);
+                Uri itemUri = resolver.insert(collectionUri, values);
+
+                File recordDir = new File(getExternalFilesDir(Environment.DIRECTORY_MOVIES),
+                        RECORD_DIR);
+                recordDir.mkdirs();
+                Path path = new File(recordDir, fileName).toPath();
+                try {
+                    // Move file out of temp directory
+                    Files.move(mTempFile.toPath(), path);
+
+                    // Add to the mediastore
+                    OutputStream os = resolver.openOutputStream(itemUri, "w");
+                    Files.copy(path, os);
+                    os.close();
+
+                    Notification notification = createSaveNotification(itemUri, path);
+                    notificationManager.notify(NOTIFICATION_ID, notification);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, R.string.screenrecord_delete_error, Toast.LENGTH_LONG)
+                            .show();
+                }
                 break;
 
             case ACTION_PAUSE:
@@ -375,7 +407,9 @@ public class RecordingService extends Service {
         notificationManager.notify(NOTIFICATION_ID, mRecordingNotificationBuilder.build());
     }
 
-    private Notification createSaveNotification(Uri uri) {
+    private Notification createSaveNotification(Uri uri, Path path) {
+        Log.d(TAG, "Screen recording saved to " + uri.toString() + ", " + path.toString());
+
         Intent viewIntent = new Intent(Intent.ACTION_VIEW)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 .setDataAndType(uri, "video/mp4");
