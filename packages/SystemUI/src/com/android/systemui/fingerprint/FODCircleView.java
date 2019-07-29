@@ -360,22 +360,22 @@ public class FODCircleView extends ImageView implements OnTouchListener {
         if (mIsDreaming && !mIsPulsing) {
             setImageResource(R.drawable.fod_icon_empty);
             return;
-        } else {
-            if (!TextUtils.isEmpty(customIconURI)) {
-                try {
-                    ParcelFileDescriptor parcelFileDescriptor =
-                        getContext().getContentResolver().openFileDescriptor(Uri.parse(customIconURI), "r");
-                    FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-                    Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-                    parcelFileDescriptor.close();
-                    setImageBitmap(image);
-                }
-                catch (Exception e) {
-                    setImageResource(R.drawable.fod_icon_default);
-                }
-            } else {
+        }
+
+        if (!TextUtils.isEmpty(customIconURI)) {
+            try {
+                ParcelFileDescriptor parcelFileDescriptor =
+                    getContext().getContentResolver().openFileDescriptor(Uri.parse(customIconURI), "r");
+                FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+                Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+                parcelFileDescriptor.close();
+                setImageBitmap(image);
+            }
+            catch (Exception e) {
                 setImageResource(R.drawable.fod_icon_default);
             }
+        } else {
+            setImageResource(R.drawable.fod_icon_default);
         }
     }
 }
