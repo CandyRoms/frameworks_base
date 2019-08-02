@@ -571,6 +571,9 @@ public class SubscriptionInfo implements Parcelable {
      */
     @Deprecated
     public boolean canManageSubscription(Context context, String packageName) {
+        if (!isEmbedded()) {
+            throw new UnsupportedOperationException("Not an embedded subscription");
+        }
         List<UiccAccessRule> allAccessRules = getAllAccessRules();
         if (allAccessRules == null) {
             return false;
@@ -617,6 +620,24 @@ public class SubscriptionInfo implements Parcelable {
         if (mNativeAccessRules != null) {
             merged.addAll(getAccessRules());
         }
+        if (mCarrierConfigAccessRules != null) {
+            merged.addAll(Arrays.asList(mCarrierConfigAccessRules));
+        }
+        if (mNativeAccessRules == null) return null;
+        return Arrays.asList(mNativeAccessRules);
+    }
+
+    /**
+     * @return the {@link UiccAccessRule}s that are both stored on Uicc and in carrierConfigs
+     * dictating who is authorized to manage this subscription.
+     * @hide
+     */
+    public @Nullable List<UiccAccessRule> getAllAccessRules() {
+        if (!isEmbedded()) {
+            throw new UnsupportedOperationException("Not an embedded subscription");
+        }
+        List<UiccAccessRule> merged = new ArrayList<>();
+        if (mNativeAccessRules != null) merged.addAll(getAccessRules());
         if (mCarrierConfigAccessRules != null) {
             merged.addAll(Arrays.asList(mCarrierConfigAccessRules));
         }
