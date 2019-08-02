@@ -6373,15 +6373,13 @@ public class AudioService extends IAudioService.Stub
 
         if (device == AudioSystem.DEVICE_OUT_WIRED_HEADSET) {
             connType = AudioRoutesInfo.MAIN_HEADSET;
-            if ((mLaunchPlayer == 1 || mLaunchPlayer == 4 || mLaunchPlayer == 5)
-                    && state ==1) {
+            if (state ==1) {
                 startMusicPlayer();
             }
         } else if (device == AudioSystem.DEVICE_OUT_WIRED_HEADPHONE ||
                    device == AudioSystem.DEVICE_OUT_LINE) {
             connType = AudioRoutesInfo.MAIN_HEADPHONES;
-            if ((mLaunchPlayer == 1 || mLaunchPlayer == 4 || mLaunchPlayer == 5)
-                    && state ==1) {
+            if (state ==1) {
                 startMusicPlayer();
             }
         } else if (device == AudioSystem.DEVICE_OUT_HDMI ||
@@ -6463,8 +6461,11 @@ public class AudioService extends IAudioService.Stub
     }
 
     private void startMusicPlayer() {
+        boolean launchPlayer = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.HEADSET_CONNECT_PLAYER, 0, UserHandle.USER_CURRENT) != 0;
         TelecomManager tm = (TelecomManager) mContext.getSystemService(Context.TELECOM_SERVICE);
-        if (!tm.isInCall()) {
+
+        if (launchPlayer && !tm.isInCall()) {
             try {
                 Intent playerIntent = new Intent(Intent.ACTION_MAIN);
                 playerIntent.addCategory(Intent.CATEGORY_APP_MUSIC);
