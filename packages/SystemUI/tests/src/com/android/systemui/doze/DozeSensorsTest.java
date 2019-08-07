@@ -78,8 +78,6 @@ public class DozeSensorsTest extends SysuiTestCase {
     private AlwaysOnDisplayPolicy mAlwaysOnDisplayPolicy;
     @Mock
     private TriggerSensor mTriggerSensor;
-    @Mock
-    private TriggerSensor mProxGatedTriggerSensor;
     private SensorManagerPlugin.SensorEventListener mWakeLockScreenListener;
     private TestableLooper mTestableLooper;
     private DozeSensors mDozeSensors;
@@ -87,7 +85,6 @@ public class DozeSensorsTest extends SysuiTestCase {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(mProxGatedTriggerSensor.performsProxCheck()).thenReturn(true);
         mTestableLooper = TestableLooper.get(this);
         when(mAmbientDisplayConfiguration.getWakeLockScreenDebounce()).thenReturn(5000L);
         when(mAmbientDisplayConfiguration.alwaysOnEnabled(anyInt())).thenReturn(true);
@@ -146,21 +143,13 @@ public class DozeSensorsTest extends SysuiTestCase {
     }
 
     @Test
-    public void testSetPaused_onlyPausesNonGatedSensors() {
+    public void testSetPaused_doesntPause_sensors() {
         mDozeSensors.setListening(true);
         verify(mTriggerSensor).setListening(eq(true));
-        verify(mProxGatedTriggerSensor).setListening(eq(true));
 
-        clearInvocations(mTriggerSensor, mProxGatedTriggerSensor);
+        clearInvocations(mTriggerSensor);
         mDozeSensors.setPaused(true);
-        verify(mTriggerSensor).setListening(eq(false));
-        verify(mProxGatedTriggerSensor).setListening(eq(true));
-
-        clearInvocations(mTriggerSensor, mProxGatedTriggerSensor);
-        mDozeSensors.setPaused(false);
         verify(mTriggerSensor).setListening(eq(true));
-        verify(mProxGatedTriggerSensor).setListening(eq(true));
-
         clearInvocations(mTriggerSensor);
         mDozeSensors.setListening(false);
         verify(mTriggerSensor).setListening(eq(false));
@@ -179,7 +168,7 @@ public class DozeSensorsTest extends SysuiTestCase {
                     mWakeLockScreenListener = (PluginSensor) sensor;
                 }
             }
-            mSensors = new TriggerSensor[] {mTriggerSensor, mProxGatedTriggerSensor};
+            mSensors = new TriggerSensor[] {mTriggerSensor};
         }
     }
 }

@@ -41,6 +41,7 @@ import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.util.Preconditions;
 import com.android.systemui.Dependency;
+import com.android.systemui.R;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.statusbar.phone.DozeParameters;
 import com.android.systemui.util.Assert;
@@ -175,7 +176,7 @@ public class DozeTriggers implements DozeMachine.Part {
                     null /* onPulseSupressedListener */);
         } else if (isWakeLockScreen) {
             if (wakeEvent) {
-                requestPulse(pulseReason, sensorPerformedProxCheck,
+                requestPulse(pulseReason, true /* alreadyPerformedProxCheck */,
                         null /* onPulseSupressedListener */);
             }
         } else {
