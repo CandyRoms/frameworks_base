@@ -4981,6 +4981,21 @@ public final class Settings {
         public static final String BATTERY_BAR_USE_GRADIENT_COLOR = "battery_bar_use_gradient_color";
 
 
+         /**
+         * Whether to enable DOZE only when charging
+         * @hide
+         */
+        public static final String DOZE_ON_CHARGE = "doze_on_charge";
+
+        private static final Validator DOZE_ON_CHARGE_VALIDATOR =
+                BOOLEAN_VALIDATOR;
+
+        /**
+         * hidden stting of the current state of DOZE only when charging
+         * @hide
+         */
+        public static final String DOZE_ON_CHARGE_NOW = "doze_on_charge_now";
+
         /**
          * Apps to skip for Pulse
          * @hide
@@ -5120,6 +5135,7 @@ public final class Settings {
 	        STOCK_STATUSBAR_IN_HIDE,
             OMNI_FINGERPRINT_SUCCESS_VIB,
             OMNI_CUSTOM_FP_ICON,
+            DOZE_ON_CHARGE
         };
 
         /**
@@ -5267,6 +5283,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(OMNI_CUSTOM_FP_ICON);
             PRIVATE_SETTINGS.add(DOUBLE_TAP_SLEEP_GESTURE);
             PRIVATE_SETTINGS.add(HEADSET_CONNECT_PLAYER);
+            PRIVATE_SETTINGS.add(DOZE_ON_CHARGE);
         }
 
         /**
@@ -5377,6 +5394,7 @@ public final class Settings {
             VALIDATORS.put(STOCK_STATUSBAR_IN_HIDE, STOCK_STATUSBAR_IN_HIDE_VALIDATOR);
             VALIDATORS.put(OMNI_CUSTOM_FP_ICON, OMNI_CUSTOM_FP_ICON_VALIDATOR);
             VALIDATORS.put(OMNI_FINGERPRINT_SUCCESS_VIB, OMNI_FINGERPRINT_SUCCESS_VIB_VALIDATOR);
+            VALIDATORS.put(DOZE_ON_CHARGE, DOZE_ON_CHARGE_VALIDATOR);
         }
 
         /**
