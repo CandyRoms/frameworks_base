@@ -93,14 +93,12 @@ public class RecordingService extends Service {
     private static final String ACTION_DELETE = "com.android.systemui.screenrecord.DELETE";
 
     private static final int TOTAL_NUM_TRACKS = 1;
-    private static final String RECORD_DIR = "Captures"; // TODO: use a translatable string
     private static final int VIDEO_BIT_RATE = 6000000;
     private static final int VIDEO_FRAME_RATE = 30;
     private static final int AUDIO_BIT_RATE = 16;
     private static final int AUDIO_SAMPLE_RATE = 44100;
     private static final int LOW_VIDEO_FRAME_RATE = 25;
     private static final int LOW_VIDEO_BIT_RATE = 1500000;
-    private static final String FILE_PROVIDER = "com.android.systemui.fileprovider";
 
     private MediaProjectionManager mMediaProjectionManager;
     private MediaProjection mMediaProjection;
@@ -190,41 +188,7 @@ public class RecordingService extends Service {
 
             case ACTION_STOP:
                 stopRecording();
-
-                String fileName = new SimpleDateFormat("'screen-'yyyyMMdd-HHmmss'.mp4'")
-                        .format(new Date());
-
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Video.Media.DISPLAY_NAME, fileName);
-                values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
-                values.put(MediaStore.Video.Media.DATE_ADDED, System.currentTimeMillis());
-                values.put(MediaStore.Video.Media.DATE_TAKEN, System.currentTimeMillis());
-
-                ContentResolver resolver = getContentResolver();
-                Uri collectionUri = MediaStore.Video.Media.getContentUri(
-                        MediaStore.VOLUME_EXTERNAL_PRIMARY);
-                Uri itemUri = resolver.insert(collectionUri, values);
-
-                File recordDir = new File(getExternalFilesDir(Environment.DIRECTORY_MOVIES),
-                        RECORD_DIR);
-                recordDir.mkdirs();
-                Path path = new File(recordDir, fileName).toPath();
-                try {
-                    // Move file out of temp directory
-                    Files.move(mTempFile.toPath(), path);
-
-                    // Add to the mediastore
-                    OutputStream os = resolver.openOutputStream(itemUri, "w");
-                    Files.copy(path, os);
-                    os.close();
-
-                    Notification notification = createSaveNotification(itemUri, path);
-                    notificationManager.notify(NOTIFICATION_ID, notification);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, R.string.screenrecord_delete_error, Toast.LENGTH_LONG)
-                            .show();
-                }
+                saveRecording(notificationManager);
                 break;
 
             case ACTION_PAUSE:
@@ -407,9 +371,7 @@ public class RecordingService extends Service {
         notificationManager.notify(NOTIFICATION_ID, mRecordingNotificationBuilder.build());
     }
 
-    private Notification createSaveNotification(Uri uri, Path path) {
-        Log.d(TAG, "Screen recording saved to " + uri.toString() + ", " + path.toString());
-
+    private Notification createSaveNotification(Uri uri) {
         Intent viewIntent = new Intent(Intent.ACTION_VIEW)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 .setDataAndType(uri, "video/mp4");
@@ -482,7 +444,7 @@ public class RecordingService extends Service {
     }
 
     private void saveRecording(NotificationManager notificationManager) {
-        String fileName = new SimpleDateFormat("'screen-'yyyyMMdd-HHmmss'.mp4'")
+        String fileName = new SimpleDateFormat("'screenrecord-'yyyyMMdd-HHmmss'.mp4'")
                 .format(new Date());
 
         ContentValues values = new ContentValues();
