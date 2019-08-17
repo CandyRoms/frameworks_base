@@ -77,6 +77,7 @@ public class FODCircleView extends ImageView implements OnTouchListener {
     private boolean mIsPulsing;
     private boolean mIsScreenOn;
     private boolean mShouldHide = false;
+    private boolean mIsKeyguard = false;
 
     public boolean viewAdded;
     private boolean mIsEnrolling;
@@ -133,6 +134,7 @@ public class FODCircleView extends ImageView implements OnTouchListener {
         public void onKeyguardVisibilityChanged(boolean showing) {
             super.onKeyguardVisibilityChanged(showing);
             mInsideCircle = false;
+            mIsKeyguard = true;
         }
 
         @Override
@@ -169,7 +171,7 @@ public class FODCircleView extends ImageView implements OnTouchListener {
         public void onTrustChanged(int userId) {
             super.onTrustChanged(userId);
             int mUserId = userId;
-            mShouldHide = (mUpdateMonitor.getUserHasTrust(mUserId) ? true : false);
+            mShouldHide = (mIsKeyguard && mUpdateMonitor.getUserHasTrust(mUserId) ? true : false);
         }
     };
 
