@@ -2621,9 +2621,6 @@ public class SubscriptionManager {
      * @hide
      */
     public boolean canManageSubscription(SubscriptionInfo info, String packageName) {
-        if (!info.isEmbedded()) {
-            throw new IllegalArgumentException("Not an embedded subscription");
-        }
         if (info.getAllAccessRules() == null) {
             return false;
         }
