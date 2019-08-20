@@ -796,9 +796,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
 
         createAndAddWindows();
-        mSSettingsObserver.observe();
-        mSSettingsObserver.update();
-        mCandySettingsObserver.observe();
 
         // Make sure we always have the most current wallpaper info.
         IntentFilter wallpaperChangedFilter = new IntentFilter(Intent.ACTION_WALLPAPER_CHANGED);
@@ -5038,69 +5035,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     };
 
-    private SSettingsObserver mSSettingsObserver = new SSettingsObserver(mHandler);
-    private class SSettingsObserver extends ContentObserver {
-        SSettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QS_ROWS_PORTRAIT),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QS_ROWS_LANDSCAPE),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QS_COLUMNS_PORTRAIT),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.QS_COLUMNS_LANDSCAPE),
-                    false, this, UserHandle.USER_ALL);
-	        resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                  Settings.System.LOCKSCREEN_ALBUM_ART_FILTER),
-                  false, this, UserHandle.USER_ALL);
-	    }
-
-        public void onChange(boolean selfChange, Uri uri) {
-	    super.onChange(selfChange, uri);
-            update();
-
-            if (uri.equals(Settings.System.getUriFor(Settings.System.QS_ROWS_PORTRAIT)) ||
-                    uri.equals(Settings.System.getUriFor(Settings.System.QS_ROWS_LANDSCAPE)) ||
-                    uri.equals(Settings.System.getUriFor(Settings.System.QS_COLUMNS_PORTRAIT)) ||
-                    uri.equals(Settings.System.getUriFor(Settings.System.QS_COLUMNS_LANDSCAPE))) {
-                setQsRowsColumns();
-            } else if (uri.equals(Settings.System.getUriFor(
-                Settings.System.DOUBLE_TAP_SLEEP_GESTURE))) {
-                setStatusBarWindowViewOptions();
-            } else if (uri.equals(Settings.System.getUriFor(
-                Settings.System.LOCKSCREEN_ALBUM_ART_FILTER))) {
-                updateLockscreenFilter();
-            }
-            update();
-        }
-
-
-         public void update() {
-            updateResources();
-            updateTheme(false);
-	        setStatusBarWindowViewOptions();
-            handleCutout(null);
-            updateLockscreenFilter();
-        }
-    }
-
-    private void setQsRowsColumns() {
-        if (mQSPanel != null) {
-            mQSPanel.updateResources();
-        }
-    }
-
     private void updateStatusBarColors(boolean enable) {
         if (enable) {
             if (mStatusBarView != null)
@@ -5777,10 +5711,28 @@ public class StatusBar extends SystemUI implements DemoMode,
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.HEADS_UP_STOPLIST_VALUES),
-                    false, this);
+                    false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.HEADS_UP_BLACKLIST_VALUES),
-                    false, this);
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_ROWS_PORTRAIT),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_ROWS_LANDSCAPE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_COLUMNS_PORTRAIT),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_COLUMNS_LANDSCAPE),
+                    false, this, UserHandle.USER_ALL);
+	        resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.LOCKSCREEN_ALBUM_ART_FILTER),
+                    false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -5823,7 +5775,6 @@ public class StatusBar extends SystemUI implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.LESS_BORING_HEADS_UP))) {
                 setUseLessBoringHeadsUp();
-
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.USE_OLD_MOBILETYPE))) {
                 mCommandQueue.restartUI();
@@ -5839,6 +5790,12 @@ public class StatusBar extends SystemUI implements DemoMode,
                 setHeadsUpStoplist();
             } else if (uri.equals(Settings.System.getUriFor(Settings.System.HEADS_UP_BLACKLIST_VALUES))) {
                 setHeadsUpBlacklist();
+            } else if (uri.equals(Settings.System.getUriFor(
+                Settings.System.DOUBLE_TAP_SLEEP_GESTURE))) {
+                setStatusBarWindowViewOptions();
+            } else if (uri.equals(Settings.System.getUriFor(
+                Settings.System.LOCKSCREEN_ALBUM_ART_FILTER))) {
+                updateLockscreenFilter();
             }
         }
 
@@ -5849,11 +5806,19 @@ public class StatusBar extends SystemUI implements DemoMode,
             updateKeyguardStatusSettings();
             setUseLessBoringHeadsUp();
             setForceAmbient();
+            handleCutout(null);
+            updateLockscreenFilter();
             setHeadsUpStoplist();
             setHeadsUpBlacklist();
             setOldMobileType();
             setPulseBlacklist();
             updateTheme(false);
+        }
+    }
+
+    private void setQsRowsColumns() {
+        if (mQSPanel != null) {
+            mQSPanel.updateResources();
         }
     }
 
@@ -5937,21 +5902,6 @@ public class StatusBar extends SystemUI implements DemoMode,
             }
         }
     };
-
-    private CandySettingsObserver mCandySettingsObserver = new CandySettingsObserver(mHandler);
-
-    private class CandySettingsObserver extends ContentObserver {
-       CandySettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.Secure.LOCK_QS_DISABLED),
-                    false, this, UserHandle.USER_ALL);
-        };
-    }
 
     @Override
     public void onNotificationClicked(StatusBarNotification sbn, ExpandableNotificationRow row) {
