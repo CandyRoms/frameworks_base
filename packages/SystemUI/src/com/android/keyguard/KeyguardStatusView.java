@@ -51,7 +51,7 @@ import android.widget.TextView;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.ViewClippingUtil;
 import com.android.keyguard.clocks.CustomAnalogClock;
-import com.android.keyguard.clocks.CustomTextClock;
+import com.android.keyguard.clocks.TypographicClock;
 import com.android.systemui.Dependency;
 import com.android.systemui.Interpolators;
 import com.android.systemui.doze.DozeLog;
@@ -79,7 +79,7 @@ public class KeyguardStatusView extends GridLayout implements
     private CustomAnalogClock mCustomClockView1;
     private CustomAnalogClock mCustomClockView2;
     private CustomAnalogClock mCustomClockView3;
-    private LinearLayout mTextClock;
+    private TypographicClock mTextClock;
     private TextClock mClockView;
     private View mClockSeparator;
     private TextView mOwnerInfo;
@@ -746,6 +746,9 @@ public class KeyguardStatusView extends GridLayout implements
         mCustomClockView1.setDark(dark);
         mCustomClockView2.setDark(dark);
         mCustomClockView3.setDark(dark);
+        if (mClockSelection == 8) {
+            mTextClock.setTextColor(blendedTextColor);
+        }
         updateVisibilities();
         updateSettings();
     }
