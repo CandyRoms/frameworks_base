@@ -40,9 +40,6 @@ public class TypographicClock extends TextView {
     private final Animation fadeIn;
     private final Animation fadeOut;
 
-    private final Animation fadeIn;
-    private final Animation fadeOut;
-
     private final BroadcastReceiver mTimeZoneChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -85,7 +82,7 @@ public class TypographicClock extends TextView {
 
     public void onTimeChanged() {
         int oldColor = mAccentColor;
-        mSystemAccent = AccentUtils.getAccentColor(mResources
+        mAccentColor = AccentUtils.getAccentColor(mResources
                 .getColor(R.color.custom_text_clock_top_color, null));
         mTime.setTimeInMillis(System.currentTimeMillis());
         setContentDescription(DateFormat.format(mDescFormat, mTime));
