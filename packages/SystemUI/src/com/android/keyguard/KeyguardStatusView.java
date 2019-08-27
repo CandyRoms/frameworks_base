@@ -441,7 +441,7 @@ public class KeyguardStatusView extends GridLayout implements
 
             final ContentResolver resolver = mContext.getContentResolver();
             boolean mClockSelection = Settings.System.getIntForUser(resolver,
-                    Settings.System.LOCKSCREEN_CLOCK_SELECTION, 0, UserHandle.USER_CURRENT) == 9;
+                    Settings.System.LOCKSCREEN_CLOCK_SELECTION, 0, UserHandle.USER_CURRENT) == 8;
 
             // If text style clock, align the textView to start else keep it center.
             if (mClockSelection) {
@@ -488,117 +488,64 @@ public class KeyguardStatusView extends GridLayout implements
     }
 
     private void updateVisibilities() {
+        mClockView.setVisibility(View.GONE);
+        mCustomClockView.setVisibility(View.GONE);
+        mCustomClockView1.setVisibility(View.GONE);
+        mCustomClockView2.setVisibility(View.GONE);
+        mCustomClockView3.setVisibility(View.GONE);
+        mTextClock.setVisibility(View.GONE);
+        final int mClockVisibility = mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
+                       View.GONE) : View.VISIBLE;
         switch (mClockSelection) {
-            case 0: // default digital
-            default:
-                mClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
-                       View.GONE) : View.VISIBLE);
-                mCustomClockView.setVisibility(View.GONE);
-                mCustomClockView1.setVisibility(View.GONE);
-                mCustomClockView2.setVisibility(View.GONE);
-                mCustomClockView3.setVisibility(View.GONE);
-                mKeyguardSlice.setPadding(0,0,0,0);
-                mTextClock.setVisibility(View.GONE);
-                break;
-            case 1: // digital (bold)
-                mClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
-                       View.GONE) : View.VISIBLE);
-                mCustomClockView.setVisibility(View.GONE);
-                mCustomClockView1.setVisibility(View.GONE);
-                mCustomClockView2.setVisibility(View.GONE);
-                mCustomClockView3.setVisibility(View.GONE);
-                mTextClock.setVisibility(View.GONE);
-                break;
             case 2: // custom analog
-                mCustomClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
-                       View.GONE) : View.VISIBLE);
-                mClockView.setVisibility(View.GONE);
-                mCustomClockView1.setVisibility(View.GONE);
-                mCustomClockView2.setVisibility(View.GONE);
-                mCustomClockView3.setVisibility(View.GONE);
-                mTextClock.setVisibility(View.GONE);
-                mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
-                    getResources().getDisplayMetrics()),0,0
-                );
-                break;
-            case 3: // sammy
-                mClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
-                       View.GONE) : View.VISIBLE);
-                mCustomClockView.setVisibility(View.GONE);
-                mCustomClockView1.setVisibility(View.GONE);
-                mCustomClockView2.setVisibility(View.GONE);
-                mCustomClockView3.setVisibility(View.GONE);
-                mTextClock.setVisibility(View.GONE);
-                mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
-                    getResources().getDisplayMetrics()),0,0
-                );
-                break;
-            case 4: // sammy (bold)
-                mClockView.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
-                       View.GONE) : View.VISIBLE);
-                mCustomClockView.setVisibility(View.GONE);
-                mCustomClockView1.setVisibility(View.GONE);
-                mCustomClockView2.setVisibility(View.GONE);
-                mCustomClockView3.setVisibility(View.GONE);
-                mTextClock.setVisibility(View.GONE);
+                mCustomClockView.setVisibility(mClockVisibility);
                 mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
                     getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
                 break;
             case 5: // Candy custom 1
-                mCustomClockView1.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
-                       View.GONE) : View.VISIBLE);
-                mClockView.setVisibility(View.GONE);
-                mCustomClockView.setVisibility(View.GONE);
-                mCustomClockView2.setVisibility(View.GONE);
-                mCustomClockView3.setVisibility(View.GONE);
-                mTextClock.setVisibility(View.GONE);
+                mCustomClockView1.setVisibility(mClockVisibility);
                 mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
                     getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
                 break;
             case 6: // Candy custom 2
-                mCustomClockView2.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
-                       View.GONE) : View.VISIBLE);
-                mClockView.setVisibility(View.GONE);
-                mCustomClockView.setVisibility(View.GONE);
-                mCustomClockView1.setVisibility(View.GONE);
-                mCustomClockView3.setVisibility(View.GONE);
-                mTextClock.setVisibility(View.GONE);
+                mCustomClockView2.setVisibility(mClockVisibility);
                 mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
                     getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
                 break;
             case 7: // Candy custom  3
-                mCustomClockView3.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
-                       View.GONE) : View.VISIBLE);
-                mClockView.setVisibility(View.GONE);
-                mCustomClockView.setVisibility(View.GONE);
-                mCustomClockView1.setVisibility(View.GONE);
-                mCustomClockView2.setVisibility(View.GONE);
-                mTextClock.setVisibility(View.GONE);
+                mCustomClockView3.setVisibility(mClockVisibility);
                 mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
                     getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
                     getResources().getDisplayMetrics()),0,0
                 );
                 break;
+            case 3: // sammy
+            case 4: // sammy (bold)
+                mClockView.setVisibility(mClockVisibility);
+                mClockView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    getResources().getDimensionPixelSize(R.dimen.widget_big_font_size));
+                mClockView.setLineSpacing(0, 0.8f);
+                break;
             case 8: // custom text clock
-                mTextClock.setVisibility(mDarkAmount != 1 ? (mShowClock ? View.VISIBLE :
-                       View.GONE) : View.VISIBLE);
-                mClockView.setVisibility(View.GONE);
-                mCustomClockView.setVisibility(View.GONE);
-                mCustomClockView1.setVisibility(View.GONE);
-                mCustomClockView2.setVisibility(View.GONE);
-                mCustomClockView3.setVisibility(View.GONE);
-                mKeyguardSlice.setPadding(0,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(R.dimen.custom_analog_clock_bottom_padding),
-                    getResources().getDisplayMetrics()),0,0
-                );
+                mTextClock.setVisibility(mClockVisibility);
+                mKeyguardSlice.setPaddingRelative((int) mContext.getResources()
+                    .getDimension(R.dimen.custom_clock_left_padding) + 8, 0, 0, 0);
+                mKeyguardSlice.setGravity(Gravity.START);
+                break;
+            case 0: // default digital
+            case 1: // digital (bold)
+            default:
+                mClockView.setVisibility(mClockVisibility);
+                mClockView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    getResources().getDimensionPixelSize(R.dimen.widget_big_font_size));
+                mClockView.setLineSpacing(0, 1f);
+                break;
         }
     }
 
@@ -617,29 +564,8 @@ public class KeyguardStatusView extends GridLayout implements
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
                 mKeyguardSlice.getLayoutParams();
         switch (mClockSelection) {
-            case 0: // default digital
-            default:
-                params.addRule(RelativeLayout.BELOW, R.id.clock_view);
-                mClockView.setSingleLine(true);
-                mClockView.setGravity(Gravity.CENTER);
-                break;
-            case 1: // digital (bold)
-                params.addRule(RelativeLayout.BELOW, R.id.clock_view);
-                mClockView.setSingleLine(true);
-                mClockView.setGravity(Gravity.CENTER);
-                break;
             case 2: // custom analog
                 params.addRule(RelativeLayout.BELOW, R.id.custom_clock_view);
-                break;
-            case 3: // sammy
-                params.addRule(RelativeLayout.BELOW, R.id.clock_view);
-                mClockView.setSingleLine(false);
-                mClockView.setGravity(Gravity.CENTER);
-                break;
-            case 4: // sammy (bold)
-                params.addRule(RelativeLayout.BELOW, R.id.clock_view);
-                mClockView.setSingleLine(false);
-                mClockView.setGravity(Gravity.CENTER);
                 break;
             case 5: // custom analog
                 params.addRule(RelativeLayout.BELOW, R.id.custom_clock_view1);
@@ -652,6 +578,23 @@ public class KeyguardStatusView extends GridLayout implements
                 break;
             case 8: // custom text clock
                 params.addRule(RelativeLayout.BELOW, R.id.custom_textclock_view);
+                break;
+            case 0: // default digital
+            case 1: // digital (bold)
+                params.addRule(RelativeLayout.BELOW, R.id.clock_view);
+                mClockView.setSingleLine(true);
+                mClockView.setGravity(Gravity.CENTER);
+                break;
+            case 3: // sammy
+            case 4: // sammy (bold)
+                params.addRule(RelativeLayout.BELOW, R.id.clock_view);
+                mClockView.setSingleLine(false);
+                mClockView.setGravity(Gravity.CENTER);
+                break;
+            default:
+                params.addRule(RelativeLayout.BELOW, R.id.clock_view);
+                mClockView.setSingleLine(false);
+                mClockView.setGravity(Gravity.CENTER);
                 break;
         }
         mKeyguardSlice.setLayoutParams(params);
