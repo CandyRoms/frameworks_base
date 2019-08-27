@@ -19,6 +19,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
+import android.util.Log;
 
 import com.android.keyguard.R;
 
@@ -35,6 +36,9 @@ public class TypographicClock extends TextView {
     private final Resources mResources;
     private final Calendar mTime;
     private TimeZone mTimeZone;
+
+    private final Animation fadeIn;
+    private final Animation fadeOut;
 
     private final Animation fadeIn;
     private final Animation fadeOut;
@@ -81,7 +85,7 @@ public class TypographicClock extends TextView {
 
     public void onTimeChanged() {
         int oldColor = mAccentColor;
-        mAccentColor = AccentUtils.getAccentColor(mResources
+        mSystemAccent = AccentUtils.getAccentColor(mResources
                 .getColor(R.color.custom_text_clock_top_color, null));
         mTime.setTimeInMillis(System.currentTimeMillis());
         setContentDescription(DateFormat.format(mDescFormat, mTime));
