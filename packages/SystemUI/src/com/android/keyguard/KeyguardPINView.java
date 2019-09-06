@@ -119,10 +119,12 @@ public class KeyguardPINView extends KeyguardPinBasedInputView {
             });
         }
 
+        boolean mUserHasUnlockedOnce = mKeyguardUpdateMonitor.hasUserAuthenticatedSinceBoot();
+
         boolean quickUnlock = (Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.LOCKSCREEN_QUICK_UNLOCK_CONTROL, 0) == 1);
 
-        if (quickUnlock) {
+        if (quickUnlock && mUserHasUnlockedOnce) {
             mPasswordEntry.setQuickUnlockListener(new QuickUnlockListener() {
                 public void onValidateQuickUnlock(String password) {
                     validateQuickUnlock(password);

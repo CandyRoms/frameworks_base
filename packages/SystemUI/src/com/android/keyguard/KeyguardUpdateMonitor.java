@@ -725,6 +725,10 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
         return mUserTrustIsManaged.get(userId) && !isTrustDisabled(userId);
     }
 
+    public boolean hasUserAuthenticatedSinceBoot() {
+        return mStrongAuthTracker.hasUserAuthenticatedSinceBoot();
+    }
+
     public boolean isUnlockingWithFingerprintAllowed() {
         return mStrongAuthTracker.isUnlockingWithFingerprintAllowed()
             || (Settings.System.getInt(mContext.getContentResolver(),
