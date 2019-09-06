@@ -4184,12 +4184,8 @@ public final class Settings {
         public static final String LOCKSCREEN_BATTERY_INFO = "lockscreen_battery_info";
 
         /**
-         * Unlock keystore with fingerprint after reboot
-         * @hide
-         */
-        public static final String FP_UNLOCK_KEYSTORE = "fp_unlock_keystore";
-
-        /**
+         * Custom fingerprint icon
+         *
          * @hide
          */
         public static final String OMNI_CUSTOM_FP_ICON = "custom_fingerprint_icon";
@@ -4318,10 +4314,8 @@ public final class Settings {
                BOOLEAN_VALIDATOR;
 
         /**
-         * IMPORTANT: If you add a new public settings you also have to add it to
-         * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
-         * it to PRIVATE_SETTINGS below. Also add a validator that can validate
-         * the setting value. See an example above.
+         * 3-finger screenshot
+         * @hide
          */
         public static final String THREE_FINGER_GESTURE = "three_finger_gesture";
 
@@ -4847,10 +4841,7 @@ public final class Settings {
                 BOOLEAN_VALIDATOR;
 
         /**
-         * IMPORTANT: If you add a new public settings you also have to add it to
-         * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
-         * it to PRIVATE_SETTINGS below. Also add a validator that can validate
-         * the setting value. See an example above.
+         * @hide
          */
         public static final String STOCK_STATUSBAR_IN_HIDE = "stock_statusbar_in_hide";
 
