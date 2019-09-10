@@ -65,4 +65,8 @@
     <java-symbol type="string" name="reboot_message" />
 
     <java-symbol type="array" name="custom_config_globalActionsList" />
+
+    <!-- Post reset runnable for all clients -->
+    <java-symbol type="bool" name="config_fingerprintPostResetRunnableForAllClients" />
+
 </resources>
