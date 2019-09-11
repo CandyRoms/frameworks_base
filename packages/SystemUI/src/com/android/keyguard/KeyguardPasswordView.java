@@ -63,9 +63,13 @@ public class KeyguardPasswordView extends KeyguardAbsKeyInputView
     private Interpolator mLinearOutSlowInInterpolator;
     private Interpolator mFastOutLinearInInterpolator;
 
+    private KeyguardUpdateMonitor mKeyguardUpdateMonitor;
+
+    private final boolean mUserHasUnlockedOnce = mKeyguardUpdateMonitor.hasUserAuthenticatedSinceBoot();
+    private final int userId = mKeyguardUpdateMonitor.getCurrentUser();
+
     private final boolean quickUnlock = (Settings.System.getInt(getContext().getContentResolver(),
             Settings.System.LOCKSCREEN_QUICK_UNLOCK_CONTROL, 0) == 1);
-    private final int userId = KeyguardUpdateMonitor.getCurrentUser();
 
     public KeyguardPasswordView(Context context) {
         this(context, null);
@@ -347,7 +351,7 @@ public class KeyguardPasswordView extends KeyguardAbsKeyInputView
         // is from the user.
         if (!TextUtils.isEmpty(s)) {
             onUserInput();
-            if (quickUnlock) {
+            if (quickUnlock && mUserHasUnlockedOnce) {
                 String entry = getPasswordText();
                 if (entry.length() > MINIMUM_PASSWORD_LENGTH_BEFORE_REPORT
                         && kpvCheckPassword(entry)) {
