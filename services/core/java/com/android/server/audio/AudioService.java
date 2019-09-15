@@ -597,7 +597,6 @@ public class AudioService extends IAudioService.Stub
     // Devices for which the volume is fixed and VolumePanel slider should be disabled
     int mFixedVolumeDevices = AudioSystem.DEVICE_OUT_HDMI |
             AudioSystem.DEVICE_OUT_DGTL_DOCK_HEADSET |
-            AudioSystem.DEVICE_OUT_ANLG_DOCK_HEADSET |
             AudioSystem.DEVICE_OUT_HDMI_ARC |
             AudioSystem.DEVICE_OUT_SPDIF |
             AudioSystem.DEVICE_OUT_AUX_LINE;
@@ -5707,7 +5706,11 @@ public class AudioService extends IAudioService.Stub
                     break;
 
                 case MSG_PLAY_SOUND_EFFECT:
-                    onPlaySoundEffect(msg.arg1, msg.arg2);
+                    if (isStreamMute(AudioSystem.STREAM_SYSTEM)) {
+                        Log.d(TAG, "Stream muted, skip playback");
+                    } else {
+                        onPlaySoundEffect(msg.arg1, msg.arg2);
+                    }
                     break;
 
                 case MSG_BTA2DP_DOCK_TIMEOUT:
