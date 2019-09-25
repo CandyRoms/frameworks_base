@@ -4729,6 +4729,13 @@ public final class Settings {
         private static final Validator BATTERY_LIGHT_LOW_BLINKING_VALIDATOR =
                 BOOLEAN_VALIDATOR;
 
+        /** @hide */
+        public static final String BACK_GESTURE_HEIGHT = "back_gesture_height";
+
+        /** @hide */
+        private static final Validator BACK_GESTURE_HEIGHT_VALIDATOR =
+                ANY_INTEGER_VALIDATOR;
+
         /**
         * Low battery charging color
         * @hide
@@ -4874,6 +4881,7 @@ public final class Settings {
             DOZE_ON_CHARGE,
             CANDY_CUSTOM_FP_ICON,
             GESTURE_PILL_TOGGLE,
+            BACK_GESTURE_HEIGHT,
         };
 
         /**
@@ -5031,6 +5039,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(DOZE_ON_CHARGE);
             PRIVATE_SETTINGS.add(CANDY_CUSTOM_FP_ICON);
             PRIVATE_SETTINGS.add(GESTURE_PILL_TOGGLE);
+            PRIVATE_SETTINGS.add(BACK_GESTURE_HEIGHT);
         }
 
         /**
@@ -5139,6 +5148,7 @@ public final class Settings {
             VALIDATORS.put(DOZE_ON_CHARGE, DOZE_ON_CHARGE_VALIDATOR);
             VALIDATORS.put(CANDY_CUSTOM_FP_ICON, CANDY_CUSTOM_FP_ICON_VALIDATOR);
             VALIDATORS.put(GESTURE_PILL_TOGGLE, GESTURE_PILL_TOGGLE_VALIDATOR);
+            VALIDATORS.put(BACK_GESTURE_HEIGHT, BACK_GESTURE_HEIGHT_VALIDATOR);
         }
 
         /**
