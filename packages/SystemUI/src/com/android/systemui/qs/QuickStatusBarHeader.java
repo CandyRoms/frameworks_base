@@ -52,6 +52,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Space;
 import android.widget.TextView;
+import android.content.ContentResolver;
+import android.database.ContentObserver;
+import android.content.ContentResolver;
+import android.os.UserHandle;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -148,6 +152,29 @@ public class QuickStatusBarHeader extends RelativeLayout implements
 
     private PrivacyItemController mPrivacyItemController;
 
+    protected ContentResolver mContentResolver;
+
+    private class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = getContext().getContentResolver();
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.QS_BATTERY_MODE), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUS_BAR_BATTERY_STYLE), false,
+                    this, UserHandle.USER_ALL);
+            }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+    private SettingsObserver mSettingsObserver = new SettingsObserver(mHandler);
     private final BroadcastReceiver mRingerReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -250,9 +277,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mBatteryRemainingIcon = findViewById(R.id.batteryRemainingIcon);
         // Don't need to worry about tuner settings for this icon
         mBatteryRemainingIcon.setIgnoreTunerUpdates(true);
-        // QS will always show the estimate, and BatteryMeterView handles the case where
-        // it's unavailable or charging
-        mBatteryRemainingIcon.setPercentShowMode(BatteryMeterView.MODE_ESTIMATE);
+        mBatteryRemainingIcon.setPercentShowMode(BatteryMeterView.MODE_ON);
         mRingerModeTextView.setSelected(true);
         mNextAlarmTextView.setSelected(true);
 
@@ -411,6 +436,40 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         updateHeaderTextContainerAlphaAnimator();
         updatePrivacyChipAlphaAnimator();
     }
+
+    private void updateSettings() {
+        updateQSBatteryMode();
+        updateSBBatteryStyle();
+        updateResources();
+     }
+
+     private void updateQSBatteryMode() {
+        int showEstimate = Settings.System.getInt(mContext.getContentResolver(),
+        Settings.System.QS_BATTERY_MODE, 0);
+        if (showEstimate == 0) {
+            mBatteryRemainingIcon.mShowBatteryPercent = 0;
+            mBatteryRemainingIcon.setPercentShowMode(BatteryMeterView.MODE_OFF);
+        } else if (showEstimate == 1) {
+            mBatteryRemainingIcon.mShowBatteryPercent = 0;
+            mBatteryRemainingIcon.setPercentShowMode(BatteryMeterView.MODE_ON);
+        } else if (showEstimate == 2) {
+            mBatteryRemainingIcon.mShowBatteryPercent = 1;
+            mBatteryRemainingIcon.setPercentShowMode(BatteryMeterView.MODE_OFF);
+        } else if (showEstimate == 3) {
+            mBatteryRemainingIcon.mShowBatteryPercent = 0;
+            mBatteryRemainingIcon.setPercentShowMode(BatteryMeterView.MODE_ESTIMATE);
+        }
+        mBatteryRemainingIcon.updatePercentView();
+        mBatteryRemainingIcon.updateVisibility();
+     }
+
+     private void updateSBBatteryStyle() {
+        mBatteryRemainingIcon.mBatteryStyle = Settings.System.getInt(mContext.getContentResolver(),
+        Settings.System.STATUS_BAR_BATTERY_STYLE, 0);
+        mBatteryRemainingIcon.updateBatteryStyle();
+        mBatteryRemainingIcon.updatePercentView();
+        mBatteryRemainingIcon.updateVisibility();
+     }
 
     private void updateStatusIconAlphaAnimator() {
         mStatusIconsAlphaAnimator = new TouchAnimator.Builder()
