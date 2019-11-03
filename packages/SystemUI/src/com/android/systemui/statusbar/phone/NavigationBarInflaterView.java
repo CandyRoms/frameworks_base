@@ -108,6 +108,7 @@ public class NavigationBarInflaterView extends FrameLayout
 
     private boolean mIsVertical;
     private boolean mAlternativeOrder;
+    private boolean mUsingCustomLayout;
 
     private OverviewProxyService mOverviewProxyService;
     private int mNavBarMode = NAV_BAR_MODE_3BUTTON;
@@ -169,13 +170,7 @@ public class NavigationBarInflaterView extends FrameLayout
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Dependency.get(TunerService.class).addTunable(this, KEY_NAVIGATION_HINT);
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        Dependency.get(TunerService.class).addTunable(this, NAV_BAR_INVERSE);
+        Dependency.get(TunerService.class).addTunable(this, NAV_BAR_VIEWS, NAV_BAR_INVERSE);
     }
 
     @Override
@@ -191,6 +186,8 @@ public class NavigationBarInflaterView extends FrameLayout
             mIsHintEnabled = TunerService.parseIntegerSwitch(newValue, true);
             updateHint();
             onLikelyDefaultLayoutChange();
+        } else if (NAV_BAR_VIEWS.equals(key)) {
+            setNavigationBarLayout(newValue);
         } else if (NAV_BAR_INVERSE.equals(key)) {
             mInverseLayout = TunerService.parseIntegerSwitch(newValue, true);
             updateLayoutInversion();
@@ -199,6 +196,14 @@ public class NavigationBarInflaterView extends FrameLayout
 
     public boolean isHintEnabled() {
         return mIsHintEnabled;
+    }
+
+    public void setNavigationBarLayout(String layoutValue) {
+        if (!Objects.equals(mCurrentLayout, layoutValue)) {
+            mUsingCustomLayout = layoutValue != null;
+            clearViews();
+            inflateLayout(layoutValue);
+        }
     }
 
     @Override
