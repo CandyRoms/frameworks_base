@@ -3459,33 +3459,11 @@ public class NotificationPanelView extends PanelView implements
         mAnimateNextPositionUpdate = true;
     }
 
-    /**
-     * Panel and QS expansion callbacks.
-     */
-    public interface PanelExpansionListener {
-        /**
-         * Invoked whenever the notification panel expansion changes, at every animation frame.
-         * This is the main expansion that happens when the user is swiping up to dismiss the
-         * lock screen.
-         *
-         * @param expansion 0 when collapsed, 1 when expanded.
-         * @param tracking {@code true} when the user is actively dragging the panel.
-         */
-        void onPanelExpansionChanged(float expansion, boolean tracking);
-
-        /**
-         * Invoked whenever the QS expansion changes, at every animation frame.
-         * @param expansion 0 when collapsed, 1 when expanded.
-         */
-        void onQsExpansionChanged(float expansion);
+    public void setOnReinflationListener(Runnable onReinflationListener) {
+        mOnReinflationListener = onReinflationListener;
     }
 
     public void updateDoubleTapToSleep(boolean doubleTapToSleepEnabled) {
         mDoubleTapToSleepEnabled = doubleTapToSleepEnabled;
     }
-
-    public void setOnReinflationListener(Runnable onReinflationListener) {
-        mOnReinflationListener = onReinflationListener;
-    }
-
 }

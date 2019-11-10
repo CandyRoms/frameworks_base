@@ -41,6 +41,7 @@ import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.util.Preconditions;
 import com.android.systemui.Dependency;
+import com.android.systemui.R;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.statusbar.phone.DozeParameters;
 import com.android.systemui.util.Assert;
@@ -278,7 +279,7 @@ public class DozeTriggers implements DozeMachine.Part {
                             .setType(MetricsEvent.TYPE_OPEN)
                             .setSubtype(DozeLog.REASON_SENSOR_WAKE_UP));
                 }
-            }, false /* alreadyPerformedProxCheck */, DozeLog.REASON_SENSOR_WAKE_UP);
+            }, true /* alreadyPerformedProxCheck */, DozeLog.REASON_SENSOR_WAKE_UP);
         } else {
             boolean paused = (state == DozeMachine.State.DOZE_AOD_PAUSED);
             boolean pausing = (state == DozeMachine.State.DOZE_AOD_PAUSING);
@@ -417,6 +418,9 @@ public class DozeTriggers implements DozeMachine.Part {
         mDozeSensors.dump(pw);
     }
 
+    /**
+     * @see DozeSensors.ProxSensor
+     */
     private abstract class ProximityCheck implements SensorEventListener, Runnable {
         private static final int TIMEOUT_DELAY_MS = 500;
 
@@ -428,12 +432,18 @@ public class DozeTriggers implements DozeMachine.Part {
         private boolean mRegistered;
         private boolean mFinished;
         private float mMaxRange;
+        private boolean mUsingBrightnessSensor;
 
         protected abstract void onProximityResult(int result);
 
         public void check() {
             Preconditions.checkState(!mFinished && !mRegistered);
-            final Sensor sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+            Sensor sensor = DozeSensors.findSensorWithType(mSensorManager,
+                    mContext.getString(R.string.doze_brightness_sensor_type));
+            mUsingBrightnessSensor = sensor != null;
+            if (sensor == null) {
+                sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+            }
             if (sensor == null) {
                 if (DozeMachine.DEBUG) Log.d(TAG, "ProxCheck: No sensor found");
                 finishWithResult(RESULT_UNKNOWN);
@@ -449,6 +459,9 @@ public class DozeTriggers implements DozeMachine.Part {
             mRegistered = true;
         }
 
+        /**
+         * @see DozeSensors.ProxSensor#onSensorChanged(SensorEvent)
+         */
         @Override
         public void onSensorChanged(SensorEvent event) {
             if (event.values.length == 0) {
@@ -458,7 +471,14 @@ public class DozeTriggers implements DozeMachine.Part {
                 if (DozeMachine.DEBUG) {
                     Log.d(TAG, "ProxCheck: Event: value=" + event.values[0] + " max=" + mMaxRange);
                 }
-                final boolean isNear = event.values[0] < mMaxRange;
+                final boolean isNear;
+                if (mUsingBrightnessSensor) {
+                    // The custom brightness sensor is gated by the proximity sensor and will
+                    // return 0 whenever prox is covered.
+                    isNear = event.values[0] == 0;
+                } else {
+                    isNear = event.values[0] < mMaxRange;
+                }
                 finishWithResult(isNear ? RESULT_NEAR : RESULT_FAR);
             }
         }

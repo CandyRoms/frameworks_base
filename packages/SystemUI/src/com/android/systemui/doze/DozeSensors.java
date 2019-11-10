@@ -621,9 +621,8 @@ public class DozeSensors {
         /**
          * Called when a sensor requests a pulse
          * @param pulseReason Requesting sensor, e.g. {@link DozeLog#REASON_SENSOR_PICKUP}
-         * @param sensorPerformedProxCheck true if the sensor already checked for FAR proximity.
          * @param screenX the location on the screen where the sensor fired or -1
- *                if the sensor doesn't support reporting screen locations.
+         *                if the sensor doesn't support reporting screen locations.
          * @param screenY the location on the screen where the sensor fired or -1
          * @param rawValues raw values array from the event.
          */
