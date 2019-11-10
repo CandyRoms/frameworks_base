@@ -2876,8 +2876,9 @@
         <item>lockdown</item>
         <item>logout</item>
         <item>bugreport</item>
-        <item>screenshot</item>
         <item>recovery</item>
+        <item>screenshot</item>
+        <item>screenrecord</item>
     </string-array>
         <!--<item>emergency</item>-->
 
