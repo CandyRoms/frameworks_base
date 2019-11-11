@@ -67,6 +67,7 @@ public class TileLayout extends ViewGroup implements QSTileLayout {
 
     protected void addTileView(TileRecord tile) {
         addView(tile.tileView);
+        tile.tileView.textVisibility();
     }
 
     @Override
@@ -101,7 +102,9 @@ public class TileLayout extends ViewGroup implements QSTileLayout {
         if (columns < 1) {
             columns = 1;
         }
-        mCellHeight = mContext.getResources().getDimensionPixelSize(R.dimen.qs_tile_height);
+        if (rows < 1) {
+            rows = 1;
+        }
         mCellMarginHorizontal = res.getDimensionPixelSize(R.dimen.qs_tile_margin_horizontal);
         mCellMarginVertical= res.getDimensionPixelSize(R.dimen.qs_tile_margin_vertical);
         mCellMarginTop = res.getDimensionPixelSize(R.dimen.qs_tile_margin_top);
