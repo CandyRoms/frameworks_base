@@ -98,6 +98,7 @@ import android.widget.Toast;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.internal.config.sysui.SystemUiDeviceConfigFlags;
 import com.android.internal.messages.nano.SystemMessageProto.SystemMessage;
+import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.candy.CandyUtils;
 import com.android.systemui.R;
 import com.android.systemui.SysUiServiceProvider;
