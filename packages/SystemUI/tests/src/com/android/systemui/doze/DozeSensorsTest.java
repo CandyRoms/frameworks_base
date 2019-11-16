@@ -19,7 +19,6 @@ package com.android.systemui.doze;
 import static com.android.systemui.plugins.SensorManagerPlugin.Sensor.TYPE_WAKE_LOCK_SCREEN;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -106,14 +105,14 @@ public class DozeSensorsTest extends SysuiTestCase {
         mWakeLockScreenListener.onSensorChanged(mock(SensorManagerPlugin.SensorEvent.class));
         mTestableLooper.processAllMessages();
         verify(mCallback).onSensorPulse(eq(DozeLog.PULSE_REASON_SENSOR_WAKE_LOCK_SCREEN),
-                anyBoolean(), anyFloat(), anyFloat(), eq(null));
+                anyFloat(), anyFloat(), eq(null));
 
         mDozeSensors.requestTemporaryDisable();
         reset(mCallback);
         mWakeLockScreenListener.onSensorChanged(mock(SensorManagerPlugin.SensorEvent.class));
         mTestableLooper.processAllMessages();
         verify(mCallback, never()).onSensorPulse(eq(DozeLog.PULSE_REASON_SENSOR_WAKE_LOCK_SCREEN),
-                anyBoolean(), anyFloat(), anyFloat(), eq(null));
+                anyFloat(), anyFloat(), eq(null));
     }
 
     @Test
@@ -126,7 +125,18 @@ public class DozeSensorsTest extends SysuiTestCase {
     @Test
     public void testSetListening_twiceTrue_onlyRegisterSettingsObserverOnce() {
         mDozeSensors.setListening(true);
+
+        verify(mTriggerSensor, times(1)).registerSettingsObserver(any(ContentObserver.class));
+    }
+
+    @Test
+    public void testSetPaused_doesntPause_sensors() {
         mDozeSensors.setListening(true);
+        verify(mTriggerSensor).setListening(eq(true));
+
+        clearInvocations(mTriggerSensor);
+        mDozeSensors.setPaused(true);
+        verify(mTriggerSensor).setListening(eq(true));
 
         verify(mTriggerSensor, times(1)).registerSettingsObserver(any(ContentObserver.class));
     }
@@ -146,6 +156,10 @@ public class DozeSensorsTest extends SysuiTestCase {
         mDozeSensors.setPaused(false);
         verify(mTriggerSensor).setListening(eq(true));
         verify(mProxGatedTriggerSensor).setListening(eq(true));
+
+        clearInvocations(mTriggerSensor);
+        mDozeSensors.setListening(false);
+        verify(mTriggerSensor).setListening(eq(false));
     }
 
     private class TestableDozeSensors extends DozeSensors {
