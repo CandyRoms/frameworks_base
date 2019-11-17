@@ -1260,8 +1260,8 @@ public class NotificationPanelView extends PanelView implements
         // pull down QS or expand the shade.
         if (mStatusBar.isBouncerShowingScrimmed()) {
             return false;
-        }
-        if (!mQsExpanded
+	    }
+        if (!mQsExpanded && !mPulsing && !mDozing
                 && mDoubleTapToSleepEnabled
                 && event.getY() < mStatusBarHeaderHeight) {
             if (mDoubleTapGesture.onTouchEvent(event)) {

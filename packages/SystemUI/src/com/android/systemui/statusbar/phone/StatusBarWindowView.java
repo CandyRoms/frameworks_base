@@ -110,7 +110,6 @@ public class StatusBarWindowView extends FrameLayout {
     private boolean mExpandAnimationPending;
     private boolean mSuppressingWakeUpGesture;
 
-    // omni additions start
     private boolean mDoubleTapEnabledNative;
 
     private final GestureDetector.SimpleOnGestureListener mGestureListener =
@@ -127,11 +126,11 @@ public class StatusBarWindowView extends FrameLayout {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-                if (mDoubleTapEnabled || mSingleTapEnabled || mDoubleTapEnabledNative) {
             if (mIsMusicTickerTap) {
                 mService.handleSystemKey(KeyEvent.KEYCODE_MEDIA_NEXT);
                 return true;
             }
+            if (mDoubleTapEnabled || mSingleTapEnabled || mDoubleTapEnabledNative) {
                 mService.wakeUpIfDozing(SystemClock.uptimeMillis(), StatusBarWindowView.this,
                         "DOUBLE_TAP");
                 return true;
