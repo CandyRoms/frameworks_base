@@ -4577,24 +4577,6 @@ public final class Settings {
         public static final String GLOBAL_ACTIONS_FLASHLIGHT = "global_actions_flashlight";
 
         /**
-         * Disable dashboard conditions in settings
-         * @hide
-         */
-        public static final String ENABLE_CONDITIONS = "enable_conditions";
-        /** @hide */
-        private static final Validator ENABLE_CONDITIONS_VALIDATOR =
-                BOOLEAN_VALIDATOR;
-
-        /**
-         * Disable dashboard suggestions in settings
-         * @hide
-         */
-        public static final String ENABLE_SUGGESTIONS = "enable_suggestions";
-        /** @hide */
-        private static final Validator ENABLE_SUGGESTIONS_VALIDATOR =
-                BOOLEAN_VALIDATOR;
-
-        /**
          * Three Finger Gesture from Oppo
          * @hide
          */
@@ -4628,9 +4610,9 @@ public final class Settings {
                 ANY_INTEGER_VALIDATOR;
 
         /**
- 	 ** What size to show for network traffic indicator in statusbar
-	 ** @hide
-	 **/
+     	 ** What size to show for network traffic indicator in statusbar
+	     ** @hide
+	     **/
          public static final String NETWORK_TRAFFIC_FONT_SIZE = "network_traffic_font_size";
 
         /**
@@ -4676,7 +4658,7 @@ public final class Settings {
         private static final Validator DOUBLE_TAP_SLEEP_LOCKSCREEN_VALIDATOR =
                 BOOLEAN_VALIDATOR;
 
-	/**
+	    /**
          * Whether the proximity sensor will adjust call to speaker
          */
         public static final String PROXIMITY_AUTO_SPEAKER = "proximity_auto_speaker";
@@ -4831,8 +4813,6 @@ public final class Settings {
             DISPLAY_COLOR_MODE,
             ALARM_ALERT,
             NOTIFICATION_LIGHT_PULSE,
-            ENABLE_CONDITIONS,
-            ENABLE_SUGGESTIONS,
             NETWORK_TRAFFIC_HIDEARROW,
             DOUBLE_TAP_SLEEP_GESTURE,
             DOUBLE_TAP_SLEEP_LOCKSCREEN,
@@ -4962,8 +4942,6 @@ public final class Settings {
             PRIVATE_SETTINGS.add(EGG_MODE);
             PRIVATE_SETTINGS.add(SHOW_BATTERY_PERCENT);
             PRIVATE_SETTINGS.add(DISPLAY_COLOR_MODE);
-            PRIVATE_SETTINGS.add(ENABLE_CONDITIONS);
-            PRIVATE_SETTINGS.add(ENABLE_SUGGESTIONS);
             PRIVATE_SETTINGS.add(NETWORK_TRAFFIC_STATE);
             PRIVATE_SETTINGS.add(NETWORK_TRAFFIC_TYPE);
             PRIVATE_SETTINGS.add(NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD);
@@ -5071,8 +5049,6 @@ public final class Settings {
             VALIDATORS.put(WIFI_STATIC_DNS2, WIFI_STATIC_DNS2_VALIDATOR);
             VALIDATORS.put(SHOW_BATTERY_PERCENT, SHOW_BATTERY_PERCENT_VALIDATOR);
             VALIDATORS.put(NOTIFICATION_LIGHT_PULSE, BOOLEAN_VALIDATOR);
-            VALIDATORS.put(ENABLE_CONDITIONS, ENABLE_CONDITIONS_VALIDATOR);
-            VALIDATORS.put(ENABLE_SUGGESTIONS, ENABLE_SUGGESTIONS_VALIDATOR);
             VALIDATORS.put(NETWORK_TRAFFIC_HIDEARROW, NETWORK_TRAFFIC_HIDEARROW_VALIDATOR);
             VALIDATORS.put(DOUBLE_TAP_SLEEP_GESTURE, DOUBLE_TAP_SLEEP_GESTURE_VALIDATOR);
             VALIDATORS.put(DOUBLE_TAP_SLEEP_LOCKSCREEN, DOUBLE_TAP_SLEEP_LOCKSCREEN_VALIDATOR);
