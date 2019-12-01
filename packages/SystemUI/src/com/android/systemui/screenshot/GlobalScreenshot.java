@@ -771,26 +771,6 @@ class GlobalScreenshot {
                 statusBarVisible, navBarVisible);
     }
 
-    void setBlockedGesturalNavigation(boolean blocked) {
-        IStatusBarService service = IStatusBarService.Stub.asInterface(
-                ServiceManager.getService(Context.STATUS_BAR_SERVICE));
-        if (service != null) {
-            try {
-                service.setBlockedGesturalNavigation(blocked);
-            } catch (RemoteException e) {
-                // end of the world
-            }
-
-    void takeScreenshot(Consumer<Uri> finisher, boolean statusBarVisible, boolean navBarVisible) {
-        if (mScreenshotLayout.getParent() != null) {
-            finisher.accept(null);
-            return;
-        }
-        mDisplay.getRealMetrics(mDisplayMetrics);
-        takeScreenshot(finisher, statusBarVisible, navBarVisible,
-                new Rect(0, 0, mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels));
-    }
-
     Rect getRotationAdjustedRect(Rect rect) {
         Display defaultDisplay = mWindowManager.getDefaultDisplay();
         Rect adjustedRect = new Rect(rect);
@@ -828,6 +808,28 @@ class GlobalScreenshot {
         } else {
             mWindowLayoutParams.screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
         }
+    }
+
+    void setBlockedGesturalNavigation(boolean blocked) {
+        IStatusBarService service = IStatusBarService.Stub.asInterface(
+                ServiceManager.getService(Context.STATUS_BAR_SERVICE));
+        if (service != null) {
+            try {
+                service.setBlockedGesturalNavigation(blocked);
+            } catch (RemoteException e) {
+                // end of the world
+            }
+        }
+    }
+
+    void takeScreenshot(Consumer<Uri> finisher, boolean statusBarVisible, boolean navBarVisible) {
+        if (mScreenshotLayout.getParent() != null) {
+            finisher.accept(null);
+            return;
+        }
+        mDisplay.getRealMetrics(mDisplayMetrics);
+        takeScreenshot(finisher, statusBarVisible, navBarVisible,
+                new Rect(0, 0, mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels));
     }
 
     /**
@@ -899,6 +901,7 @@ class GlobalScreenshot {
         mScreenshotSelectorView.stopSelection();
         mScreenshotSelectorView.setVisibility(View.GONE);
         mCaptureButton.setVisibility(View.GONE);
+        setBlockedGesturalNavigation(false);
     }
 
     /**
@@ -912,6 +915,8 @@ class GlobalScreenshot {
         if (mScreenshotLayout.getParent() != null) {
             hideScreenshotSelector();
         }
+
+        setBlockedGesturalNavigation(false);
     }
 
     /**

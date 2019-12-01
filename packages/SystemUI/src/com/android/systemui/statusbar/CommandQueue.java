@@ -119,6 +119,7 @@ public class CommandQueue extends IStatusBar.Stub implements CallbackController<
     private static final int MSG_RESTART_UI                    = 48 << MSG_SHIFT;
     private static final int MSG_SHOW_IN_DISPLAY_FINGERPRINT_VIEW = 49 << MSG_SHIFT;
     private static final int MSG_HIDE_IN_DISPLAY_FINGERPRINT_VIEW = 50 << MSG_SHIFT;
+    private static final int MSG_SET_BLOCKED_GESTURAL_NAVIGATION = 51 << MSG_SHIFT;
 
     private static final int MSG_PARTIAL_SCREENSHOT_ACTIVE           = 90 << MSG_SHIFT;
 
@@ -285,6 +286,7 @@ public class CommandQueue extends IStatusBar.Stub implements CallbackController<
         default void restartUI() { }
         default void showInDisplayFingerprintView() { }
         default void hideInDisplayFingerprintView() { }
+        default void setBlockedGesturalNavigation(boolean blocked) {}
 
         /**
          * @see IStatusBar#onDisplayReady(int)
@@ -810,6 +812,14 @@ public class CommandQueue extends IStatusBar.Stub implements CallbackController<
     }
 
     @Override
+    public void setBlockedGesturalNavigation(boolean blocked) {
+        synchronized (mLock) {
+            mHandler.removeMessages(MSG_SET_BLOCKED_GESTURAL_NAVIGATION);
+            mHandler.obtainMessage(MSG_SET_BLOCKED_GESTURAL_NAVIGATION, blocked).sendToTarget();
+        }
+    }
+
+    @Override
     public void onDisplayReady(int displayId) {
         synchronized (mLock) {
             mHandler.obtainMessage(MSG_DISPLAY_READY, displayId, 0).sendToTarget();
@@ -1136,6 +1146,11 @@ public class CommandQueue extends IStatusBar.Stub implements CallbackController<
                 case MSG_PARTIAL_SCREENSHOT_ACTIVE:
                     for (int i = 0; i < mCallbacks.size(); i++) {
                         mCallbacks.get(i).setPartialScreenshot((Boolean) msg.obj);
+                    }
+                    break;
+                case MSG_SET_BLOCKED_GESTURAL_NAVIGATION:
+                    for (int i = 0; i < mCallbacks.size(); i++) {
+                        mCallbacks.get(i).setBlockedGesturalNavigation((Boolean) msg.obj);
                     }
                     break;
             }
