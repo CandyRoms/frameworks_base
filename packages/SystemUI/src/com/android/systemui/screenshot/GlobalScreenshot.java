@@ -649,7 +649,6 @@ class GlobalScreenshot {
 
     private MediaActionSound mCameraSound;
 
-
     /**
      * @param context everything needs a context :(
      */
@@ -780,6 +779,7 @@ class GlobalScreenshot {
     void takeScreenshotPartial(final Consumer<Uri> finisher, final boolean statusBarVisible,
             final boolean navBarVisible) {
         mWindowManager.addView(mScreenshotLayout, mWindowLayoutParams);
+        CandyUtils.setPartialScreenshot(true);
         mScreenshotSelectorView.setSelectionListener(
                 new ScreenshotSelectorView.OnSelectionListener() {
             @Override
@@ -828,6 +828,7 @@ class GlobalScreenshot {
     }
 
     void hideScreenshotSelector() {
+        CandyUtils.setPartialScreenshot(false);
         mWindowManager.removeView(mScreenshotLayout);
         mScreenshotSelectorView.stopSelection();
         mScreenshotSelectorView.setVisibility(View.GONE);
