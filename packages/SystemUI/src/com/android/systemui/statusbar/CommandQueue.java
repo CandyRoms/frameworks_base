@@ -116,9 +116,14 @@ public class CommandQueue extends IStatusBar.Stub implements CallbackController<
     private static final int MSG_SHOW_PINNING_TOAST_ENTER_EXIT = 45 << MSG_SHIFT;
     private static final int MSG_SHOW_PINNING_TOAST_ESCAPE     = 46 << MSG_SHIFT;
     private static final int MSG_RECENTS_ANIMATION_STATE_CHANGED = 47 << MSG_SHIFT;
+<<<<<<< HEAD
     private static final int MSG_RESTART_UI                    = 48 << MSG_SHIFT;
     private static final int MSG_SHOW_IN_DISPLAY_FINGERPRINT_VIEW = 49 << MSG_SHIFT;
     private static final int MSG_HIDE_IN_DISPLAY_FINGERPRINT_VIEW = 50 << MSG_SHIFT;
+=======
+    private static final int MSG_TOGGLE_CAMERA_FLASH           = 90 << MSG_SHIFT;
+    private static final int MSG_PARTIAL_SCREENSHOT_ACTIVE           = 91 << MSG_SHIFT;
+>>>>>>> 5030a2846b6c... Partial screenshot: Allow BACK action only from right side
 
     public static final int FLAG_EXCLUDE_NONE = 0;
     public static final int FLAG_EXCLUDE_SEARCH_PANEL = 1 << 0;
@@ -298,6 +303,13 @@ public class CommandQueue extends IStatusBar.Stub implements CallbackController<
          * @see IStatusBar#onRecentsAnimationStateChanged(boolean)
          */
         default void onRecentsAnimationStateChanged(boolean running) { }
+<<<<<<< HEAD
+=======
+
+        default void toggleCameraFlash() { }
+
+        default void setPartialScreenshot(boolean active) { }
+>>>>>>> 5030a2846b6c... Partial screenshot: Allow BACK action only from right side
     }
 
     @VisibleForTesting
@@ -846,6 +858,25 @@ public class CommandQueue extends IStatusBar.Stub implements CallbackController<
         }
     }
 
+<<<<<<< HEAD
+=======
+    @Override
+    public void toggleCameraFlash() {
+        synchronized (mLock) {
+            mHandler.removeMessages(MSG_TOGGLE_CAMERA_FLASH);
+            mHandler.sendEmptyMessage(MSG_TOGGLE_CAMERA_FLASH);
+        }
+    }
+
+    @Override
+    public void setPartialScreenshot(boolean active) {
+        synchronized (mLock) {
+            mHandler.removeMessages(MSG_PARTIAL_SCREENSHOT_ACTIVE);
+            mHandler.obtainMessage(MSG_PARTIAL_SCREENSHOT_ACTIVE, active).sendToTarget();
+        }
+    }
+
+>>>>>>> 5030a2846b6c... Partial screenshot: Allow BACK action only from right side
     private final class H extends Handler {
         private H(Looper l) {
             super(l);
@@ -1119,6 +1150,11 @@ public class CommandQueue extends IStatusBar.Stub implements CallbackController<
                 case MSG_HIDE_IN_DISPLAY_FINGERPRINT_VIEW:
                     for (int i = 0; i < mCallbacks.size(); i++) {
                         mCallbacks.get(i).hideInDisplayFingerprintView();
+                    }
+                    break;
+                case MSG_PARTIAL_SCREENSHOT_ACTIVE:
+                    for (int i = 0; i < mCallbacks.size(); i++) {
+                        mCallbacks.get(i).setPartialScreenshot((Boolean) msg.obj);
                     }
                     break;
             }

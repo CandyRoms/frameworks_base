@@ -92,6 +92,7 @@ import android.widget.Toast;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.internal.config.sysui.SystemUiDeviceConfigFlags;
 import com.android.internal.messages.nano.SystemMessageProto.SystemMessage;
+import com.android.internal.util.candy.CandyUtils;
 import com.android.systemui.R;
 import com.android.systemui.SysUiServiceProvider;
 import com.android.systemui.SystemUI;
@@ -769,6 +770,11 @@ class GlobalScreenshot {
     void takeScreenshotPartial(final Consumer<Uri> finisher, final boolean statusBarVisible,
             final boolean navBarVisible) {
         mWindowManager.addView(mScreenshotLayout, mWindowLayoutParams);
+        mPartialShotStarted = false;
+        mPartialShot = true;
+        ViewConfiguration vc = ViewConfiguration.get(mContext);
+        final int touchSlop = vc.getScaledTouchSlop();
+        CandyUtils.setPartialScreenshot(true);
         mScreenshotSelectorView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -782,6 +788,7 @@ class GlobalScreenshot {
                         return true;
                     case MotionEvent.ACTION_UP:
                         view.setVisibility(View.GONE);
+                        CandyUtils.setPartialScreenshot(false);
                         mWindowManager.removeView(mScreenshotLayout);
                         final Rect rect = view.getSelectionRect();
                         if (rect != null) {
@@ -824,6 +831,8 @@ class GlobalScreenshot {
             } catch (IllegalArgumentException ignored) {
             }
         }
+        // called from action_cancel and also when unbinding screenshot service
+        CandyUtils.setPartialScreenshot(false);
     }
 
     /**

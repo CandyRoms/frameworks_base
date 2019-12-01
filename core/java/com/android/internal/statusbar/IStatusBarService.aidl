@@ -115,4 +115,9 @@ interface IStatusBarService
     // Used to show or hide in display fingerprint view
     void showInDisplayFingerprintView();
     void hideInDisplayFingerprintView();
+
+    /**
+     * Candy
+     */
+    void setPartialScreenshot(boolean active);
 }
