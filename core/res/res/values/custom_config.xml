@@ -56,7 +56,7 @@
     <integer name="config_maxVisibleNotificationIconsWhenDark">5</integer>
 
     <string-array translatable="false" name="config_customPermissionsList">
-        <!-- <item>more packages</item>-->
+        <item>com.android.wallpaper.livepicker</item>
     </string-array>
 
     <string-array translatable="false" name="custom_config_globalActionsList">
