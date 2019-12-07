@@ -155,7 +155,7 @@ public final class FileUtils {
      *
      * @return true if readable, false if not
      */
-    public static boolean fileReadable(String fileName) {
+    public static boolean isFileReadable(String fileName) {
         final File file = new File(fileName);
         return file.exists() && file.canRead();
     }
@@ -165,7 +165,7 @@ public final class FileUtils {
      *
      * @return true if writable, false if not
      */
-    public static boolean fileWritable(String fileName) {
+    public static boolean isFileWritable(String fileName) {
         final File file = new File(fileName);
         return file.exists() && file.canWrite();
     }
