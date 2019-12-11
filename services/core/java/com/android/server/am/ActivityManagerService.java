@@ -19021,12 +19021,6 @@ public class ActivityManagerService extends IActivityManager.Stub
         }
     }
 
-    @Override
-    public boolean shouldForceCutoutFullscreen(String packageName) {
-        synchronized (this) {
-            return mCutoutFullscreenController.shouldForceCutoutFullscreen(packageName);
-        }
-    }
     private class SwipeToScreenshotObserver extends ContentObserver {
 
         private final Context mContext;
