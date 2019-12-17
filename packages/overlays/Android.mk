@@ -31,6 +31,7 @@ LOCAL_REQUIRED_MODULES := \
 	AccentColorAquamarineOverlay \
 	AccentColorTangerineOverlay \
         AccentColorTealOverlay \
+	AccentColorMIUIOverlay \
 	AccentColorRedOverlay \
 	AccentColorQGreenOverlay \
 	AccentColorPinkOverlay \
