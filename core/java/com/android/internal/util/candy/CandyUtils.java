@@ -322,6 +322,7 @@ public class CandyUtils {
         return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 
+    // Method to toggle flashlight
     public static void toggleCameraFlash() {
         FireActions.toggleCameraFlash();
     }
@@ -360,6 +361,16 @@ public class CandyUtils {
             } catch (RemoteException e) {
                 // do nothing.
             }
+        }
+    }
+
+	
+    // Method to check if task is in lock task mode
+    public static boolean isInLockTaskMode() {
+        try {
+            return ActivityManagerNative.getDefault().isInLockTaskMode();
+        } catch (RemoteException e) {
+            return false;
         }
     }
 }

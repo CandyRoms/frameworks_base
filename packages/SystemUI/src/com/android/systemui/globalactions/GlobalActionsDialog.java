@@ -86,6 +86,7 @@ import com.android.internal.telephony.TelephonyProperties;
 import com.android.internal.util.EmergencyAffordanceManager;
 import com.android.internal.util.ScreenRecordHelper;
 import com.android.internal.util.ScreenshotHelper;
+import com.android.internal.util.candy.CandyUtils;
 import com.android.internal.view.RotationPolicy;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardUpdateMonitor;
@@ -474,7 +475,7 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
             } else if (GLOBAL_ACTION_KEY_LOCKDOWN.equals(actionKey)) {
                 if (Settings.Secure.getIntForUser(mContext.getContentResolver(),
                             Settings.Secure.LOCKDOWN_IN_POWER_MENU, 0, getCurrentUser().id) != 0
-                        && shouldDisplayLockdown()) {
+                        && shouldDisplayLockdown() && !CandyUtils.isInLockTaskMode()) {
                     mItems.add(getLockdownAction());
                     mHasLockdownButton = true;
                 }
@@ -1562,7 +1563,7 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
                 won't show the LegacyGlobalActions after systemui restart
                 */
                 funcs.onGlobalActionsHidden();
-                restartSystemUI(ctx);
+                Process.killProcess(Process.myPid());
                 break;
             default:
                 break;
@@ -2134,9 +2135,4 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
     private static boolean shouldUseSeparatedView() {
         return true;
     }
-
-    public static void restartSystemUI(Context ctx) {
-        Process.killProcess(Process.myPid());
-    }
-
 }
