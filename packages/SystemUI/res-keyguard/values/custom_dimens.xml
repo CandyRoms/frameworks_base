@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-     Copyright (C) 2015-2020 AOSiP
+     Copyright (C) 2021 CandyRoms
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- The minimum bottom margin of the keyguard security container -->
     <dimen name="kg_security_container_min_bottom_margin">0dp</dimen>
+    <!-- Padding added to keyguard status area when Type clock is in use -->
+    <dimen name="keyguard_status_area_typeclock_padding">32dp</dimen>
 </resources>
