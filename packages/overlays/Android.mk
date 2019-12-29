@@ -75,6 +75,7 @@ LOCAL_REQUIRED_MODULES := \
 	IconPackRoundedSystemUIOverlay \
 	IconShapeCylinderOverlay \
 	IconPackRoundedThemePickerOverlay \
+	IconShapeHexagonOverlay \
 	IconShapeRoundedRectOverlay \
 	IconShapeSquircleOverlay \
 	IconShapeTeardropOverlay \
