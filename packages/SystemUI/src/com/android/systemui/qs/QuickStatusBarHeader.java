@@ -154,6 +154,15 @@ public class QuickStatusBarHeader extends RelativeLayout implements
 
     protected ContentResolver mContentResolver;
 
+    private static final String SHOW_QS_CLOCK =
+            "system:" + Settings.System.SHOW_QS_CLOCK;
+    private static final String QS_SHOW_BATTERY_PERCENT =
+            "system:" + Settings.System.QS_SHOW_BATTERY_PERCENT;
+    private static final String QS_SHOW_BATTERY_ESTIMATE =
+            "system:" + Settings.System.QS_SHOW_BATTERY_ESTIMATE;
+    public static final String STATUS_BAR_BATTERY_STYLE =
+            "system:" + Settings.System.STATUS_BAR_BATTERY_STYLE;
+
     private class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -277,7 +286,6 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mBatteryRemainingIcon = findViewById(R.id.batteryRemainingIcon);
         // Don't need to worry about tuner settings for this icon
         mBatteryRemainingIcon.setIgnoreTunerUpdates(true);
-        mBatteryRemainingIcon.setPercentShowMode(BatteryMeterView.MODE_ON);
         mRingerModeTextView.setSelected(true);
         mNextAlarmTextView.setSelected(true);
 
@@ -286,6 +294,11 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         DeviceConfig.addOnPropertyChangedListener(DeviceConfig.NAMESPACE_PRIVACY,
                 mContext.getMainExecutor(), mPropertyListener);
 
+        Dependency.get(TunerService.class).addTunable(this,
+                SHOW_QS_CLOCK,
+                QS_SHOW_BATTERY_PERCENT,
+                QS_SHOW_BATTERY_ESTIMATE,
+                STATUS_BAR_BATTERY_STYLE);
     }
 
     private List<String> getIgnoredIconSlots() {
@@ -716,6 +729,38 @@ public class QuickStatusBarHeader extends RelativeLayout implements
             RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) v.getLayoutParams();
             lp.leftMargin = sideMargins;
             lp.rightMargin = sideMargins;
+        }
+    }
+
+    @Override
+    public void onTuningChanged(String key, String newValue) {
+        switch (key) {
+            case SHOW_QS_CLOCK:
+                boolean showClock =
+                        TunerService.parseIntegerSwitch(newValue, true);
+                mClockView.setClockVisibleByUser(showClock);
+                break;
+            case QS_SHOW_BATTERY_PERCENT:
+                mBatteryRemainingIcon.mShowBatteryPercent =
+                        TunerService.parseInteger(newValue, 2);
+                mBatteryRemainingIcon.updatePercentView();
+                mBatteryRemainingIcon.updateVisibility();
+                break;
+            case QS_SHOW_BATTERY_ESTIMATE:
+                mBatteryRemainingIcon.mShowBatteryEstimate =
+                        TunerService.parseInteger(newValue, 0);
+                mBatteryRemainingIcon.updatePercentView();
+                mBatteryRemainingIcon.updateVisibility();
+                break;
+            case STATUS_BAR_BATTERY_STYLE:
+                mBatteryRemainingIcon.mBatteryStyle =
+                        TunerService.parseInteger(newValue, 0);
+                mBatteryRemainingIcon.updateBatteryStyle();
+                mBatteryRemainingIcon.updatePercentView();
+                mBatteryRemainingIcon.updateVisibility();
+                break;
+            default:
+                break;
         }
     }
 }
