@@ -744,6 +744,7 @@ public class DisplayModeDirector {
         @Override
         public void onDisplayChanged(int displayId) {
             updateDisplayModes(displayId);
+            mBrightnessObserver.onDisplayChanged(displayId);
         }
 
         private void updateDisplayModes(int displayId) {
@@ -798,7 +799,6 @@ public class DisplayModeDirector {
         private AmbientFilter mAmbientFilter;
 
         private final Context mContext;
-        private final ScreenStateReceiver mScreenStateReceiver;
 
         // Enable light sensor only when mShouldObserveAmbientChange is true, screen is on, peak
         // refresh rate changeable and low power mode off. After initialization, these states will
@@ -810,7 +810,6 @@ public class DisplayModeDirector {
         BrightnessObserver(Context context, Handler handler) {
             super(handler);
             mContext = context;
-            mScreenStateReceiver = new ScreenStateReceiver(mContext);
             mDisplayBrightnessThresholds = context.getResources().getIntArray(
                     R.array.config_brightnessThresholdsOfPeakRefreshRate);
             mAmbientBrightnessThresholds = context.getResources().getIntArray(
@@ -890,12 +889,16 @@ public class DisplayModeDirector {
             }
         }
 
+        public void onDisplayChanged(int displayId) {
+            if (displayId == Display.DEFAULT_DISPLAY) {
+                onScreenOn(isDefaultDisplayOn());
+            }
+        }
+
         @Override
         public void onChange(boolean selfChange, Uri uri, int userId) {
             synchronized (mLock) {
-                if (mRefreshRateChangeable) {
-                    onBrightnessChangedLocked();
-                }
+                onBrightnessChangedLocked();
             }
         }
 
@@ -941,16 +944,11 @@ public class DisplayModeDirector {
                     mAmbientFilter = DisplayWhiteBalanceFactory.createBrightnessFilter(res);
                     mLightSensor = lightSensor;
 
-                    // Intent.ACTION_SCREEN_ON is not sticky. Check current screen status.
-                    if (mContext.getSystemService(PowerManager.class).isInteractive()) {
-                        onScreenOn(true);
-                    }
-                    mScreenStateReceiver.register();
+                    onScreenOn(isDefaultDisplayOn());
                 }
             } else {
                 mAmbientFilter = null;
                 mLightSensor = null;
-                mScreenStateReceiver.unregister();
             }
 
             if (mRefreshRateChangeable) {
@@ -1016,8 +1014,6 @@ public class DisplayModeDirector {
         }
 
         private void onScreenOn(boolean on) {
-            // Not check mShouldObserveAmbientChange because Screen status receiver is registered
-            // only when it is true.
             if (mScreenOn != on) {
                 mScreenOn = on;
                 updateSensorStatus();
@@ -1037,6 +1033,13 @@ public class DisplayModeDirector {
                 mLightSensorListener.removeCallbacks();
                 mSensorManager.unregisterListener(mLightSensorListener);
             }
+        }
+
+        private boolean isDefaultDisplayOn() {
+            final Display display = mContext.getSystemService(DisplayManager.class)
+                    .getDisplay(Display.DEFAULT_DISPLAY);
+            return display.getState() != Display.STATE_OFF
+                    && mContext.getSystemService(PowerManager.class).isInteractive();
         }
 
         private final class LightSensorEventListener implements SensorEventListener {
@@ -1116,38 +1119,6 @@ public class DisplayModeDirector {
                     }
                 }
             };
-        };
-
-        private final class ScreenStateReceiver extends BroadcastReceiver {
-            final Context mContext;
-            boolean mRegistered;
-
-            public ScreenStateReceiver(Context context) {
-                mContext = context;
-            }
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                onScreenOn(Intent.ACTION_SCREEN_ON.equals(intent.getAction()));
-            }
-
-            public void register() {
-                if (!mRegistered) {
-                    IntentFilter filter = new IntentFilter();
-                    filter.addAction(Intent.ACTION_SCREEN_OFF);
-                    filter.addAction(Intent.ACTION_SCREEN_ON);
-                    filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
-                    mContext.registerReceiver(this, filter, null, mHandler);
-                    mRegistered = true;
-                }
-            }
-
-            public void unregister() {
-                if (mRegistered) {
-                    mContext.unregisterReceiver(this);
-                    mRegistered = false;
-                }
-            }
         }
     }
 
