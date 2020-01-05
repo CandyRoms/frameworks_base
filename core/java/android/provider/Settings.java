@@ -9465,6 +9465,14 @@ public final class Settings {
                 BOOLEAN_VALIDATOR;
 
         /**
+         * Whether to hide lock icon on lockscreen
+         * {@hide}
+         */
+        public static final String HIDE_LOCKICON = "hide_lockicon";
+
+        private static final Validator HIDE_LOCKICON_VALIDATOR = BOOLEAN_VALIDATOR;
+
+        /**
          * This are the settings to be backed up.
          *
          * NOTE: Settings are backed up and restored in the order they appear
@@ -9607,7 +9615,8 @@ public final class Settings {
             DARK_MODE_DIALOG_SEEN,
             GLOBAL_ACTIONS_PANEL_ENABLED,
             AWARE_LOCK_ENABLED,
-            VOLUME_LINK_NOTIFICATION
+            VOLUME_LINK_NOTIFICATION,
+            HIDE_LOCKICON,
         };
 
         /**
@@ -9804,6 +9813,7 @@ public final class Settings {
             VALIDATORS.put(GLOBAL_ACTIONS_PANEL_ENABLED, GLOBAL_ACTIONS_PANEL_ENABLED_VALIDATOR);
             VALIDATORS.put(AWARE_LOCK_ENABLED, AWARE_LOCK_ENABLED_VALIDATOR);
             VALIDATORS.put(VOLUME_LINK_NOTIFICATION, VOLUME_LINK_NOTIFICATION_VALIDATOR);
+            VALIDATORS.put(HIDE_LOCKICON, HIDE_LOCKICON_VALIDATOR);
         }
 
         /**
