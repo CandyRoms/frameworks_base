@@ -82,4 +82,7 @@
   <!-- Whether doze feature is enabled by default in settings -->
   <java-symbol type="bool" name="config_doze_enabled_by_default" />
 
+  <!-- Custom default wallpaper -->
+  <java-symbol type="drawable" name="custom_default_wallpaper" />
+
 </resources>
