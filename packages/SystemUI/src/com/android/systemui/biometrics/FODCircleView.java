@@ -16,18 +16,25 @@
 
 package com.android.systemui.biometrics;
 
+import android.app.WallpaperColors;
+import android.app.WallpaperManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.ContentObserver;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.hardware.biometrics.BiometricSourceType;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.os.UserHandle;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.RemoteException;
@@ -39,6 +46,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import androidx.palette.graphics.Palette;
 
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
@@ -69,9 +77,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
     private int mDreamingOffsetY;
 
-    private int mColor;
-    private int mColorBackground;
-
     private boolean mIsBouncer;
     private boolean mIsDreaming;
 
@@ -88,6 +93,8 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private PowerManager.WakeLock mWakeLock;
 
     private Timer mBurnInProtectionTimer;
+    private WallpaperManager mWallManager;
+    private int iconcolor = 0xFF3980FF;
 
     private IFingerprintInscreenCallback mFingerprintInscreenCallback =
             new IFingerprintInscreenCallback.Stub() {
@@ -160,8 +167,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     public FODCircleView(Context context) {
         super(context);
 
-        setScaleType(ScaleType.CENTER);
-
         IFingerprintInscreen daemon = getFingerprintInScreenDaemon();
         if (daemon == null) {
             throw new RuntimeException("Unable to get IFingerprintInscreen");
@@ -178,11 +183,8 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         Resources res = context.getResources();
 
-        mColor = res.getColor(R.color.config_fodColor);
-        mColorBackground = res.getColor(R.color.config_fodColorBackground);
-
         mPaintFingerprint.setAntiAlias(true);
-        mPaintFingerprint.setColor(mColorBackground);
+        mPaintFingerprint.setColor(res.getColor(R.color.config_fodColor));
 
         mWindowManager = context.getSystemService(WindowManager.class);
 
@@ -212,56 +214,16 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         mUpdateMonitor = KeyguardUpdateMonitor.getInstance(context);
         mUpdateMonitor.registerCallback(mMonitorCallback);
 
-        getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            float drawingDimAmount = mParams.dimAmount;
-            if (mCurrentDimAmount == 0.0f && drawingDimAmount > 0.0f) {
-                dispatchPress();
-                mCurrentDimAmount = drawingDimAmount;
-            } else if (mCurrentDimAmount > 0.0f && drawingDimAmount == 0.0f) {
-                mCurrentDimAmount = drawingDimAmount;
-            }
-        });
-
-        updateCutoutFlags();
-
-        Dependency.get(ConfigurationController.class).addCallback(this);
         mPowerManager = context.getSystemService(PowerManager.class);
-        mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                FODCircleView.class.getSimpleName());
+        mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "FODCircleView");
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawCircle(mSize / 2, mSize / 2, mSize / 2.0f, mPaintFingerprint);
         super.onDraw(canvas);
 
         if (mIsCircleShowing) {
-            if (getFODPressedState() == 0) {
-                //canvas.drawCircle(mSize / 2, mSize / 2, mSize / 2.0f, mPaintFingerprint);
-                setImageResource(R.drawable.fod_icon_pressed);
-            } else if (getFODPressedState() == 1) {
-                //canvas.drawCircle(mSize / 2, mSize / 2, mSize / 2.0f, mPaintFingerprint);
-                setImageResource(R.drawable.fod_icon_pressed_white);
-            } else if (getFODPressedState() == 2) {
-                canvas.drawCircle(mSize / 2, mSize / 2, mSize / 2.0f, mPaintFingerprint);
-            }
-        }
-    }
-
-    private int getFODPressedState() {
-        return Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.FOD_PRESSED_STATE, 0);
-    }
-
-    private void setFODPressedState() {
-        int fodpressed = getFODPressedState();
-
-        if (fodpressed == 0) {
-            setImageResource(R.drawable.fod_icon_pressed);
-        } else if (fodpressed == 1) {
-            setImageResource(R.drawable.fod_icon_pressed_white);
-        } else if (fodpressed == 2) {
-            setImageDrawable(null);
+            canvas.drawCircle(mSize / 2, mSize / 2, mSize / 2.0f, mPaintFingerprint);
         }
     }
 
@@ -355,9 +317,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     }
 
     public void showCircle() {
-        if (mIsAuthenticated) {
-            return;
-        }
 
         mIsCircleShowing = true;
 
@@ -369,22 +328,118 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         setDim(true);
         updateAlpha();
+        dispatchPress();
 
-        setFODPressedState();
+        setImageDrawable(null);
         invalidate();
     }
 
     public void hideCircle() {
         mIsCircleShowing = false;
 
-        mPaintFingerprint.setColor(mColorBackground);
-        setImageResource(R.drawable.fod_icon_default);
+        setFODIcon();
         invalidate();
+
+        dispatchRelease();
 
         setDim(false);
         updateAlpha();
 
         setKeepScreenOn(false);
+    }
+
+    private boolean useWallpaperColor() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.FOD_ICON_WALLPAPER_COLOR, 0) != 0;
+    }
+
+    private int getFODIcon() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.FOD_ICON, 0);
+    }
+
+    private void setFODIcon() {
+        int fodicon = getFODIcon();
+
+        if (fodicon == 0) {
+            this.setImageResource(R.drawable.fod_icon_default);
+        } else if (fodicon == 1) {
+            this.setImageResource(R.drawable.fod_icon_default_1);
+        } else if (fodicon == 2) {
+            this.setImageResource(R.drawable.fod_icon_default_2);
+        } else if (fodicon == 3) {
+            this.setImageResource(R.drawable.fod_icon_default_3);
+        } else if (fodicon == 4) {
+            this.setImageResource(R.drawable.fod_icon_default_4);
+        } else if (fodicon == 5) {
+            this.setImageResource(R.drawable.fod_icon_default_5);
+        } else if (fodicon == 6) {
+            this.setImageResource(R.drawable.fod_icon_arc_reactor);
+        } else if (fodicon == 7) {
+            this.setImageResource(R.drawable.fod_icon_cpt_america_flat);
+        } else if (fodicon == 8) {
+            this.setImageResource(R.drawable.fod_icon_cpt_america_flat_gray);
+        } else if (fodicon == 9) {
+            this.setImageResource(R.drawable.fod_icon_dragon_black_flat);
+        } else if (fodicon == 10) {
+            this.setImageResource(R.drawable.fod_icon_future);
+        } else if (fodicon == 11) {
+            this.setImageResource(R.drawable.fod_icon_glow_circle);
+        } else if (fodicon == 12) {
+            this.setImageResource(R.drawable.fod_icon_neon_arc);
+        } else if (fodicon == 13) {
+            this.setImageResource(R.drawable.fod_icon_neon_arc_gray);
+        } else if (fodicon == 14) {
+            this.setImageResource(R.drawable.fod_icon_neon_circle_pink);
+        } else if (fodicon == 15) {
+            this.setImageResource(R.drawable.fod_icon_neon_triangle);
+        } else if (fodicon == 16) {
+            this.setImageResource(R.drawable.fod_icon_paint_splash_circle);
+        } else if (fodicon == 17) {
+            this.setImageResource(R.drawable.fod_icon_rainbow_horn);
+        } else if (fodicon == 18) {
+            this.setImageResource(R.drawable.fod_icon_shooky);
+        } else if (fodicon == 19) {
+            this.setImageResource(R.drawable.fod_icon_spiral_blue);
+        } else if (fodicon == 20) {
+            this.setImageResource(R.drawable.fod_icon_sun_metro);
+        }
+
+        if (useWallpaperColor()) {
+            try {
+                WallpaperManager wallpaperManager = WallpaperManager.getInstance(mContext);
+                Drawable wallpaperDrawable = wallpaperManager.getDrawable();
+                Bitmap bitmap = ((BitmapDrawable)wallpaperDrawable).getBitmap();
+                if (bitmap != null) {
+                    Palette p = Palette.from(bitmap).generate();
+                    int wallColor = p.getDominantColor(iconcolor);
+                    if (iconcolor != wallColor) {
+                        iconcolor = wallColor;
+                    }
+                    this.setColorFilter(lighter(iconcolor, 3));
+                }
+            } catch (Exception e) {
+                // Nothing to do
+            }
+        } else {
+            this.setColorFilter(null);
+        }
+    }
+
+    private static int lighter(int color, int factor) {
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+
+        blue = blue * factor;
+        green = green * factor;
+        blue = blue * factor;
+
+        blue = blue > 255 ? 255 : blue;
+        green = green > 255 ? 255 : green;
+        red = red > 255 ? 255 : red;
+
+        return Color.argb(Color.alpha(color), red, green, blue);
     }
 
     public void show() {
