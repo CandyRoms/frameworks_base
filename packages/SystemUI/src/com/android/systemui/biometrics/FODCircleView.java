@@ -71,11 +71,16 @@ public class FODCircleView extends ImageView implements OnTouchListener {
 
     private boolean mIsBouncer;
     private boolean mIsDreaming;
+
     private boolean mIsInsideCircle;
     private boolean mIsPressed;
     private boolean mIsPulsing;
     private boolean mIsScreenOn;
     private boolean mIsViewAdded;
+
+    private boolean mIsKeyguard;
+    private boolean mIsShowing;
+    private boolean mIsCircleShowing;
 
     private Handler mHandler;
 
@@ -429,6 +434,11 @@ public class FODCircleView extends ImageView implements OnTouchListener {
                 break;
             default:
                 throw new IllegalArgumentException("Unknown rotation: " + rotation);
+        }
+
+        if (mIsKeyguard) {
+            mParams.x = mPositionX;
+            mParams.y = mPositionY;
         }
 
         if (mIsDreaming) {
