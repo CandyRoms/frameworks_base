@@ -5153,6 +5153,19 @@ public final class Settings {
         public static final String SHOW_QS_CLOCK = "show_qs_clock";
 
         /**
+         * Wheter to trigger partial screenshot action on normal or long click for globalactions Screenshot button
+         * @hide
+         */
+        public static final String PARTIAL_SCREENSHOT_AS_DEFAULT = "partial_screenshot_as_default";
+
+        /**
+         * IMPORTANT: If you add a new public settings you also have to add it to
+         * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
+         * it to PRIVATE_SETTINGS below. Also add a validator that can validate
+         * the setting value. See an example above.
+         */
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
