@@ -60,7 +60,7 @@ public class ProximitySensor {
     @Inject
     public ProximitySensor(Context context, AsyncSensorManager sensorManager) {
         mSensorManager = sensorManager;
-        Sensor sensor = findBrightnessSensor(context, sensorManager);
+        Sensor sensor = findCustomProxSensor(context, sensorManager);
 
         if (sensor == null) {
             mUsingBrightnessSensor = false;
