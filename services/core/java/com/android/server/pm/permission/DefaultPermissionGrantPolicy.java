@@ -944,6 +944,10 @@ public final class DefaultPermissionGrantPolicy {
 
         // Support Pulse on dirty flashes
         grantSystemFixedPermissionsToSystemPackage(pm, "com.android.systemui", userId, PULSE_EQ_PERMISSIONS);
+
+        // Candy Updater
+        grantSystemFixedPermissionsToSystemPackage(pm,"org.candy.updater", userId, STORAGE_PERMISSIONS);
+
     }
 
     private String getDefaultSystemHandlerActivityPackageForCategory(PackageManagerWrapper pm,
