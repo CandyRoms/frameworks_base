@@ -31,8 +31,7 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
 
     private final float mIconAlphaWhenOpaque;
 
-    private View mLeftSide, mStatusIcons, mBattery, mCenterClock;
-
+    private View mLeftSide, mStatusIcons, mBattery;
     private Animator mCurrentAnimation;
 
     /**
@@ -42,13 +41,9 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
         super(backgroundView, R.drawable.status_background);
         final Resources res = statusBarView.getContext().getResources();
         mIconAlphaWhenOpaque = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
-    }
-
-    public void init() {
-        mLeftSide = mView.findViewById(R.id.status_bar_left_side);
-        mStatusIcons = mView.findViewById(R.id.statusIcons);
-        mBattery = mView.findViewById(R.id.battery);
-        mCenterClock = mView.findViewById(R.id.center_clock);
+        mLeftSide = statusBarView.findViewById(R.id.status_bar_left_side);
+        mStatusIcons = statusBarView.findViewById(R.id.statusIcons);
+        mBattery = statusBarView.findViewById(R.id.battery);
         applyModeBackground(-1, getMode(), false /*animate*/);
         applyMode(getMode(), false /*animate*/);
     }
