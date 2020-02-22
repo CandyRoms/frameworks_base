@@ -6059,12 +6059,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-    // Flashlight
-    private void toggleFlashLight() {
-        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, true, "Flashlight toggle");
-        CandyUtils.toggleCameraFlash();
-    }
-
     // Clear notifications
     private void toggleClearNotifications() {
         performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, true, "Clear-all notifications");
@@ -6087,11 +6081,5 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private void toggleScreenshot() {
         performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, true, "Screenshot");
         CandyUtils.takeScreenshot(true);
-    }
-
-    // Notifications
-    private void toggleNotifications() {
-        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, true, "Notifications");
-        aosipUtils.toggleNotifications();
     }
 }
