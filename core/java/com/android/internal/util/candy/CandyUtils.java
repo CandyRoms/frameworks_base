@@ -364,13 +364,24 @@ public class CandyUtils {
         }
     }
 
-	
     // Method to check if task is in lock task mode
     public static boolean isInLockTaskMode() {
         try {
             return ActivityManagerNative.getDefault().isInLockTaskMode();
         } catch (RemoteException e) {
             return false;
+        }
+    }
+
+    // Toggle notifications panel
+    public static void toggleNotifications() {
+        IStatusBarService service = getStatusBarService();
+        if (service != null) {
+            try {
+                service.togglePanel();
+            } catch (RemoteException e) {
+                // do nothing.
+            }
         }
     }
 }
