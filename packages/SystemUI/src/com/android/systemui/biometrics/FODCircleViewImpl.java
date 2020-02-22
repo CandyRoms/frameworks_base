@@ -19,7 +19,6 @@ package com.android.systemui.biometrics;
 import android.content.pm.PackageManager;
 import android.hardware.display.ColorDisplayManager;
 import android.os.Handler;
-import android.os.SystemProperties;
 import android.util.Slog;
 import android.view.View;
 
@@ -70,9 +69,6 @@ public class FODCircleViewImpl extends SystemUI implements CommandQueue.Callback
     }
 
     private void setNightMode(boolean state) {
-        if (!SystemProperties.getBoolean("persist.fod.night_mode_enabled", true)) {
-            return;
-        }
         ColorDisplayManager colorDisplayManager = mContext.getSystemService(ColorDisplayManager.class);
         if (state) {
             mNightMode = colorDisplayManager.isNightDisplayActivated();
