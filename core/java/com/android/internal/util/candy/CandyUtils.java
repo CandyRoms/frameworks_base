@@ -16,6 +16,10 @@
 
 package com.android.internal.util.candy;
 
+import android.Manifest;
+import android.app.ActivityManager;
+import android.app.ActivityManagerNative;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -343,6 +347,18 @@ public class CandyUtils {
                 } catch (RemoteException e) {
                     // do nothing.
                 }
+            }
+        }
+    }
+
+    // Clear notifications
+    public static void clearAllNotifications() {
+        IStatusBarService service = getStatusBarService();
+        if (service != null) {
+            try {
+                service.onClearAllNotifications(ActivityManager.getCurrentUser());
+            } catch (RemoteException e) {
+                // do nothing.
             }
         }
     }
