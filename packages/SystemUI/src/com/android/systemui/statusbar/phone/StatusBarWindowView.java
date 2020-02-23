@@ -111,7 +111,7 @@ public class StatusBarWindowView extends FrameLayout {
     private boolean mExpandAnimationPending;
     private boolean mSuppressingWakeUpGesture;
 
-    // candy additions start
+    // omni additions start
     private boolean mDoubleTapEnabledNative;
 
     private final GestureDetector.SimpleOnGestureListener mGestureListener =
