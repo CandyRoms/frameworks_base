@@ -7445,5 +7445,8 @@ message MetricsEvent {
     // Custom Quick Settings tiles
     CUSTOM_QUICK_TILES = 5002;
 
+    // Panel for Mobile Data
+    PANEL_MOBILE_DATA = 2002;
+
   }
 }
