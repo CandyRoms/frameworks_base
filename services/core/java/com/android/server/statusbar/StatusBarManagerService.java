@@ -675,6 +675,7 @@ public class StatusBarManagerService extends IStatusBarService.Stub implements D
         }
     }
 
+
     @Override
     public void hideInDisplayFingerprintView() {
         if (mBar != null) {
@@ -682,6 +683,16 @@ public class StatusBarManagerService extends IStatusBarService.Stub implements D
                 mBar.hideInDisplayFingerprintView();
             } catch (RemoteException ex) {
                 // do nothing
+            }
+        }
+    }
+
+    @Override
+    public void killForegroundApp() {
+        if (mBar != null) {
+            try {
+                mBar.killForegroundApp();
+            } catch (RemoteException ex) {
             }
         }
     }
