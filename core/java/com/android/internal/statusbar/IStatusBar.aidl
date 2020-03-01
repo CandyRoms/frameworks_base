@@ -235,4 +235,6 @@ oneway interface IStatusBar
      * Candy custom stuffs
      */
     void toggleCameraFlash();
+
+    void killForegroundApp();
 }

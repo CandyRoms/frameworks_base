@@ -243,4 +243,10 @@ public class DependencyProvider {
     static UiEventLogger provideUiEventLogger() {
         return new UiEventLoggerImpl();
     }
+
+    @Singleton
+    @Provides
+    public TaskHelper provideTaskHelper(Context context) {
+        return new TaskHelper(context);
+    }
 }

@@ -156,4 +156,6 @@ interface IStatusBarService
      * Candy custom stuffs
      */
     void toggleCameraFlash();
+
+    void killForegroundApp();
 }
