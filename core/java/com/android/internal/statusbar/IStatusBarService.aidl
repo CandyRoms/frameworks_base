@@ -237,4 +237,6 @@ interface IStatusBarService
     void startAssist(in Bundle args);
 
     void toggleCameraFlash();
+
+    void killForegroundApp();
 }

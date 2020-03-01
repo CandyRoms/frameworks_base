@@ -369,4 +369,6 @@ oneway interface IStatusBar
     void showMediaOutputSwitcher(String packageName);
 
     void toggleCameraFlash();
+
+    void killForegroundApp();
 }
