@@ -46,6 +46,9 @@ class UserSwitchingDialog extends AlertDialog
     // Time to wait for the onWindowShown() callback before continuing the user switch
     private static final int WINDOW_SHOWN_TIMEOUT_MS = 3000;
 
+    // User switching doesn't happen that frequently, so it doesn't hurt to have it always on
+    protected static final boolean DEBUG = false;
+
     private final ActivityManagerService mService;
     private final int mUserId;
     private static final int MSG_START_USER = 1;

@@ -18,6 +18,7 @@ package com.android.systemui.statusbar.car;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.car.Car;
 import android.car.trust.CarTrustAgentEnrollmentManager;
 import android.car.userlib.CarUserManagerHelper;
 import android.content.BroadcastReceiver;
@@ -33,7 +34,10 @@ import android.view.ViewStub;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.android.internal.widget.LockPatternUtils;
+import com.android.systemui.CarSystemUIFactory;
 import com.android.systemui.R;
+import com.android.systemui.SystemUIFactory;
 import com.android.systemui.statusbar.car.CarTrustAgentUnlockDialogHelper.OnHideListener;
 import com.android.systemui.statusbar.car.UserGridRecyclerView.UserRecord;
 
@@ -50,7 +54,7 @@ public class FullscreenUserSwitcher {
     private final CarStatusBar mStatusBar;
     private final Context mContext;
     private final UserManager mUserManager;
-    private final CarTrustAgentEnrollmentManager mEnrollmentManager;
+    private CarTrustAgentEnrollmentManager mEnrollmentManager;
     private CarTrustAgentUnlockDialogHelper mUnlockDialogHelper;
     private UserGridRecyclerView.UserRecord mSelectedUser;
     private CarUserManagerHelper mCarUserManagerHelper;
@@ -65,12 +69,9 @@ public class FullscreenUserSwitcher {
         }
     };
 
-
-    public FullscreenUserSwitcher(CarStatusBar statusBar, ViewStub containerStub,
-            CarTrustAgentEnrollmentManager enrollmentManager, Context context) {
+    public FullscreenUserSwitcher(CarStatusBar statusBar, ViewStub containerStub, Context context) {
         mStatusBar = statusBar;
         mParent = containerStub.inflate();
-        mEnrollmentManager = enrollmentManager;
         mContext = context;
 
         View container = mParent.findViewById(R.id.container);
@@ -85,6 +86,15 @@ public class FullscreenUserSwitcher {
         mCarUserManagerHelper = new CarUserManagerHelper(context);
         mUnlockDialogHelper = new CarTrustAgentUnlockDialogHelper(mContext);
         mUserManager = mContext.getSystemService(UserManager.class);
+
+        ((CarSystemUIFactory) SystemUIFactory.getInstance()).getCarServiceProvider(mContext)
+                .addListener((car, ready) -> {
+                    if (!ready) {
+                        return;
+                    }
+                    mEnrollmentManager = (CarTrustAgentEnrollmentManager) car
+                            .getCarManager(Car.CAR_TRUST_AGENT_ENROLLMENT_SERVICE);
+                });
 
         mShortAnimDuration = container.getResources()
                 .getInteger(android.R.integer.config_shortAnimTime);
@@ -109,13 +119,10 @@ public class FullscreenUserSwitcher {
                 /* isStartGuestSession= */ false,
                 /* isAddUser= */ false,
                 /* isForeground= */ true);
-        // For single user without trusted device, hide the user switcher.
-        if (!hasMultipleUsers() && !hasTrustedDevice(initialUser)) {
-            dismissUserSwitcher();
-            return;
-        }
-        // Show unlock dialog for initial user
-        if (hasTrustedDevice(initialUser)) {
+
+        // If the initial user has screen lock and trusted device, display the unlock dialog on the
+        // keyguard.
+        if (hasScreenLock(initialUser) && hasTrustedDevice(initialUser)) {
             mUnlockDialogHelper.showUnlockDialogAfterDelay(initialUser,
                     mOnHideListener);
         }
@@ -162,7 +169,7 @@ public class FullscreenUserSwitcher {
      */
     private void onUserSelected(UserGridRecyclerView.UserRecord record) {
         mSelectedUser = record;
-        if (hasTrustedDevice(record.mInfo.id)) {
+        if (hasScreenLock(record.mInfo.id) && hasTrustedDevice(record.mInfo.id)) {
             mUnlockDialogHelper.showUnlockDialog(record.mInfo.id, mOnHideListener);
             return;
         }
@@ -200,7 +207,15 @@ public class FullscreenUserSwitcher {
 
     }
 
+    private boolean hasScreenLock(int uid) {
+        LockPatternUtils lockPatternUtils = new LockPatternUtils(mContext);
+        return lockPatternUtils.isSecure(uid);
+    }
+
     private boolean hasTrustedDevice(int uid) {
+        if (mEnrollmentManager == null) { // car service not ready, so it cannot be available.
+            return false;
+        }
         return !mEnrollmentManager.getEnrolledDeviceInfoForUser(uid).isEmpty();
     }
 

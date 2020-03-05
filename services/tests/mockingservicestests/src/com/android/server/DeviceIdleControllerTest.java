@@ -54,6 +54,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import android.app.ActivityManagerInternal;
@@ -63,7 +64,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.hardware.TriggerEvent;
+import android.hardware.TriggerEventListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.net.ConnectivityManager;
@@ -122,6 +127,8 @@ public class DeviceIdleControllerTest {
     @Mock
     private PowerManagerInternal mPowerManagerInternal;
     @Mock
+    private Sensor mMotionSensor;
+    @Mock
     private SensorManager mSensorManager;
 
     class InjectorForTest extends DeviceIdleController.Injector {
@@ -162,6 +169,11 @@ public class DeviceIdleControllerTest {
         @Override
         DeviceIdleController.MyHandler getHandler(DeviceIdleController controller) {
             return mHandler;
+        }
+
+        @Override
+        Sensor getMotionSensor() {
+            return mMotionSensor;
         }
 
         @Override
@@ -1605,6 +1617,202 @@ public class DeviceIdleControllerTest {
         float curfactor = mDeviceIdleController.getPreIdleTimeoutFactor();
         assertEquals("Pre idle time factor of mode default.",
                 1.0f, curfactor, delta);
+    }
+
+    @Test
+    public void testStationaryDetection_QuickDozeOff() {
+        setQuickDozeEnabled(false);
+        enterDeepState(STATE_IDLE);
+        // Regular progression through states, so time should have increased appropriately.
+        mInjector.nowElapsed += mConstants.IDLE_AFTER_INACTIVE_TIMEOUT + mConstants.SENSING_TIMEOUT
+                + mConstants.LOCATING_TIMEOUT;
+
+        StationaryListenerForTest stationaryListener = new StationaryListenerForTest();
+
+        mDeviceIdleController.registerStationaryListener(stationaryListener);
+
+        // Go to IDLE_MAINTENANCE
+        mDeviceIdleController.stepIdleStateLocked("testing");
+
+        // Back to IDLE
+        mDeviceIdleController.stepIdleStateLocked("testing");
+        assertTrue(stationaryListener.isStationary);
+
+        // Test motion
+        stationaryListener.motionExpected = true;
+        mDeviceIdleController.mMotionListener.onTrigger(null);
+        assertFalse(stationaryListener.isStationary);
+    }
+
+    @Test
+    public void testStationaryDetection_QuickDozeOn_NoMotion() {
+        // Short timeout for testing.
+        mConstants.MOTION_INACTIVE_TIMEOUT = 6000L;
+        doReturn(Sensor.REPORTING_MODE_ONE_SHOT).when(mMotionSensor).getReportingMode();
+        doReturn(true).when(mSensorManager)
+                .requestTriggerSensor(eq(mDeviceIdleController.mMotionListener), eq(mMotionSensor));
+        setAlarmSoon(false);
+        enterDeepState(STATE_QUICK_DOZE_DELAY);
+        mDeviceIdleController.stepIdleStateLocked("testing");
+        verifyStateConditions(STATE_IDLE);
+        // Quick doze progression through states, so time should have increased appropriately.
+        mInjector.nowElapsed += mConstants.QUICK_DOZE_DELAY_TIMEOUT;
+        final ArgumentCaptor<AlarmManager.OnAlarmListener> motionAlarmListener = ArgumentCaptor
+                .forClass(AlarmManager.OnAlarmListener.class);
+        final ArgumentCaptor<AlarmManager.OnAlarmListener> motionRegistrationAlarmListener =
+                ArgumentCaptor.forClass(AlarmManager.OnAlarmListener.class);
+        doNothing().when(mAlarmManager).set(anyInt(), anyLong(), eq("DeviceIdleController.motion"),
+                motionAlarmListener.capture(), any());
+        doNothing().when(mAlarmManager).set(anyInt(), anyLong(),
+                eq("DeviceIdleController.motion_registration"),
+                motionRegistrationAlarmListener.capture(), any());
+
+        StationaryListenerForTest stationaryListener = new StationaryListenerForTest();
+        spyOn(stationaryListener);
+        InOrder inOrder = inOrder(stationaryListener);
+
+        stationaryListener.motionExpected = true;
+        mDeviceIdleController.registerStationaryListener(stationaryListener);
+        inOrder.verify(stationaryListener, timeout(1000L).times(1))
+                .onDeviceStationaryChanged(eq(false));
+        assertFalse(stationaryListener.isStationary);
+
+        // Go to IDLE_MAINTENANCE
+        mDeviceIdleController.stepIdleStateLocked("testing");
+
+        mInjector.nowElapsed += mConstants.MOTION_INACTIVE_TIMEOUT / 2;
+
+        // Back to IDLE
+        mDeviceIdleController.stepIdleStateLocked("testing");
+
+        // Now enough time has passed.
+        mInjector.nowElapsed += mConstants.MOTION_INACTIVE_TIMEOUT;
+        stationaryListener.motionExpected = false;
+        motionAlarmListener.getValue().onAlarm();
+        inOrder.verify(stationaryListener, timeout(1000L).times(1))
+                .onDeviceStationaryChanged(eq(true));
+        assertTrue(stationaryListener.isStationary);
+
+        stationaryListener.motionExpected = true;
+        mDeviceIdleController.mMotionListener.onTrigger(null);
+        inOrder.verify(stationaryListener, timeout(1000L).times(1))
+                .onDeviceStationaryChanged(eq(false));
+        assertFalse(stationaryListener.isStationary);
+
+        // Since we're in quick doze, the device shouldn't stop idling.
+        verifyStateConditions(STATE_IDLE);
+
+        // Go to IDLE_MAINTENANCE
+        mDeviceIdleController.stepIdleStateLocked("testing");
+
+        motionRegistrationAlarmListener.getValue().onAlarm();
+        mInjector.nowElapsed += mConstants.MOTION_INACTIVE_TIMEOUT / 2;
+
+        // Back to IDLE
+        stationaryListener.motionExpected = false;
+        mDeviceIdleController.stepIdleStateLocked("testing");
+        verify(mSensorManager,
+                timeout(mConstants.MOTION_INACTIVE_TIMEOUT).times(2))
+                .requestTriggerSensor(eq(mDeviceIdleController.mMotionListener), eq(mMotionSensor));
+
+        // Now enough time has passed.
+        mInjector.nowElapsed += mConstants.MOTION_INACTIVE_TIMEOUT;
+        motionAlarmListener.getValue().onAlarm();
+        inOrder.verify(stationaryListener,
+                timeout(mConstants.MOTION_INACTIVE_TIMEOUT).times(1))
+                .onDeviceStationaryChanged(eq(true));
+        assertTrue(stationaryListener.isStationary);
+    }
+
+    @Test
+    public void testStationaryDetection_QuickDozeOn_OneShot() {
+        // Short timeout for testing.
+        mConstants.MOTION_INACTIVE_TIMEOUT = 6000L;
+        doReturn(Sensor.REPORTING_MODE_ONE_SHOT).when(mMotionSensor).getReportingMode();
+        setAlarmSoon(false);
+        enterDeepState(STATE_QUICK_DOZE_DELAY);
+        mDeviceIdleController.stepIdleStateLocked("testing");
+        verifyStateConditions(STATE_IDLE);
+        // Quick doze progression through states, so time should have increased appropriately.
+        mInjector.nowElapsed += mConstants.QUICK_DOZE_DELAY_TIMEOUT;
+        final ArgumentCaptor<AlarmManager.OnAlarmListener> alarmListener = ArgumentCaptor
+                .forClass(AlarmManager.OnAlarmListener.class);
+        doNothing().when(mAlarmManager)
+                .set(anyInt(), anyLong(), eq("DeviceIdleController.motion"), any(), any());
+        doNothing().when(mAlarmManager).set(anyInt(), anyLong(),
+                eq("DeviceIdleController.motion_registration"),
+                alarmListener.capture(), any());
+        ArgumentCaptor<TriggerEventListener> listenerCaptor =
+                ArgumentCaptor.forClass(TriggerEventListener.class);
+
+        StationaryListenerForTest stationaryListener = new StationaryListenerForTest();
+        spyOn(stationaryListener);
+        InOrder inOrder = inOrder(stationaryListener, mSensorManager);
+
+        stationaryListener.motionExpected = true;
+        mDeviceIdleController.registerStationaryListener(stationaryListener);
+        inOrder.verify(stationaryListener, timeout(1000L).times(1))
+                .onDeviceStationaryChanged(eq(false));
+        assertFalse(stationaryListener.isStationary);
+        inOrder.verify(mSensorManager)
+                .requestTriggerSensor(listenerCaptor.capture(), eq(mMotionSensor));
+        final TriggerEventListener listener = listenerCaptor.getValue();
+
+        // Trigger motion
+        listener.onTrigger(mock(TriggerEvent.class));
+        inOrder.verify(stationaryListener, timeout(1000L).times(1))
+                .onDeviceStationaryChanged(eq(false));
+
+        // Make sure the listener is re-registered.
+        alarmListener.getValue().onAlarm();
+        inOrder.verify(mSensorManager).requestTriggerSensor(eq(listener), eq(mMotionSensor));
+    }
+
+    @Test
+    public void testStationaryDetection_QuickDozeOn_MultiShot() {
+        // Short timeout for testing.
+        mConstants.MOTION_INACTIVE_TIMEOUT = 6000L;
+        doReturn(Sensor.REPORTING_MODE_CONTINUOUS).when(mMotionSensor).getReportingMode();
+        setAlarmSoon(false);
+        enterDeepState(STATE_QUICK_DOZE_DELAY);
+        mDeviceIdleController.stepIdleStateLocked("testing");
+        verifyStateConditions(STATE_IDLE);
+        // Quick doze progression through states, so time should have increased appropriately.
+        mInjector.nowElapsed += mConstants.QUICK_DOZE_DELAY_TIMEOUT;
+        final ArgumentCaptor<AlarmManager.OnAlarmListener> alarmListener = ArgumentCaptor
+                .forClass(AlarmManager.OnAlarmListener.class);
+        doNothing().when(mAlarmManager)
+                .set(anyInt(), anyLong(), eq("DeviceIdleController.motion"), any(), any());
+        doNothing().when(mAlarmManager).set(anyInt(), anyLong(),
+                eq("DeviceIdleController.motion_registration"),
+                alarmListener.capture(), any());
+        ArgumentCaptor<SensorEventListener> listenerCaptor =
+                ArgumentCaptor.forClass(SensorEventListener.class);
+
+        StationaryListenerForTest stationaryListener = new StationaryListenerForTest();
+        spyOn(stationaryListener);
+        InOrder inOrder = inOrder(stationaryListener, mSensorManager);
+
+        stationaryListener.motionExpected = true;
+        mDeviceIdleController.registerStationaryListener(stationaryListener);
+        inOrder.verify(stationaryListener, timeout(1000L).times(1))
+                .onDeviceStationaryChanged(eq(false));
+        assertFalse(stationaryListener.isStationary);
+        inOrder.verify(mSensorManager)
+                .registerListener(listenerCaptor.capture(), eq(mMotionSensor),
+                        eq(SensorManager.SENSOR_DELAY_NORMAL));
+        final SensorEventListener listener = listenerCaptor.getValue();
+
+        // Trigger motion
+        listener.onSensorChanged(mock(SensorEvent.class));
+        inOrder.verify(stationaryListener, timeout(1000L).times(1))
+                .onDeviceStationaryChanged(eq(false));
+
+        // Make sure the listener is re-registered.
+        alarmListener.getValue().onAlarm();
+        inOrder.verify(mSensorManager)
+                .registerListener(eq(listener), eq(mMotionSensor),
+                        eq(SensorManager.SENSOR_DELAY_NORMAL));
     }
 
     private void enterDeepState(int state) {
