@@ -15,12 +15,15 @@
  */
 package com.android.systemui.qs.tiles;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.provider.Settings.Secure;
 import android.service.quicksettings.Tile;
 import android.widget.Switch;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
+import com.android.settingslib.graph.BatteryMeterDrawableBase;
 import com.android.systemui.R;
 import com.android.systemui.plugins.qs.QSTile.BooleanState;
 import com.android.systemui.qs.QSHost;
@@ -99,8 +102,18 @@ public class BatterySaverTile extends QSTileImpl<BooleanState> implements
     protected void handleUpdateState(BooleanState state, Object arg) {
         state.state = mPluggedIn ? Tile.STATE_UNAVAILABLE
                 : mPowerSave ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE;
-        state.icon = mIcon;
-        state.label = mContext.getString(R.string.battery_detail_switch_title);
+        BatterySaverIcon bsi = new BatterySaverIcon();
+        bsi.mState = state.state;
+        state.icon = bsi;
+        if (mCharging && mLevel != 100) {
+            state.label = mContext.getString(R.string.keyguard_plugged_in, mLevel + "%");
+        } else {
+            if (mCharging && mLevel == 100) {
+                state.label = mContext.getString(R.string.keyguard_charged);
+            } else {
+                state.label = mLevel + "%";
+            }
+        }
         state.contentDescription = state.label;
         state.value = mPowerSave;
         state.expandedAccessibilityClassName = Switch.class.getName();
@@ -119,5 +132,49 @@ public class BatterySaverTile extends QSTileImpl<BooleanState> implements
     public void onPowerSaveChanged(boolean isPowerSave) {
         mPowerSave = isPowerSave;
         refreshState(null);
+    }
+
+    public static class BatterySaverIcon extends Icon {
+        private int mState;
+
+        @Override
+        public Drawable getDrawable(Context context) {
+            BatterySaverDrawable b =
+                    new BatterySaverDrawable(context, QSTileImpl.getColorForState(context, mState));
+            b.mState = mState;
+            final int pad = context.getResources()
+                    .getDimensionPixelSize(R.dimen.qs_tile_divider_height);
+            b.setPadding(pad, pad, pad, pad);
+            return b;
+        }
+    }
+
+    private static class BatterySaverDrawable extends BatteryMeterDrawableBase {
+        private int mState;
+        private static final int MAX_BATTERY = 100;
+
+        BatterySaverDrawable(Context context, int frameColor) {
+            super(context, frameColor);
+            // Show as full so it's always uniform color
+            super.setBatteryLevel(MAX_BATTERY);
+            setPowerSave(true);
+            setCharging(false);
+            setPowerSaveAsColorError(false);
+            mPowerSaveAsColorError = true;
+            mFramePaint.setColor(0);
+            mPowersavePaint.setColor(frameColor);
+            mFramePaint.setStrokeWidth(mPowersavePaint.getStrokeWidth());
+            mPlusPaint.setColor(frameColor);
+        }
+
+        @Override
+        protected int batteryColorForLevel(int level) {
+            return 0;
+        }
+
+        @Override
+        public void setBatteryLevel(int val) {
+            // Don't change the actual level, otherwise this won't draw correctly
+        }
     }
 }
