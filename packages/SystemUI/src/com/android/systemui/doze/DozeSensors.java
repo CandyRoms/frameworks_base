@@ -176,6 +176,17 @@ public class DozeSensors {
         return null;
     }
 
+    static Sensor findBrightnessSensorForProximity(Context context, SensorManager sensorManager) {
+        boolean brightnessSensorReportsProximity =
+                context.getResources().getBoolean(R.bool.doze_brightness_sensor_reports_proximity);
+        if (brightnessSensorReportsProximity) {
+            return findSensorWithType(sensorManager,
+                    context.getString(R.string.doze_brightness_sensor_type));
+        }
+
+        return null;
+    }
+
     /**
      * If sensors should be registered and sending signals.
      */
@@ -301,8 +312,7 @@ public class DozeSensors {
 
             // The default prox sensor can be noisy, so let's use a prox gated brightness sensor
             // if available.
-            Sensor sensor = DozeSensors.findSensorWithType(mSensorManager,
-                    mContext.getString(R.string.doze_brightness_sensor_type));
+            Sensor sensor = DozeSensors.findBrightnessSensorForProximity(mContext, mSensorManager);
             mUsingBrightnessSensor = sensor != null;
             if (sensor == null) {
                 sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
