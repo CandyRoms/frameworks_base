@@ -24,6 +24,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.hardware.biometrics.BiometricSourceType;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -69,10 +72,10 @@ public class FODCircleView extends ImageView {
     private boolean mIsBouncer;
     private boolean mIsDreaming;
 
+    private boolean mIsKeyguard;
     private boolean mIsShowing;
     private boolean mIsCircleShowing;
-
-    private boolean mIsKeyguard;
+    private boolean mIsAuthenticated;
 
     private float mCurrentDimAmount = 0.0f;
 
@@ -127,6 +130,12 @@ public class FODCircleView extends ImageView {
             } else if (mUpdateMonitor.isFingerprintDetectionRunning()) {
                 show();
             }
+        }
+
+        @Override
+        public void onBiometricAuthenticated(int userId, BiometricSourceType biometricSourceType) {
+            super.onBiometricAuthenticated(userId, biometricSourceType);
+            mIsAuthenticated = true;
         }
 
         @Override
@@ -308,6 +317,10 @@ public class FODCircleView extends ImageView {
     }
 
     public void showCircle() {
+        if (mIsAuthenticated) {
+            return;
+        }
+
         mIsCircleShowing = true;
 
         setKeepScreenOn(true);
@@ -346,6 +359,7 @@ public class FODCircleView extends ImageView {
         }
 
         mIsShowing = true;
+        mIsAuthenticated = false;
 
         dispatchShow();
         setVisibility(View.VISIBLE);
