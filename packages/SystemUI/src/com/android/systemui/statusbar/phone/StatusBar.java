@@ -784,6 +784,9 @@ public class StatusBar extends SystemUI implements DemoMode,
         mCandySettingsObserver.observe();
         mCandySettingsObserver.update();
 
+        mCustomSettingsObserver.observe();
+        mCustomSettingsObserver.update();
+
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext, mIconController);
         mSignalPolicy = new StatusBarSignalPolicy(mContext, mIconController);
