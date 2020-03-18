@@ -148,14 +148,8 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             if (dreaming) {
                 mBurnInProtectionTimer = new Timer();
                 mBurnInProtectionTimer.schedule(new BurnInProtectionTask(), 0, 60 * 1000);
-                if (!mWakeLock.isHeld()) {
-                    mWakeLock.acquire();
-                }
             } else if (mBurnInProtectionTimer != null) {
                 mBurnInProtectionTimer.cancel();
-                if (mWakeLock.isHeld()) {
-                    mWakeLock.release();
-                }
             }
         }
 
@@ -165,7 +159,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             updateStyle();
             updatePosition();
             if (mFODAnimation != null) {
-                mFODAnimation.setAnimationKeyguard(showing);
+                mFODAnimation.setAnimationKeyguard(mIsKeyguard);
             }
         }
 
@@ -218,8 +212,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         } catch (RemoteException e) {
             throw new RuntimeException("Failed to retrieve FOD circle position or size");
         }
-
-        mFODAnimation = new FODAnimation(context, mPositionX, mPositionY);
 
         Resources res = context.getResources();
 
@@ -455,8 +447,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         setImageResource(ICON_STYLES[mSelectedIcon]);
         setWallpaperColor(true);
         invalidate();
-
-        dispatchRelease();
 
         setDim(false);
         updateAlpha();
