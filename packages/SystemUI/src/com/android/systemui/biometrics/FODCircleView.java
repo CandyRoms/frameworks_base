@@ -98,6 +98,8 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private FODAnimation mFODAnimation;
     private boolean mIsRecognizingAnimEnabled;
 
+    private int mFODPressedState;
+
     private int mSelectedIcon;
     private final int[] ICON_STYLES = {
         R.drawable.fod_icon_default,
@@ -271,6 +273,9 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
                     Settings.System.FOD_ICON),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.FOD_PRESSED_STATE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.FOD_ANIM),
                     false, this, UserHandle.USER_ALL);
         }
@@ -279,6 +284,9 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         public void onChange(boolean selfChange, Uri uri) {
             if (uri.equals(Settings.System.getUriFor(
                     Settings.System.FOD_ICON))) {
+                updateStyle();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.FOD_PRESSED_STATE))) {
                 updateStyle();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.FOD_ANIM))) {
@@ -314,13 +322,13 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     }
 
     private void setFODPressedState() {
-        int fodpressed = getFODPressedState();
+        mFODPressedState = getFODPressedState();
 
-        if (fodpressed == 0) {
+        if (mFODPressedState == 0) {
             setImageResource(R.drawable.fod_icon_pressed);
-        } else if (fodpressed == 1) {
+        } else if (mFODPressedState == 1) {
             setImageResource(R.drawable.fod_icon_pressed_white);
-        } else if (fodpressed == 2) {
+        } else if (mFODPressedState == 2) {
             setImageDrawable(null);
         }
     }
@@ -536,6 +544,8 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
                 Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
         mSelectedIcon = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.FOD_ICON, 0);
+        mFODPressedState = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.FOD_PRESSED_STATE, 0);
         if (mFODAnimation != null) {
             mFODAnimation.update();
         }
