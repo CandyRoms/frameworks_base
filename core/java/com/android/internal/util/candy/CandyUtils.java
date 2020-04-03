@@ -70,6 +70,7 @@ import com.android.internal.statusbar.IStatusBarService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.List;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
@@ -80,6 +81,8 @@ public class CandyUtils {
 
     public static final String INTENT_SCREENSHOT = "action_take_screenshot";
     public static final String INTENT_REGION_SCREENSHOT = "action_take_region_screenshot";
+
+    private static OverlayManager mOverlayService;
 
     private static int sDeviceType = -1;
     private static final int DEVICE_PHONE = 0;
@@ -472,15 +475,10 @@ public class CandyUtils {
 
     // Method to detect whether an overlay is enabled or not
     public static boolean isThemeEnabled(String packageName) {
-        if (sOverlayService == null) {
-            sOverlayService = new OverlayManager();
-        }
+        mOverlayService = new OverlayManager();
         try {
-            ArrayList<OverlayInfo> infos = new ArrayList<OverlayInfo>();
-            infos.addAll(sOverlayService.getOverlayInfosForTarget("android",
-                    UserHandle.myUserId()));
-            infos.addAll(sOverlayService.getOverlayInfosForTarget("com.android.systemui",
-                    UserHandle.myUserId()));
+            List<OverlayInfo> infos = mOverlayService.getOverlayInfosForTarget("android",
+                    UserHandle.myUserId());
             for (int i = 0, size = infos.size(); i < size; i++) {
                 if (infos.get(i).packageName.equals(packageName)) {
                     return infos.get(i).isEnabled();
@@ -547,3 +545,4 @@ public class CandyUtils {
         }
     }
 }
+
