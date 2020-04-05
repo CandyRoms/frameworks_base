@@ -5051,6 +5051,12 @@ public final class Settings {
         public static final String QS_TILE_TITLE_VISIBILITY = "qs_tile_title_visibility";
 
         /**
+         * Screenrecord: video bitrate
+         * @hide
+         */
+        public static final String SCREENRECORD_VIDEO_BITRATE = "screenrecord_video_bitrate";
+
+        /**
          * FOD pressed state
          * @hide
          */
@@ -5195,6 +5201,8 @@ public final class Settings {
          * it to PRIVATE_SETTINGS below. Also add a validator that can validate
          * the setting value. See an example above.
          */
+
+
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
