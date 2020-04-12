@@ -5023,7 +5023,6 @@ public final class Settings {
         /** @hide */
         private static final Validator VOLUME_KEY_CURSOR_CONTROL_VALIDATOR =
                 ANY_INTEGER_VALIDATOR;
->>>>>>> 5e21e1a2b4cd... Framework: Volume key cursor control (1/2)
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
