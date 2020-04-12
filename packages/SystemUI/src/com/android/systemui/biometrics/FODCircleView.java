@@ -111,18 +111,18 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         R.drawable.fod_icon_default_5,
         R.drawable.fod_icon_arc_reactor,
         R.drawable.fod_icon_cpt_america_flat,
+        R.drawable.fod_icon_broncos,
+        R.drawable.fod_icon_cowboys,
+        R.drawable.fod_icon_patriots,
+        R.drawable.fod_icon_bruins,
+        R.drawable.fod_icon_bucs,
         R.drawable.fod_icon_dragon_black_flat,
         R.drawable.fod_icon_future,
         R.drawable.fod_icon_glow_circle,
-        R.drawable.fod_icon_neon_arc,
-        R.drawable.fod_icon_neon_arc_gray,
-        R.drawable.fod_icon_neon_circle_pink,
-        R.drawable.fod_icon_neon_triangle,
         R.drawable.fod_icon_paint_splash_circle,
         R.drawable.fod_icon_rainbow_horn,
         R.drawable.fod_icon_shooky,
         R.drawable.fod_icon_spiral_blue,
-        R.drawable.fod_icon_sun_metro,
         R.drawable.fod_icon_default_1
     };
 
