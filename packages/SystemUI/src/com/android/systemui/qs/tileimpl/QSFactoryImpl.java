@@ -33,6 +33,7 @@ import com.android.systemui.qs.tiles.BluetoothTile;
 import com.android.systemui.qs.tiles.CastTile;
 import com.android.systemui.qs.tiles.CellularTile;
 import com.android.systemui.qs.tiles.ColorInversionTile;
+import com.android.systemui.qs.tiles.CompassTile;
 import com.android.systemui.qs.tiles.DataSaverTile;
 import com.android.systemui.qs.tiles.DndTile;
 import com.android.systemui.qs.tiles.FlashlightTile;
@@ -81,6 +82,7 @@ public class QSFactoryImpl implements QSFactory {
     private final Provider<RebootTile> mRebootTileProvider;
     private final Provider<AODTile> mAODTileProvider;
     private final Provider<MusicTile> mMusicTileProvider;
+    private final Provider<CompassTile> mCompassTileProvider;
 
     private QSTileHost mHost;
 
@@ -106,7 +108,8 @@ public class QSFactoryImpl implements QSFactory {
             Provider<UiModeNightTile> uiModeNightTileProvider,
             Provider<RebootTile> rebootTileProvider,
             Provider<AODTile> aodTileProvider,
-            Provider<MusicTile> musicTileProvider) {
+            Provider<MusicTile> musicTileProvider,
+            Provider<CompassTile> compassTileProvider) {
         mWifiTileProvider = wifiTileProvider;
         mBluetoothTileProvider = bluetoothTileProvider;
         mCellularTileProvider = cellularTileProvider;
@@ -129,6 +132,7 @@ public class QSFactoryImpl implements QSFactory {
         mRebootTileProvider = rebootTileProvider;
         mAODTileProvider = aodTileProvider;
         mMusicTileProvider = musicTileProvider;
+        mCompassTileProvider = compassTileProvider;
     }
 
     public void setHost(QSTileHost host) {
@@ -188,6 +192,8 @@ public class QSFactoryImpl implements QSFactory {
                 return mAODTileProvider.get();
             case "music":
                 return mMusicTileProvider.get();
+            case "compass":
+                return mCompassTileProvider.get();
         }
 
         // Intent tiles.
