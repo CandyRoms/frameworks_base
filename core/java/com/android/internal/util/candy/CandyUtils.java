@@ -26,6 +26,7 @@ import android.content.res.Resources;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
+import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.os.BatteryManager;
 import android.os.UserHandle;
@@ -36,6 +37,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.DisplayInfo;
@@ -48,6 +50,8 @@ import android.view.WindowManagerGlobal;
 
 import android.util.DisplayMetrics;
 
+import com.android.internal.statusbar.IStatusBarService;
+
 import java.util.Locale;
 
 public class CandyUtils {
@@ -58,6 +62,18 @@ public class CandyUtils {
     private static final int DEVICE_PHONE = 0;
     private static final int DEVICE_HYBRID = 1;
     private static final int DEVICE_TABLET = 2;
+
+    private static IStatusBarService mStatusBarService = null;
+
+    private static IStatusBarService getStatusBarService() {
+        synchronized (CandyUtils.class) {
+            if (mStatusBarService == null) {
+                mStatusBarService = IStatusBarService.Stub.asInterface(
+                        ServiceManager.getService("statusbar"));
+            }
+            return mStatusBarService;
+        }
+    }
 
     public static boolean isChineseLanguage() {
        return Resources.getSystem().getConfiguration().locale.getLanguage().startsWith(
