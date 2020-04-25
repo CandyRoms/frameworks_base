@@ -244,7 +244,7 @@ public class NotificationInterruptionStateProvider {
             return false;
         }
 
-        if (entry.shouldSuppressPeek() || mPartialScreenshot) {
+        if (entry.shouldSuppressPeek()  || shouldSkipHeadsUp(sbn)|| mPartialScreenshot) {
             if (DEBUG_HEADS_UP) {
                 Log.d(TAG, "No heads up: suppressed by DND: " + sbn.getKey());
             }

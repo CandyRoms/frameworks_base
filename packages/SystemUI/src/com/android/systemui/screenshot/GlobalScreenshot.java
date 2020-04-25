@@ -72,6 +72,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -156,6 +157,7 @@ class SaveImageInBackgroundTask extends AsyncTask<Void, Void, Void> {
     private static final String TAG = "SaveImageInBackgroundTask";
 
     private static final String SCREENSHOT_FILE_NAME_TEMPLATE = "Screenshot_%s.png";
+    private static final String SCREENSHOT_FILE_NAME_TEMPLATE_APPNAME = "Screenshot_%s_%s.png";
     private static final String SCREENSHOT_ID_TEMPLATE = "Screenshot_%s";
     private static final String SCREENSHOT_SHARE_SUBJECT_TEMPLATE = "Screenshot (%s)";
 
@@ -768,17 +770,6 @@ class GlobalScreenshot {
                 statusBarVisible, navBarVisible);
     }
 
-    void takeScreenshot(Runnable finisher, boolean statusBarVisible, boolean navBarVisible) {
-        if (mScreenshotLayout.getParent() != null) {
-            finisher.run();
-            return;
-        }
-
-        mDisplay.getRealMetrics(mDisplayMetrics);
-        takeScreenshot(finisher, statusBarVisible, navBarVisible,
-                new Rect(0, 0, mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels));
-    }
-
     void setBlockedGesturalNavigation(boolean blocked) {
         IStatusBarService service = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
@@ -788,7 +779,15 @@ class GlobalScreenshot {
             } catch (RemoteException e) {
                 // end of the world
             }
+
+    void takeScreenshot(Consumer<Uri> finisher, boolean statusBarVisible, boolean navBarVisible) {
+        if (mScreenshotLayout.getParent() != null) {
+            finisher.accept(null);
+            return;
         }
+        mDisplay.getRealMetrics(mDisplayMetrics);
+        takeScreenshot(finisher, statusBarVisible, navBarVisible,
+                new Rect(0, 0, mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels));
     }
 
     Rect getRotationAdjustedRect(Rect rect) {
@@ -836,7 +835,7 @@ class GlobalScreenshot {
     void takeScreenshotPartial(final Consumer<Uri> finisher, final boolean statusBarVisible,
             final boolean navBarVisible) {
         if (mScreenshotLayout.getParent() != null) {
-            finisher.run();
+            finisher.accept(null);
             return;
         }
 
@@ -859,7 +858,7 @@ class GlobalScreenshot {
             @Override
             public void onClick(View v) {
                 mScreenshotLayout.post(() -> {
-                    finisher.run();
+                    finisher.accept(null);
                     hideScreenshotSelector();
                 });
             }

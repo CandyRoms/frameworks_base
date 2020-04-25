@@ -241,13 +241,8 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
                     }
                 });
 
-        mDefaultMenuActions = mContext.getResources().getStringArray(
-                com.android.internal.R.array.config_globalActionsList);
-        mRebootMenuActions = mContext.getResources().getStringArray(
-                com.android.internal.R.array.config_rebootActionsList);
         // Set the initial status of airplane mode toggle
         mAirplaneState = getUpdatedAirplaneToggleState();
-        settingsChanged();
     }
 
     /**

@@ -778,10 +778,6 @@ public class NavigationBarView extends FrameLayout implements
     }
 
     public void setPartialScreenshot(boolean active) {
-        mEdgeBackGestureHandler.setPartialScreenshot(active);
-    }
-
-    public void setPartialScreenshot(boolean active) {
         int displayId = mContext.getDisplayId();
         // tell to system and launcher to disable overview (recents) gesture
         mOverviewProxyService.setSystemUiStateFlag(SYSUI_STATE_OVERVIEW_DISABLED,

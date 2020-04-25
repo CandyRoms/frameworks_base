@@ -1847,10 +1847,6 @@ public class StatusBar extends SystemUI implements DemoMode,
         if (getNavigationBarView() != null) {
             getNavigationBarView().setPartialScreenshot(active);
         }
-<<<<<<< HEAD
-=======
-        mNotificationInterruptionStateProvider.setPartialScreenshot(active);
->>>>>>> 8012333756ad... Partial screenshot: block gestures and heads up when running
     }
 
     private CustomSettingsObserver mCustomSettingsObserver = new CustomSettingsObserver(mHandler);
