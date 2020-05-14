@@ -335,7 +335,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
     private int getFODPressedState() {
         return Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.FOD_PRESSED_STATE, 0);
+                Settings.System.FOD_PRESSED_STATE, 2);
     }
 
     private void setFODPressedState() {
@@ -462,7 +462,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         setDim(true);
         updateAlpha();
 
-        setFODPressedState();
+        setImageResource(R.drawable.fod_icon_pressed);
         invalidate();
     }
 
@@ -562,7 +562,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
         mSelectedIcon = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.FOD_ICON, 0);
+                Settings.System.FOD_ICON, 2);
         mFODPressedState = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.FOD_PRESSED_STATE, 0);
         if (mFODAnimation != null) {
