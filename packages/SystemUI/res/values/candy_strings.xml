@@ -136,4 +136,9 @@
     <string name="accessibility_quick_settings_cpuinfo_off">CPU Info off</string>
     <string name="accessibility_quick_settings_cpuinfo_on">CPU Info on</string>
 
+    <!-- Navbar tuner -->
+    <string name="tuner_nav_bar_show_handle_title">Show handle</string>
+    <string name="tuner_nav_bar_show_handle_summary"></string>
+    <string name="tuner_nav_bar_legacy_category">3-button navigation</string>
+    <string name="tuner_nav_bar_gesture_category">Gesture navigation</string>
 </resources>
