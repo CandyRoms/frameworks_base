@@ -40,6 +40,7 @@ import android.os.RemoteException;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.net.Uri;
+import android.util.DisplayMetrics;
 import android.util.Spline;
 import android.view.Display;
 import android.view.Gravity;
@@ -604,6 +605,20 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         ThreadUtils.postOnBackgroundThread(() -> {
             dispatchHide();
         });
+    }
+
+    public int getHeight(boolean includeDecor) {
+        DisplayMetrics dm = new DisplayMetrics();
+        if (includeDecor) {
+            mWindowManager.getDefaultDisplay().getMetrics(dm);
+        } else {
+            mWindowManager.getDefaultDisplay().getRealMetrics(dm);
+        }
+        return dm.heightPixels - mPositionY + mSize / 2;
+    }
+
+    private void updateAlpha() {
+        setAlpha(mIsDreaming ? 0.5f : 1.0f);
     }
 
     private void updatePosition() {
