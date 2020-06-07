@@ -85,8 +85,8 @@
     <!-- In-display Fingerprint -->
     <java-symbol type="bool" name="config_supportsInDisplayFingerprint" />
 
-   <!-- Enable face auth only when swiping security view -->
-   <java-symbol type="bool" name="config_faceAuthOnlyOnSecurityView" />
+   <!-- Enable face auth only when swiping security view
+   <java-symbol type="bool" name="config_faceAuthOnlyOnSecurityView" /> -->
 
     <!-- Device has OnePlus haptic motor -->
     <java-symbol type="bool" name="config_hasOnePlusHapticMotor" />
@@ -99,5 +99,8 @@
 
     <!-- Whether device has VOOC charging support -->
     <java-symbol type="bool" name="config_hasVoocCharger" />
+    
+    <!-- FOD icon dimming -->
+    <java-symbol type="bool" name="config_targetUsesInKernelDimming" />
 
 </resources>
