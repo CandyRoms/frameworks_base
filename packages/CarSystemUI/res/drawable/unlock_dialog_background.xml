@@ -23,4 +23,4 @@
       android:top="@*android:dimen/car_padding_2"/>
   <corners
       android:radius="@dimen/unlock_dialog_radius"/>
-</shape>
+</shape> 

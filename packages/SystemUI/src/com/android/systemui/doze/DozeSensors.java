@@ -48,6 +48,7 @@ import com.android.systemui.plugins.SensorManagerPlugin;
 import com.android.systemui.statusbar.phone.DozeParameters;
 import com.android.systemui.util.AlarmTimeout;
 import com.android.systemui.util.AsyncSensorManager;
+import com.android.systemui.util.ProximitySensor;
 import com.android.systemui.util.wakelock.WakeLock;
 
 import java.io.PrintWriter;
@@ -303,6 +304,7 @@ public class DozeSensors {
         final AlarmTimeout mCooldownTimer;
         final AlwaysOnDisplayPolicy mPolicy;
         final Sensor mSensor;
+        private final float mSensorThreshold;
         final boolean mUsingBrightnessSensor;
 
         public ProxSensor(AlwaysOnDisplayPolicy policy) {
@@ -312,10 +314,14 @@ public class DozeSensors {
 
             // The default prox sensor can be noisy, so let's use a prox gated brightness sensor
             // if available.
-            Sensor sensor = DozeSensors.findBrightnessSensorForProximity(mContext, mSensorManager);
+            Sensor sensor = ProximitySensor.findCustomProxSensor(mContext, mSensorManager);
             mUsingBrightnessSensor = sensor != null;
-            if (sensor == null) {
+            if (mUsingBrightnessSensor) {
+                mSensorThreshold = ProximitySensor.getBrightnessSensorThreshold(
+                        mContext.getResources());
+            } else {
                 sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+                mSensorThreshold = sensor == null ? 0 : sensor.getMaximumRange();
             }
             mSensor = sensor;
         }
@@ -357,11 +363,9 @@ public class DozeSensors {
             if (DEBUG) Log.d(TAG, "onSensorChanged " + event);
 
             if (mUsingBrightnessSensor) {
-                // The custom brightness sensor is gated by the proximity sensor and will return 0
-                // whenever prox is covered.
-                mCurrentlyFar = event.values[0] > 0;
+                mCurrentlyFar = event.values[0] > mSensorThreshold;
             } else {
-                mCurrentlyFar = event.values[0] >= event.sensor.getMaximumRange();
+                mCurrentlyFar = event.values[0] >= mSensorThreshold;
             }
             mProxCallback.accept(mCurrentlyFar);
 
@@ -510,6 +514,7 @@ public class DozeSensors {
                 }
                 mCallback.onSensorPulse(mPulseReason, mSensorPerformsProxCheck, screenX, screenY,
                         event.values);
+
                 if (!mRegistered) {
                     updateListening();  // reregister, this sensor only fires once
                 }
@@ -620,8 +625,7 @@ public class DozeSensors {
                     return;
                 }
                 if (DEBUG) Log.d(TAG, "onSensorEvent: " + triggerEventToString(event));
-                mCallback.onSensorPulse(mPulseReason, true /* sensorPerformsProxCheck */, -1, -1,
-                        event.getValues());
+                mCallback.onSensorPulse(mPulseReason, -1, -1, event.getValues());
             }));
         }
     }
@@ -636,7 +640,6 @@ public class DozeSensors {
          * @param screenY the location on the screen where the sensor fired or -1
          * @param rawValues raw values array from the event.
          */
-        void onSensorPulse(int pulseReason, boolean sensorPerformedProxCheck,
-                float screenX, float screenY, float[] rawValues);
+        void onSensorPulse(int pulseReason, float screenX, float screenY, float[] rawValues);
     }
 }

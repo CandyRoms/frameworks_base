@@ -450,13 +450,30 @@ public class DisplayModeDirector {
     }
 
     private static final class Vote {
+        // LOW_BRIGHTNESS votes for a single refresh rate like [60,60], [90,90] or null.
+        // If the higher voters result is a range, it will fix the rate to a single choice.
+        // It's used to avoid rate switch in certain conditions.
         public static final int PRIORITY_LOW_BRIGHTNESS = 0;
+
+        // SETTING_MIN_REFRESH_RATE is used to propose a lower bound of display refresh rate.
+        // It votes [MIN_REFRESH_RATE, Float.POSITIVE_INFINITY]
         public static final int PRIORITY_USER_SETTING_MIN_REFRESH_RATE = 1;
-        // We split the app request into two priorities in case we can satisfy one desire without
-        // the other.
+
+        // We split the app request into different priorities in case we can satisfy one desire
+        // without the other.
+
+        // Application can specify preferred refresh rate with below attrs.
+        // @see android.view.WindowManager.LayoutParams#preferredRefreshRate
+        // @see android.view.WindowManager.LayoutParams#preferredDisplayModeId
+        // System also forces some apps like blacklisted app to run at a lower refresh rate.
+        // @see android.R.array#config_highRefreshRateBlacklist
         public static final int PRIORITY_APP_REQUEST_REFRESH_RATE = 2;
         public static final int PRIORITY_APP_REQUEST_SIZE = 3;
+
+        // SETTING_PEAK_REFRESH_RATE has a high priority and will restrict the bounds of the rest
+        // of low priority voters. It votes [0, max(PEAK, MIN)]
         public static final int PRIORITY_USER_SETTING_PEAK_REFRESH_RATE = 4;
+
         // LOW_POWER_MODE force display to [0, 60HZ] if Settings.Global.LOW_POWER_MODE is on.
         public static final int PRIORITY_LOW_POWER_MODE = 5;
 
@@ -618,6 +635,7 @@ public class DisplayModeDirector {
                     Settings.System.MIN_REFRESH_RATE, 0f);
             float peakRefreshRate = Settings.System.getFloat(mContext.getContentResolver(),
                     Settings.System.PEAK_REFRESH_RATE, mDefaultPeakRefreshRate);
+
             updateVoteLocked(Vote.PRIORITY_USER_SETTING_PEAK_REFRESH_RATE,
                     Vote.forRefreshRates(0f, Math.max(minRefreshRate, peakRefreshRate)));
             updateVoteLocked(Vote.PRIORITY_USER_SETTING_MIN_REFRESH_RATE,
@@ -663,6 +681,7 @@ public class DisplayModeDirector {
                 refreshRateVote = null;
                 sizeVote = null;
             }
+
             updateVoteLocked(displayId, Vote.PRIORITY_APP_REQUEST_REFRESH_RATE, refreshRateVote);
             updateVoteLocked(displayId, Vote.PRIORITY_APP_REQUEST_SIZE, sizeVote);
             return;
@@ -976,7 +995,6 @@ public class DisplayModeDirector {
             return false;
         }
         private boolean isInsideZone(int brightness, float lux) {
-
             for (int i = 0; i < mDisplayBrightnessThresholds.length; i++) {
                 int disp = mDisplayBrightnessThresholds[i];
                 int ambi = mAmbientBrightnessThresholds[i];
@@ -1123,7 +1141,6 @@ public class DisplayModeDirector {
     }
 
     private class DeviceConfigDisplaySettings implements DeviceConfig.OnPropertiesChangedListener {
-
         public DeviceConfigDisplaySettings() {
         }
 

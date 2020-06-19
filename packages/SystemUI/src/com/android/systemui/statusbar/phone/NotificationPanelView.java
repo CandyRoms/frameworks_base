@@ -2120,7 +2120,7 @@ public class NotificationPanelView extends PanelView implements
         } else {
             maxHeight = calculatePanelHeightShade();
         }
-        maxHeight = Math.max(maxHeight, min);
+        maxHeight = Math.max(min, maxHeight);
         return maxHeight;
     }
 
@@ -3545,4 +3545,5 @@ public class NotificationPanelView extends PanelView implements
     public void updateDoubleTapToSleep(boolean doubleTapToSleepEnabled) {
         mDoubleTapToSleepEnabled = doubleTapToSleepEnabled;
     }
+
 }

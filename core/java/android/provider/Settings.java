@@ -9835,7 +9835,6 @@ public final class Settings {
                 new SettingsValidators.DiscreteValueValidator(new String[] {"0", "1", "2"});
 
         /**
-         * Whether to show or hide the arrow for back gesture
          * @hide
          */
         public static final String SHOW_BACK_ARROW_GESTURE = "show_back_arrow_gesture";

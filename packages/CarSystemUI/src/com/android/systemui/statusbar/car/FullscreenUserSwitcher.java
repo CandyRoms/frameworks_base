@@ -125,6 +125,9 @@ public class FullscreenUserSwitcher {
         if (hasScreenLock(initialUser) && hasTrustedDevice(initialUser)) {
             mUnlockDialogHelper.showUnlockDialogAfterDelay(initialUser,
                     mOnHideListener);
+        } else {
+            // If no trusted device, dismiss the keyguard.
+            dismissUserSwitcher();
         }
     }
 

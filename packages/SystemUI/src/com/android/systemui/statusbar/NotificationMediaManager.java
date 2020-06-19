@@ -278,6 +278,10 @@ public class NotificationMediaManager implements Dumpable {
         return !PAUSED_MEDIA_STATES.contains(state);
     }
 
+    public static boolean isPlayingState(int state) {
+        return !PAUSED_MEDIA_STATES.contains(state);
+    }
+
     public void setUpWithPresenter(NotificationPresenter presenter) {
         mPresenter = presenter;
     }

@@ -1163,4 +1163,9 @@
     <!-- Network traffic monitor -->
     <dimen name="net_traffic_multi_text_size">8dp</dimen>
     <dimen name="net_traffic_txt_img_padding">2dp</dimen>
+
+    <!--  Allow CornerHandleView and PathSpecCornerPathRenderer to decouple from corner-radius -->
+    <dimen name="config_rounded_mask_size">@*android:dimen/rounded_corner_radius</dimen>
+    <dimen name="config_rounded_mask_size_top">@*android:dimen/rounded_corner_radius_top</dimen>
+    <dimen name="config_rounded_mask_size_bottom">@*android:dimen/rounded_corner_radius_top</dimen>
 </resources>

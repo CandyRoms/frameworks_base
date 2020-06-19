@@ -3438,7 +3438,6 @@ public class DeviceIdleController extends SystemService
         if (mStationaryListeners.size() > 0) {
             postStationaryStatusUpdated();
             scheduleMotionTimeoutAlarmLocked();
-
             // We need to re-register the motion listener, but we don't want the sensors to be
             // constantly active or to churn the CPU by registering too early, register after some
             // delay.

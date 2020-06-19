@@ -125,6 +125,10 @@ public class DozeSensorsTest extends SysuiTestCase {
     @Test
     public void testSetListening_twiceTrue_onlyRegisterSettingsObserverOnce() {
         mDozeSensors.setListening(true);
+        mDozeSensors.setListening(true);
+
+        verify(mTriggerSensor, times(1)).registerSettingsObserver(any(ContentObserver.class));
+    }
 
         verify(mTriggerSensor, times(1)).registerSettingsObserver(any(ContentObserver.class));
     }

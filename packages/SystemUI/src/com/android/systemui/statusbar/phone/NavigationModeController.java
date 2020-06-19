@@ -148,8 +148,8 @@ public class NavigationModeController implements Dumpable {
 
     private BroadcastReceiver mEnableGestureNavReceiver;
 
-    private final class EvolutionSettingsObserver extends ContentObserver {
-        public EvolutionSettingsObserver(Handler handler) {
+    private final class CustomSettingsObserver extends ContentObserver {
+        public CustomSettingsObserver(Handler handler) {
             super(handler);
         }
 
@@ -161,7 +161,7 @@ public class NavigationModeController implements Dumpable {
         }
     }
 
-    private EvolutionSettingsObserver mSettingsObserver;
+    private CustomSettingsObserver mSettingsObserver;
 
     @Inject
     public NavigationModeController(Context context,
@@ -180,7 +180,7 @@ public class NavigationModeController implements Dumpable {
         overlayFilter.addDataSchemeSpecificPart("android", PatternMatcher.PATTERN_LITERAL);
         mContext.registerReceiverAsUser(mReceiver, UserHandle.ALL, overlayFilter, null, null);
 
-        mSettingsObserver = new EvolutionSettingsObserver(new Handler());
+        mSettingsObserver = new CustomSettingsObserver(new Handler());
         mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(
                 Settings.System.BACK_GESTURE_HEIGHT),
                 false, mSettingsObserver, UserHandle.USER_ALL);

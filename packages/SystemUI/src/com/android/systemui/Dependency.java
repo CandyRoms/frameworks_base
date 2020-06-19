@@ -524,15 +524,6 @@ public class Dependency {
                 .forEach(o -> ((Dumpable) o).dump(fd, pw, args));
     }
 
-    protected static void staticOnConfigurationChanged(Configuration newConfig) {
-        sDependency.onConfigurationChanged(newConfig);
-    }
-
-    protected synchronized void onConfigurationChanged(Configuration newConfig) {
-        mDependencies.values().stream().filter(obj -> obj instanceof ConfigurationChangedReceiver)
-                .forEach(o -> ((ConfigurationChangedReceiver) o).onConfigurationChanged(newConfig));
-    }
-
     protected final <T> T getDependency(Class<T> cls) {
         return getDependencyInner(cls);
     }

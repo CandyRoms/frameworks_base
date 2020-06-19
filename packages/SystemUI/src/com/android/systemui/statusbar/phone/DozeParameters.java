@@ -35,7 +35,7 @@ import java.io.PrintWriter;
 /**
  * Retrieve doze information
  */
-public class DozeParameters implements
+public class DozeParameters implements TunerService.Tunable,
         com.android.systemui.plugins.statusbar.DozeParameters {
     private static final int MAX_DURATION = 60 * 1000;
     public static final boolean FORCE_NO_BLANKING =

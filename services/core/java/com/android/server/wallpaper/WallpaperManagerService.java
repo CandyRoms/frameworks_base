@@ -1180,6 +1180,10 @@ public class WallpaperManagerService extends IWallpaperManager.Stub
             }
         };
 
+        private Runnable mTryToRebindRunnable = () -> {
+            tryToRebind();
+        };
+
         WallpaperConnection(WallpaperInfo info, WallpaperData wallpaper, int clientUid) {
             mInfo = info;
             mWallpaper = wallpaper;
@@ -1286,6 +1290,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub
                         saveSettingsLocked(mWallpaper.userId);
                     }
                     FgThread.getHandler().removeCallbacks(mResetRunnable);
+                    mContext.getMainThreadHandler().removeCallbacks(mTryToRebindRunnable);
                 }
             }
         }
@@ -1328,6 +1333,34 @@ public class WallpaperManagerService extends IWallpaperManager.Stub
             }
         }
 
+        private void tryToRebind() {
+            synchronized (mLock) {
+                if (mWallpaper.wallpaperUpdating) {
+                    return;
+                }
+                final ComponentName wpService = mWallpaper.wallpaperComponent;
+                // The broadcast of package update could be delayed after service disconnected. Try
+                // to re-bind the service for 10 seconds.
+                if (bindWallpaperComponentLocked(
+                        wpService, true, false, mWallpaper, null)) {
+                    mWallpaper.connection.scheduleTimeoutLocked();
+                } else if (SystemClock.uptimeMillis() - mWallpaper.lastDiedTime
+                        < WALLPAPER_RECONNECT_TIMEOUT_MS) {
+                    // Bind fail without timeout, schedule rebind
+                    Slog.w(TAG, "Rebind fail! Try again later");
+                    mContext.getMainThreadHandler().postDelayed(mTryToRebindRunnable, 1000);
+                } else {
+                    // Timeout
+                    Slog.w(TAG, "Reverting to built-in wallpaper!");
+                    clearWallpaperLocked(true, FLAG_SYSTEM, mWallpaper.userId, null);
+                    final String flattened = wpService.flattenToString();
+                    EventLog.writeEvent(EventLogTags.WP_WALLPAPER_CRASHED,
+                            flattened.substring(0, Math.min(flattened.length(),
+                                    MAX_WALLPAPER_COMPONENT_LOG_LENGTH)));
+                }
+            }
+        }
+
         private void processDisconnect(final ServiceConnection connection) {
             synchronized (mLock) {
                 // The wallpaper disappeared.  If this isn't a system-default one, track
@@ -1351,20 +1384,8 @@ public class WallpaperManagerService extends IWallpaperManager.Stub
                             clearWallpaperLocked(true, FLAG_SYSTEM, mWallpaper.userId, null);
                         } else {
                             mWallpaper.lastDiedTime = SystemClock.uptimeMillis();
-
-                            clearWallpaperComponentLocked(mWallpaper);
-                            if (bindWallpaperComponentLocked(
-                                    wpService, false, false, mWallpaper, null)) {
-                                mWallpaper.connection.scheduleTimeoutLocked();
-                            } else {
-                                Slog.w(TAG, "Reverting to built-in wallpaper!");
-                                clearWallpaperLocked(true, FLAG_SYSTEM, mWallpaper.userId, null);
-                            }
+                            tryToRebind();
                         }
-                        final String flattened = wpService.flattenToString();
-                        EventLog.writeEvent(EventLogTags.WP_WALLPAPER_CRASHED,
-                                flattened.substring(0, Math.min(flattened.length(),
-                                        MAX_WALLPAPER_COMPONENT_LOG_LENGTH)));
                     }
                 } else {
                     if (DEBUG_LIVE) {

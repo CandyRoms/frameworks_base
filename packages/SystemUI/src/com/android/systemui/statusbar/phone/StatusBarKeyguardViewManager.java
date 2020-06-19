@@ -276,7 +276,6 @@ public class StatusBarKeyguardViewManager implements RemoteInputController.Callb
                 && !mNotificationPanelView.isQsExpanded();
         boolean lockVisible = (mBouncer.isShowing() || keyguardWithoutQs)
                 && !mBouncer.isAnimatingAway() && !mKeyguardMonitor.isKeyguardFadingAway();
-
         boolean isHideLockIcon = Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.HIDE_LOCKICON, 0) == 1;
         lockVisible = lockVisible && !isHideLockIcon;

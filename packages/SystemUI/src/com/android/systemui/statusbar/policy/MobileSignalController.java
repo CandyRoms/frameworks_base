@@ -1015,6 +1015,7 @@ public class MobileSignalController extends SignalController<
                     && ((MobileState) o).roaming == roaming
                     && ((MobileState) o).imsResitered == imsResitered
                     && ((MobileState) o).isVolteRegistered == isVolteRegistered;
+                    && ((MobileState) o).defaultDataOff == defaultDataOff;
         }
     }
 }

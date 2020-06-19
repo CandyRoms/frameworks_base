@@ -245,6 +245,9 @@ public class ScrimControllerTest extends SysuiTestCase {
         mScrimController.finishAnimationsImmediately();
         assertScrimVisibility(VISIBILITY_SEMI_TRANSPARENT /* front */,
                 VISIBILITY_SEMI_TRANSPARENT /* back */);
+
+        // Reset value since enums are static.
+        mScrimController.setAodFrontScrimAlpha(0f);
     }
 
     @Test
