@@ -481,7 +481,8 @@ public class MobileSignalController extends SignalController<
         if (mVoWiFiIcon == 2 && isVowifiAvailable()) {
             return resId;
         }
-        if (mCurrentState.imsRegistered && mVoLTEicon) {
+        if (mCurrentState.imsRegistered && (mCurrentState.voiceCapable ||
+                  mCurrentState.videoCapable) && mVoLTEicon) {
             switch(mVoLTEstyle) {
                 // VoLTE
                 case 1:
