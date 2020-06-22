@@ -5009,6 +5009,12 @@ public final class Settings {
          */
         public static final String DATA_USAGE_PERIOD = "data_usage_period";
 
+	/**
+         * Whether to show VoWiFi icon or not
+         * @hide
+         */
+        public static final String VOWIFI_ICON = "vowifi_icon";
+
         /**
           * Statusbar Battery %
           * 0: Hide the battery percentage

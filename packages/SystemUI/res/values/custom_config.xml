@@ -23,7 +23,4 @@
     <integer name="config_maxVisibleNotificationIcons">4</integer>
     <integer name="config_maxVisibleNotificationIconsOnLock">5</integer>
 
-    <!-- Show VoWIFI -->
-    <bool name="config_display_vowifi">true</bool>
-
 </resources>
