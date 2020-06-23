@@ -305,16 +305,13 @@ class BluetoothManagerService extends IBluetoothManager.Stub {
         return false;
     }
 
-    private final ContentObserver mAirplaneModeObserver = new ContentObserver(null) {
-        @Override
-        public void onChange(boolean unused) {
-            synchronized (this) {
-                if (isBluetoothPersistedStateOn()) {
-                    if (isAirplaneModeOn()) {
-                        persistBluetoothSetting(BLUETOOTH_ON_AIRPLANE);
-                    } else {
-                        persistBluetoothSetting(BLUETOOTH_ON_BLUETOOTH);
-                    }
+    public void onAirplaneModeChanged() {
+        synchronized (this) {
+            if (isBluetoothPersistedStateOn()) {
+                if (isAirplaneModeOn()) {
+                    persistBluetoothSetting(BLUETOOTH_ON_AIRPLANE);
+                } else {
+                    persistBluetoothSetting(BLUETOOTH_ON_BLUETOOTH);
                 }
             }
 
