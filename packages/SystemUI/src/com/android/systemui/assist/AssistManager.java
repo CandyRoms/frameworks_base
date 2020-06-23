@@ -58,7 +58,7 @@ import javax.inject.Singleton;
  * Class to manage everything related to assist in SystemUI.
  */
 @Singleton
-public class AssistManager implements ConfigurationChangedReceiver {
+public class AssistManager {
 
     /**
      * Controls the UI for showing Assistant invocation progress.
