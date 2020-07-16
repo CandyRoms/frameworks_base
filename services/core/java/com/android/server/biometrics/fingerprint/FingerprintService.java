@@ -253,22 +253,14 @@ public class FingerprintService extends BiometricServiceBase {
         public void authenticate(final IBinder token, final long opId, final int userId,
                 final IFingerprintServiceReceiver receiver, final int flags,
                 final String opPackageName) {
-            // Keyguard check must be done on the caller's binder identity, since it also checks
-            // permission.
-            final boolean isKeyguard = Utils.isKeyguard(getContext(), opPackageName);
 
-            // Clear calling identity when checking LockPatternUtils for StrongAuth flags.
-            final long identity = Binder.clearCallingIdentity();
-            try {
-                if (isKeyguard && Utils.isUserEncryptedOrLockdown(mLockPatternUtils, userId)) {
-                    // If this happens, something in KeyguardUpdateMonitor is wrong.
-                    // SafetyNet for b/79776455
-                    EventLog.writeEvent(0x534e4554, "79776455");
-                    Slog.e(TAG, "Authenticate invoked when user is encrypted or lockdown");
-                    return;
-                }
-            } finally {
-                Binder.restoreCallingIdentity(identity);
+            if (Utils.isUserEncryptedOrLockdown(mLockPatternUtils, userId)
+                    && Utils.isKeyguard(getContext(), opPackageName)) {
+                // If this happens, something in KeyguardUpdateMonitor is wrong.
+                // SafetyNet for b/79776455
+                EventLog.writeEvent(0x534e4554, "79776455");
+                Slog.e(TAG, "Authenticate invoked when user is encrypted or lockdown");
+                return;
             }
 
             updateActiveGroup(userId, opPackageName);
@@ -713,15 +705,17 @@ public class FingerprintService extends BiometricServiceBase {
         public void onAuthenticated(final long deviceId, final int fingerId, final int groupId,
                 ArrayList<Byte> token) {
             mHandler.post(() -> {
-                Fingerprint fp = new Fingerprint("", groupId, fingerId, deviceId);
-                FingerprintService.super.handleAuthenticated(fp, token);
-                if (mHasFod && fp.getBiometricId() != 0) {
-                    try {
-                        mStatusBarService.hideInDisplayFingerprintView();
-                    } catch (RemoteException e) {
-                        Slog.e(TAG, "hideInDisplayFingerprintView failed", e);
+                boolean authenticated = fingerId != 0;
+                final ClientMonitor client = getCurrentClient();
+                if (client instanceof FingerprintAuthClient) {
+                    if (((FingerprintAuthClient) client).isDetectOnly()) {
+                        Slog.w(TAG, "Detect-only. Device is encrypted or locked down");
+                        authenticated = true;
                     }
                 }
+
+                final Fingerprint fp = new Fingerprint("", groupId, fingerId, deviceId);
+                FingerprintService.super.handleAuthenticated(authenticated, fp, token);
             });
         }
 
