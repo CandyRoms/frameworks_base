@@ -29,6 +29,7 @@ import com.android.systemui.Dependency;
 import com.android.systemui.R;
 import com.android.systemui.doze.AlwaysOnDisplayPolicy;
 import com.android.systemui.doze.DozeScreenState;
+import com.android.systemui.tuner.TunerService;
 
 import java.io.PrintWriter;
 
