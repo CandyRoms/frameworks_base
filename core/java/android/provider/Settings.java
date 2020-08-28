@@ -4976,18 +4976,6 @@ public final class Settings {
         private static final Validator GESTURE_PILL_TOGGLE_VALIDATOR = BOOLEAN_VALIDATOR;
 
         /**
-         * FOD recognizing animation picker
-         * @hide
-         */
-        public static final String FOD_ANIM = "fod_anim";
-
-        /**
-         * FOD recognizing animation
-         * @hide
-         */
-        public static final String FOD_RECOGNIZING_ANIMATION = "fod_recognizing_animation";
-
-        /**
          * @hide
          */
         public static final String REFRESH_RATE_SETTING = "refresh_rate_setting";
@@ -5061,26 +5049,6 @@ public final class Settings {
          * @hide
          */
         public static final String SCREENRECORD_VIDEO_BITRATE = "screenrecord_video_bitrate";
-
-
-
-        /**
-         * FOD pressed state
-         * @hide
-         */
-        public static final String FOD_PRESSED_STATE = "fod_pressed_state";
-
-        /**
-         * FOD icon picker
-         * @hide
-         */
-        public static final String FOD_ICON = "fod_icon";
-
-        /**
-         * FOD use wallpaper color
-         * @hide
-         */
-        public static final String FOD_ICON_WALLPAPER_COLOR = "fod_icon_wallpaper_color";
 
         /**
           * Volume keys control cursor in text fields (default is 0)

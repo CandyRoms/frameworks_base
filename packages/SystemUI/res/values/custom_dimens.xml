@@ -46,8 +46,4 @@
 
     <!-- Qs visibility -->
     <dimen name="qs_tile_height_wo_label">64dp</dimen>
-
-    <!-- Size of the FOD animation -->
-    <dimen name="fod_animation_size">280dp</dimen>
-    <dimen name="fod_animation_offset">0dp</dimen>
 </resources>
