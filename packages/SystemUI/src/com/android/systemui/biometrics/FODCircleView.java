@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.hardware.biometrics.BiometricSourceType;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -141,7 +142,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
                 BiometricSourceType biometricSourceType) {
             if (msgId == -1){ // Auth error
                 hideCircle();
-                mHandler.post(() -> mFODAnimation.hideFODanimation());
             }
         }
     };
