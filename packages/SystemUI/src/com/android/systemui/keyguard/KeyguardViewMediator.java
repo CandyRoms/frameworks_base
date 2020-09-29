@@ -369,6 +369,8 @@ public class KeyguardViewMediator extends SystemUI {
     private IKeyguardDrawnCallback mDrawnCallback;
     private CharSequence mCustomMessage;
 
+    private boolean mHasFod;
+
     KeyguardUpdateMonitorCallback mUpdateCallback = new KeyguardUpdateMonitorCallback() {
 
         @Override
@@ -768,6 +770,9 @@ public class KeyguardViewMediator extends SystemUI {
                 com.android.internal.R.anim.lock_screen_behind_enter);
 
         mWorkLockController = new WorkLockActivityController(mContext);
+
+        mHasFod = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_needCustomFODView);
     }
 
     @Override
@@ -807,6 +812,10 @@ public class KeyguardViewMediator extends SystemUI {
         synchronized (this) {
             mDeviceInteractive = false;
             mGoingToSleep = true;
+
+            if (!mHasFod) {
+                mUpdateMonitor.setKeyguardGoingAway(false);
+            }
 
             // Lock immediately based on setting if secure (user has a pin/pattern/password).
             // This also "locks" the device when not secure to provide easy access to the

@@ -84,6 +84,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private boolean mIsBiometricRunning;
     private boolean mIsCircleShowing;
     private boolean mIsDreaming;
+    private boolean mIsKeyguard;
 
     private Handler mHandler;
 
