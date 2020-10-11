@@ -1147,7 +1147,6 @@ public class StatusBar extends SystemUI implements DemoMode,
                     // TODO: this should probably be scoped to the StatusBarComponent
                     // TODO (b/136993073) Separate notification shade and status bar
                     mHeadsUpAppearanceController = new HeadsUpAppearanceController(
-                            mContext,
                             mNotificationIconAreaController, mHeadsUpManager,
                             mNotificationShadeWindowView,
                             mStatusBarStateController, mKeyguardBypassController,
