@@ -60,7 +60,7 @@ public class ProximitySensor {
     @Inject
     public ProximitySensor(Context context, AsyncSensorManager sensorManager) {
         mSensorManager = sensorManager;
-        Sensor sensor = findCustomProxSensor(context, sensorManager);
+        Sensor sensor = findBrightnessSensor(context, sensorManager);
 
         if (sensor == null) {
             mUsingBrightnessSensor = false;
@@ -84,18 +84,8 @@ public class ProximitySensor {
         mTag = tag;
     }
 
-    /**
-     * Returns a brightness sensor that can be used for proximity purposes.
-     *
-     * @deprecated This method exists for legacy purposes. Use the containing class directly.
-     */
-    @Deprecated
-    public static Sensor findCustomProxSensor(Context context, SensorManager sensorManager) {
-        String sensorType = context.getString(R.string.proximity_sensor_type);
-        if (sensorType.isEmpty()) {
-            return null;
-        }
-
+    private Sensor findBrightnessSensor(Context context, SensorManager sensorManager) {
+        String sensorType = context.getString(R.string.doze_brightness_sensor_type);
         List<Sensor> sensorList = sensorManager.getSensorList(Sensor.TYPE_ALL);
         Sensor sensor = null;
         for (Sensor s : sensorList) {
