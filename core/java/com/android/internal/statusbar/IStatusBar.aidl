@@ -230,4 +230,9 @@ oneway interface IStatusBar
      * display.
      */
     void suppressAmbientDisplay(boolean suppress);
+
+    /**
+     * Candy custom stuffs
+     */
+    void toggleCameraFlash();
 }

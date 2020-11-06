@@ -50,6 +50,7 @@ import android.view.WindowManagerGlobal;
 
 import android.util.DisplayMetrics;
 
+import com.android.internal.R;
 import com.android.internal.statusbar.IStatusBarService;
 
 import java.util.Locale;
@@ -280,12 +281,37 @@ public class CandyUtils {
         }
     }
 
-    //public static void setPartialScreenshot(boolean active) {
-    //    IStatusBarService service = getStatusBarService();
-    //    if (service != null) {
-    //        try {
-    //            service.setPartialScreenshot(active);
-    //        } catch (RemoteException e) {}
-    //   }
-    //}
+
+    public static boolean deviceHasFlashlight(Context ctx) {
+        return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+    }
+
+    public static void toggleCameraFlash() {
+        FireActions.toggleCameraFlash();
+    }
+
+    private static final class FireActions {
+        private static IStatusBarService mStatusBarService = null;
+
+        private static IStatusBarService getStatusBarService() {
+            synchronized (FireActions.class) {
+                if (mStatusBarService == null) {
+                    mStatusBarService = IStatusBarService.Stub.asInterface(
+                            ServiceManager.getService("statusbar"));
+                }
+                return mStatusBarService;
+            }
+        }
+
+        public static void toggleCameraFlash() {
+            IStatusBarService service = getStatusBarService();
+            if (service != null) {
+                try {
+                    service.toggleCameraFlash();
+                } catch (RemoteException e) {
+                    // do nothing.
+                }
+            }
+        }
+    }
 }
