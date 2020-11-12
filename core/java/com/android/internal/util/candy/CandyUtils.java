@@ -385,6 +385,16 @@ public class CandyUtils {
                 } catch (RemoteException e) {}
             }
         }
+
+        // Start assistant
+        public static void startAssist() {
+            IStatusBarService service = getStatusBarService();
+            if (service != null) {
+                try {
+                    service.startAssist(new Bundle());
+                } catch (RemoteException e) {}
+            }
+        }
     }
 
     public static void clearAllNotifications() {
@@ -519,5 +529,9 @@ public class CandyUtils {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+   public static void startAssist() {
+        FireActions.startAssist();
     }
 }
