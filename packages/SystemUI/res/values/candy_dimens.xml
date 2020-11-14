@@ -104,4 +104,7 @@
     <dimen name="status_bar_battery_icon_width_landscape_m">28.0dip</dimen>
     <dimen name="status_bar_battery_icon_width_landscape_n">25.0dip</dimen>
     <dimen name="status_bar_battery_icon_width_landscape_o">22.0dip</dimen>
+
+   <!-- Screen Record -->
+    <dimen name="screenrecord_dot_size">48dp</dimen>
 </resources>
