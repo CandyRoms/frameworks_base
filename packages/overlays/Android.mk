@@ -17,6 +17,8 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := frameworks-base-overlays
 LOCAL_REQUIRED_MODULES := \
+	AccentColorMIUIOverlay \
+        AccentColorXiaomiOrangeOverlay \
 	AccentColorBlackOverlay \
 	AccentColorCinnamonOverlay \
 	AccentColorOceanOverlay \
