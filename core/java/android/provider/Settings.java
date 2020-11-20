@@ -4972,6 +4972,9 @@ public final class Settings {
         */
        public static final String DOZE_ON_CHARGE_NOW = "doze_on_charge_now";
 
+       private static final Validator DOZE_ON_CHARGE_NOW_VALIDATOR =
+                ANY_STRING_VALIDATOR;
+
         /**
          * Use doubletap as doze pulse triggers
          * @hide
@@ -5443,6 +5446,7 @@ public final class Settings {
             BATTERY_LIGHT_FULL_COLOR,
             BATTERY_LIGHT_REALLYFULL_COLOR,
             DOZE_ON_CHARGE,
+            DOZE_ON_CHARGE_NOW,
             CANDY_CUSTOM_FP_ICON,
             GESTURE_PILL_TOGGLE,
             FORCE_SHOW_NAVBAR,
@@ -5612,6 +5616,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(DISPLAY_CUTOUT_HIDDEN);
             PRIVATE_SETTINGS.add(FORCE_FULLSCREEN_CUTOUT_APPS);
             PRIVATE_SETTINGS.add(DOZE_ON_CHARGE);
+            PRIVATE_SETTINGS.add(DOZE_ON_CHARGE_NOW);
             PRIVATE_SETTINGS.add(CANDY_CUSTOM_FP_ICON);
             PRIVATE_SETTINGS.add(GESTURE_PILL_TOGGLE);
             PRIVATE_SETTINGS.add(BACK_GESTURE_HEIGHT);
@@ -5745,6 +5750,7 @@ public final class Settings {
             VALIDATORS.put(DISPLAY_CUTOUT_HIDDEN, DISPLAY_CUTOUT_HIDDEN_VALIDATOR);
             VALIDATORS.put(FORCE_FULLSCREEN_CUTOUT_APPS, FORCE_FULLSCREEN_CUTOUT_APPS_VALIDATOR);
             VALIDATORS.put(DOZE_ON_CHARGE, DOZE_ON_CHARGE_VALIDATOR);
+            VALIDATORS.put(DOZE_ON_CHARGE_NOW, DOZE_ON_CHARGE_NOW_VALIDATOR);
             VALIDATORS.put(CANDY_CUSTOM_FP_ICON, CANDY_CUSTOM_FP_ICON_VALIDATOR);
             VALIDATORS.put(GESTURE_PILL_TOGGLE, GESTURE_PILL_TOGGLE_VALIDATOR);
             VALIDATORS.put(BACK_GESTURE_HEIGHT, BACK_GESTURE_HEIGHT_VALIDATOR);
