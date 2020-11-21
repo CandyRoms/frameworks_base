@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.internal.util.custom;
+package com.android.internal.util.candy;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -198,6 +198,141 @@ public final class LineageButtons {
             mVolBtnMusicControls = Settings.System.getIntForUser(
                     resolver, Settings.System.VOLUME_BUTTON_MUSIC_CONTROL, 1,
                     UserHandle.USER_CURRENT) == 1;
+        }
+    }
+
+    // Elmyra app actions
+    public void performTriggeredAction(String action, Context context, boolean interactive) {
+        switch(action) {
+            case "flashlight":
+                CandyUtils.toggleCameraFlash(false);
+                break;
+            case "assist":
+                CandyUtils.startAssist();
+                break;
+            case "screenshot":
+                // already disabled when screen is OFF by Elmyra app
+                CandyUtils.takeScreenshot(true/*full*/);
+                break;
+            case "partialscreenshot":
+                // already disabled when screen is OFF by Elmyra app
+                CandyUtils.takeScreenshot(false/*full*/);
+                break;
+            case "camera":
+                if (!interactive) {
+                    CandyUtils.switchScreenOff(context);
+                }
+                CandyUtils.launchCamera(context);
+                break;
+            case "mute":
+                CandyUtils.triggerHushMute(context);
+                break;
+            case "screen":
+                if (interactive) {
+                    CandyUtils.switchScreenOff(context);
+                } else {
+                    CandyUtils.switchScreenOn(context);
+                }
+                break;
+            case "skiptrack":
+                skipTrack();
+                break;
+            case "previoustrack":
+                previousTrack();
+                break;
+            case "voicesearch":
+                CandyUtils.launchVoiceSearch(context);
+                break;
+            case "volumepanel":
+                // already disabled when screen is OFF by Elmyra app
+                CandyUtils.toggleVolumePanel(context);
+                break;
+            case "powermenu":
+                // already disabled when screen is OFF by Elmyra app
+                CandyUtils.showPowerMenu();
+                break;
+            case "toggleqspanel":
+                // already disabled when screen is OFF by Elmyra app
+                CandyUtils.toggleQsPanel();
+                break;
+            case "togglenotificationspanel":
+                // already disabled when screen is OFF by Elmyra app
+                CandyUtils.toggleNotifications();
+                break;
+            case "clearallnotifications":
+                // already disabled when screen is OFF by Elmyra app
+                CandyUtils.clearAllNotifications();
+                break;
+            case "toggleringermodes":
+                CandyUtils.toggleRingerModes(context);
+                break;
+            case "killforegroundapp":
+                CandyUtils.killForegroundApp();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void triggerAction(int action, boolean leftEdge, boolean isVerticalSwipe, Context context) {
+        switch (action) {
+            case 0: // No action
+            default:
+                break;
+            case 1: // Assistant
+                CandyUtils.startAssist();
+                break;
+            case 2: // Voice search
+                CandyUtils.launchVoiceSearch(context);
+                break;
+            case 3: // Camera
+                CandyUtils.launchCamera(context);
+                break;
+            case 4: // Flashlight
+                CandyUtils.toggleCameraFlash(false/*no proximity check*/);
+                break;
+            case 5: // Application
+                CandyUtils.launchApp(context, leftEdge, isVerticalSwipe);
+                break;
+            case 6: // Volume panel
+                CandyUtils.toggleVolumePanel(context);
+                break;
+            case 7: // Screen off
+                CandyUtils.switchScreenOff(context);
+                break;
+            case 8: // Screenshot
+                CandyUtils.takeScreenshot(true);
+                break;
+            case 9: // Notification panel
+                CandyUtils.toggleNotifications();
+                break;
+            case 10: // QS panel
+                CandyUtils.toggleQsPanel();
+                break;
+            case 11: // Clear notifications
+                CandyUtils.clearAllNotifications();
+                break;
+            case 12: // Ringer modes
+                CandyUtils.toggleRingerModes(context);
+                break;
+            case 13: // Kill app
+                CandyUtils.killForegroundApp();
+                break;
+            case 14: // Skip song
+                skipTrack();
+                break;
+            case 15: // Previous song
+                previousTrack();
+                break;
+            case 16: // Power menu
+                CandyUtils.showPowerMenu();
+                break;
+            case 17: // Partial screenshot
+                CandyUtils.takeScreenshot(false);
+                break;
+            case 18: // Hush mute
+                CandyUtils.triggerHushMute(context);
+                break;
         }
     }
 }
