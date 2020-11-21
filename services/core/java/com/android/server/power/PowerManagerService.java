@@ -960,6 +960,9 @@ public final class PowerManagerService extends SystemService
                 Settings.Global.WAKE_WHEN_PLUGGED_OR_UNPLUGGED),
                 false, mSettingsObserver, UserHandle.USER_ALL);
         resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.DOZE_ON_CHARGE_NOW),
+                false, mSettingsObserver, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.DOZE_ON_CHARGE),
                 false, mSettingsObserver, UserHandle.USER_ALL);
         IVrManager vrManager = IVrManager.Stub.asInterface(getBinderService(Context.VR_SERVICE));
@@ -1073,7 +1076,9 @@ public final class PowerManagerService extends SystemService
         mAlwaysOnEnabled = mAmbientDisplayConfiguration.alwaysOnEnabled(UserHandle.USER_CURRENT);
         mDozeOnChargeEnabled = Settings.System.getIntForUser(resolver,
                 Settings.System.DOZE_ON_CHARGE, 0, UserHandle.USER_CURRENT) != 0;
-
+        Settings.System.putIntForUser(mContext.getContentResolver(),
+                Settings.System.DOZE_ON_CHARGE_NOW, mDozeOnChargeEnabled && mIsPowered ? 1 : 0,
+                UserHandle.USER_CURRENT);
         if (mSupportsDoubleTapWakeConfig) {
             boolean doubleTapWakeEnabled = Settings.Secure.getIntForUser(resolver,
                     Settings.Secure.DOUBLE_TAP_TO_WAKE, DEFAULT_DOUBLE_TAP_TO_WAKE,
@@ -1908,8 +1913,10 @@ public final class PowerManagerService extends SystemService
         }
 
         // On Always On Display, SystemUI shows the charging indicator
-        if (mAlwaysOnEnabled && !mDozeOnChargeEnabled && mWakefulness == WAKEFULNESS_DOZING) {
-            return false;
+        if (mAlwaysOnEnabled && mWakefulness == WAKEFULNESS_DOZING) {
+            if (!mDozeOnChargeEnabled) {
+                return false;
+            }
         }
 
         // Otherwise wake up!
