@@ -4958,23 +4958,6 @@ public final class Settings {
         private static final Validator BATTERY_LIGHT_REALLYFULL_COLOR_VALIDATOR =
                 ANY_STRING_VALIDATOR;
 
-        /*
-        * Whether to enable DOZE only when charging
-        * @hide
-        */
-       public static final String DOZE_ON_CHARGE = "doze_on_charge";
-
-       private static final Validator DOZE_ON_CHARGE_VALIDATOR = BOOLEAN_VALIDATOR;
-
-       /**
-        * hidden stting of the current atate of DOZE only when charging
-        * @hide
-        */
-       public static final String DOZE_ON_CHARGE_NOW = "doze_on_charge_now";
-
-       private static final Validator DOZE_ON_CHARGE_NOW_VALIDATOR =
-                ANY_STRING_VALIDATOR;
-
         /**
          * Use doubletap as doze pulse triggers
          * @hide
@@ -5445,8 +5428,6 @@ public final class Settings {
             BATTERY_LIGHT_MEDIUM_COLOR,
             BATTERY_LIGHT_FULL_COLOR,
             BATTERY_LIGHT_REALLYFULL_COLOR,
-            DOZE_ON_CHARGE,
-            DOZE_ON_CHARGE_NOW,
             CANDY_CUSTOM_FP_ICON,
             GESTURE_PILL_TOGGLE,
             FORCE_SHOW_NAVBAR,
@@ -5615,8 +5596,6 @@ public final class Settings {
             PRIVATE_SETTINGS.add(BATTERY_LIGHT_REALLYFULL_COLOR);
             PRIVATE_SETTINGS.add(DISPLAY_CUTOUT_HIDDEN);
             PRIVATE_SETTINGS.add(FORCE_FULLSCREEN_CUTOUT_APPS);
-            PRIVATE_SETTINGS.add(DOZE_ON_CHARGE);
-            PRIVATE_SETTINGS.add(DOZE_ON_CHARGE_NOW);
             PRIVATE_SETTINGS.add(CANDY_CUSTOM_FP_ICON);
             PRIVATE_SETTINGS.add(GESTURE_PILL_TOGGLE);
             PRIVATE_SETTINGS.add(BACK_GESTURE_HEIGHT);
@@ -5749,8 +5728,6 @@ public final class Settings {
             VALIDATORS.put(BATTERY_LIGHT_REALLYFULL_COLOR, BATTERY_LIGHT_REALLYFULL_COLOR_VALIDATOR);
             VALIDATORS.put(DISPLAY_CUTOUT_HIDDEN, DISPLAY_CUTOUT_HIDDEN_VALIDATOR);
             VALIDATORS.put(FORCE_FULLSCREEN_CUTOUT_APPS, FORCE_FULLSCREEN_CUTOUT_APPS_VALIDATOR);
-            VALIDATORS.put(DOZE_ON_CHARGE, DOZE_ON_CHARGE_VALIDATOR);
-            VALIDATORS.put(DOZE_ON_CHARGE_NOW, DOZE_ON_CHARGE_NOW_VALIDATOR);
             VALIDATORS.put(CANDY_CUSTOM_FP_ICON, CANDY_CUSTOM_FP_ICON_VALIDATOR);
             VALIDATORS.put(GESTURE_PILL_TOGGLE, GESTURE_PILL_TOGGLE_VALIDATOR);
             VALIDATORS.put(BACK_GESTURE_HEIGHT, BACK_GESTURE_HEIGHT_VALIDATOR);
@@ -10133,6 +10110,23 @@ public final class Settings {
          */
         public static final String ADB_PORT = "adb_port";
 
+        /*
+        * Whether to enable DOZE only when charging
+        * @hide
+        */
+       public static final String DOZE_ON_CHARGE = "doze_on_charge";
+
+       private static final Validator DOZE_ON_CHARGE_VALIDATOR = BOOLEAN_VALIDATOR;
+
+       /**
+        * hidden stting of the current atate of DOZE only when charging
+        * @hide
+        */
+       public static final String DOZE_ON_CHARGE_NOW = "doze_on_charge_now";
+
+       private static final Validator DOZE_ON_CHARGE_NOW_VALIDATOR =
+                ANY_STRING_VALIDATOR;
+
         /**
          * This are the settings to be backed up.
          *
@@ -10274,6 +10268,8 @@ public final class Settings {
             AWARE_TAP_PAUSE_GESTURE_COUNT,
             AWARE_TAP_PAUSE_TOUCH_COUNT,
             LOCKSCREEN_VISUALIZER_ENABLED,
+            DOZE_ON_CHARGE,
+            DOZE_ON_CHARGE_NOW,
         };
 
         /**
@@ -10477,6 +10473,8 @@ public final class Settings {
             VALIDATORS.put(AWARE_TAP_PAUSE_TOUCH_COUNT, NON_NEGATIVE_INTEGER_VALIDATOR);
             VALIDATORS.put(TAP_GESTURE, TAP_GESTURE_VALIDATOR);
             VALIDATORS.put(LOCKSCREEN_VISUALIZER_ENABLED, LOCKSCREEN_VISUALIZER_ENABLED_VALIDATOR);
+            VALIDATORS.put(DOZE_ON_CHARGE, DOZE_ON_CHARGE_VALIDATOR);
+            VALIDATORS.put(DOZE_ON_CHARGE_NOW, DOZE_ON_CHARGE_NOW_VALIDATOR);
         }
 
         /**

@@ -74,7 +74,7 @@ public class DozeParameters implements TunerService.Tunable,
 
         Dependency.get(TunerService.class).addTunable(this, Settings.Secure.DOZE_ALWAYS_ON,
                 Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED,
-                Settings.System.DOZE_ON_CHARGE_NOW);
+                Settings.Secure.DOZE_ON_CHARGE_NOW);
     }
 
     public void dump(PrintWriter pw) {
