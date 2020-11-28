@@ -200,8 +200,7 @@ public interface StatusBarGoogleModule {
             Lazy<NotificationShadeDepthController> notificationShadeDepthController,
             DismissCallbackRegistry dismissCallbackRegistry,
             StatusBarTouchableRegionManager statusBarTouchableRegionManager,
-            FlashlightController flashlightController,
-            TaskHelper taskHelper) {
+            FlashlightController flashlightController) {
         return new StatusBarGoogle(
                 context,
                 notificationsController,
