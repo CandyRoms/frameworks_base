@@ -27,4 +27,6 @@
     <dimen name="net_traffic_txt_img_padding">4dp</dimen>
     <dimen name="net_traffic_single_text_size_x">14dp</dimen>
 
+   <dimen name="screenrecord_dot_size">48dp</dimen>
+
 </resources>
