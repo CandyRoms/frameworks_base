@@ -129,7 +129,12 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         @Override
         public void onDreamingStateChanged(boolean dreaming) {
             mIsDreaming = dreaming;
-            updateAlpha();
+
+            if (mIsKeyguard && mUpdateMonitor.isFingerprintDetectionRunning()) {
+                show();
+            } else {
+                hide();
+            }
 
             if (mIsKeyguard && mUpdateMonitor.isFingerprintDetectionRunning()) {
                 show();
@@ -171,15 +176,10 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         }
 
         @Override
-        public void onStartedGoingToSleep(int why) {
-            hide();
-        }
-
-        @Override
         public void onScreenTurnedOff() {
             hideCircle();
         }
-
+       
         @Override
         public void onBiometricHelp(int msgId, String helpString,
                 BiometricSourceType biometricSourceType) {
@@ -501,7 +501,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         if (dim) {
             int curBrightness = Settings.System.getInt(getContext().getContentResolver(),
                     Settings.System.SCREEN_BRIGHTNESS, 100);
-            float dimAmount = 0.0f;
+            int dimAmount = 0;
 
             IFingerprintInscreen daemon = getFingerprintInScreenDaemon();
             try {
@@ -511,6 +511,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             }
 
             if (mShouldBoostBrightness) {
+                mPressedParams.screenBrightness = 1.0f;
             }
 
             mPressedParams.dimAmount = dimAmount / 255.0f;
@@ -520,9 +521,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
                 mWindowManager.updateViewLayout(mPressedView, mPressedParams);
             }
         } else {
-            if (mShouldBoostBrightness) {
-                mPressedParams.screenBrightness = 0.0f;
-            }
+            mPressedParams.screenBrightness = 0.0f;
             mPressedParams.dimAmount = 0.0f;
             if (mPressedView.getParent() != null) {
                 mWindowManager.removeView(mPressedView);
