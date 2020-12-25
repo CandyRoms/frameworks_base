@@ -129,12 +129,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         @Override
         public void onDreamingStateChanged(boolean dreaming) {
             mIsDreaming = dreaming;
-
-            if (mIsKeyguard && mUpdateMonitor.isFingerprintDetectionRunning()) {
-                show();
-            } else {
-                hide();
-            }
+            updateAlpha();
 
             if (mIsKeyguard && mUpdateMonitor.isFingerprintDetectionRunning()) {
                 show();
