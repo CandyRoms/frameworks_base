@@ -96,6 +96,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
     private int mCurrentBrightness;
     private int mDreamingOffsetY;
+    private int mColorBackground;
 
     private boolean mFading;
     private boolean mIsBouncer;
@@ -118,8 +119,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
     private Spline mFODiconBrightnessToDimAmountSpline;
 
-    private FODAnimation mFODAnimation;
-    private boolean mIsRecognizingAnimEnabled;
 
     private int mSelectedIcon;
     private final int[] ICON_STYLES = {
@@ -145,6 +144,15 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         R.drawable.fod_icon_shooky,
         R.drawable.fod_icon_spiral_blue,
         R.drawable.fod_icon_default_1
+    };
+
+    private int mDefaultPressedColor;
+    private int mPressedColor;
+    private final int[] PRESSED_COLOR = {
+        R.drawable.fod_icon_pressed,
+        R.drawable.fod_icon_pressed_cyan,
+        R.drawable.fod_icon_pressed_green,
+        R.drawable.fod_icon_pressed_yellow
     };
 
     private IFingerprintInscreenCallback mFingerprintInscreenCallback =
@@ -292,39 +300,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
     private boolean mCutoutMasked;
     private int mStatusbarHeight;
-    private class CustomSettingsObserver extends ContentObserver {
-        CustomSettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    SCREEN_BRIGHTNESS), false, this, UserHandle.USER_ALL);
-        }
-
-        void unobserve() {
-            mContext.getContentResolver().unregisterContentObserver(this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            // if (uri.equals(Settings.System.getUriFor(SCREEN_BRIGHTNESS))) {
-            update();
-            // }
-        }
-
-        void update() {
-            int brightness = Settings.System.getInt(
-                    mContext.getContentResolver(), SCREEN_BRIGHTNESS, 100);
-            if (mCurrentBrightness != brightness) {
-                mCurrentBrightness = brightness;
-                updateIconDim(false);
-            }
-        }
-    }
-
-    private CustomSettingsObserver mCustomSettingsObserver;
 
     public FODCircleView(Context context) {
         super(context);
@@ -348,8 +323,10 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         mPaintFingerprint.setColor(res.getColor(R.color.config_fodColor));
         mPaintFingerprint.setAntiAlias(true);
-
-        mPaintFingerprintBackground.setColor(res.getColor(R.color.config_fodColorBackground));
+        mColorBackground = res.getColor(R.color.config_fodColorBackground);
+        mDefaultPressedColor = res.getInteger(com.android.internal.R.
+             integer.config_fod_pressed_color);
+        mPaintFingerprintBackground.setColor(mColorBackground);
         mPaintFingerprintBackground.setAntiAlias(true);
 
         float[] icon_dim_amount =
@@ -371,9 +348,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         mDreamingMaxOffset = (int) (mSize * 0.1f);
 
         mHandler = new Handler(Looper.getMainLooper());
-
-        mCustomSettingsObserver = new CustomSettingsObserver(mHandler);
-        mCustomSettingsObserver.update();
 
         mParams.height = mSize;
         mParams.width = mSize;
@@ -398,13 +372,16 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             @Override
             protected void onDraw(Canvas canvas) {
                 if (mIsCircleShowing) {
-                    canvas.drawCircle(mSize / 2, mSize / 2, mSize / 2.0f, mPaintFingerprint);
+                    setImageResource(PRESSED_COLOR[mPressedColor]);
                 }
                 super.onDraw(canvas);
             }
         };
+
         mWindowManager.addView(this, mParams);
 
+        mCustomSettingsObserver.observe();
+        mCustomSettingsObserver.update();
         updatePosition();
         hide();
 
@@ -449,9 +426,46 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
                         setColorFilter(Color.argb(getDimAlpha(), 0, 0, 0),
                         PorterDuff.Mode.SRC_ATOP));
             }
-        } else {
-            mHandler.post(() -> setColorFilter(Color.argb(0, 0, 0, 0),
-                    PorterDuff.Mode.SRC_ATOP));
+        }
+    }
+
+    private CustomSettingsObserver mCustomSettingsObserver = new CustomSettingsObserver(mHandler);
+    private class CustomSettingsObserver extends ContentObserver {
+
+        CustomSettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    SCREEN_BRIGHTNESS), false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.FOD_COLOR),
+                    false, this, UserHandle.USER_ALL);
+        }
+
+        void unobserve() {
+            mContext.getContentResolver().unregisterContentObserver(this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            if (uri.equals(Settings.System.getUriFor(Settings.System.FOD_COLOR))) {
+                updateStyle();
+            } if (uri.equals(Settings.System.getUriFor(SCREEN_BRIGHTNESS))) {
+                update();
+            }
+        } 
+
+        public void update() {
+            int brightness = Settings.System.getInt(
+                    mContext.getContentResolver(), SCREEN_BRIGHTNESS, 100);
+            if (mCurrentBrightness != brightness) {
+                mCurrentBrightness = brightness;
+                updateIconDim(false);
+            }
+            updateStyle();
         }
 
     }
@@ -753,6 +767,11 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
     private void updateAlpha() {
         setAlpha(mIsDreaming ? 0.5f : 1.0f);
+    }
+
+    private void updateStyle() {
+        mPressedColor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.FOD_COLOR, mDefaultPressedColor);
     }
 
     private void updatePosition() {

@@ -5215,6 +5215,11 @@ public final class Settings {
          */
         public static final String FOD_ICON_WALLPAPER_COLOR = "fod_icon_wallpaper_color";
 
+        /**
+         * FOD pressed color
+         * @hide
+         */
+        public static final String FOD_COLOR = "fod_color";
 
         /**
          * Keys we no longer back up under the current schema, but want to continue to
