@@ -178,12 +178,23 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             }
 
             if (dreaming) {
-                mBurnInProtectionTimer = new Timer();
-                mBurnInProtectionTimer.schedule(new BurnInProtectionTask(), 0, 60 * 1000);
-            } else if (mBurnInProtectionTimer != null) {
-                mBurnInProtectionTimer.cancel();
-                mBurnInProtectionTimer = null;
-                updatePosition();
+                if (shouldShowOnDoze()) {
+                    mBurnInProtectionTimer = new Timer();
+                    mBurnInProtectionTimer.schedule(new BurnInProtectionTask(), 0, 60 * 1000);
+                } else {
+                    setImageDrawable(null);
+                    invalidate();
+                }
+            } else {
+                if (mBurnInProtectionTimer != null) {
+                    mBurnInProtectionTimer.cancel();
+                    mBurnInProtectionTimer = null;
+                    updatePosition();
+                }
+                if (!shouldShowOnDoze()) {
+                    setImageResource(R.drawable.fod_icon_default);
+                    invalidate();
+                }
             }
         }
 
@@ -522,7 +533,11 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     public void hideCircle() {
         mIsCircleShowing = false;
 
-        setImageResource(R.drawable.fod_icon_default);
+        if (mIsDreaming && !shouldShowOnDoze()) {
+            setImageDrawable(null);
+        } else {
+            setImageResource(R.drawable.fod_icon_default);
+        }
         invalidate();
 
         ThreadUtils.postOnBackgroundThread(() -> {
@@ -682,6 +697,11 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         }
 
         return false;
+    }
+
+    private boolean shouldShowOnDoze() {
+        return Settings.Secure.getInt(mContext.getContentResolver(),
+                Settings.Secure.FOD_ON_DOZE, 1) == 1;
     }
 
     private class BurnInProtectionTask extends TimerTask {
