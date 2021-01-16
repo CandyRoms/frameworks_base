@@ -629,7 +629,7 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
         int rot = mDisplay.getRotation();
         int width = crop.width();
         int height = crop.height();
-        takeScreenshot(SurfaceControl.screenshot(crop, width, height, rot), finisher, screenRect,
+        saveScreenshot(SurfaceControl.screenshot(crop, width, height, rot), finisher, screenRect,
                 Insets.NONE, true);
 
     }
