@@ -3,8 +3,11 @@ package com.android.systemui.statusbar.phone;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -192,12 +195,27 @@ public class NotificationIconAreaController implements DarkReceiver,
                 mIconSize + 2 * mIconHPadding, getHeight());
     }
 
+    @NonNull
+    private FrameLayout.LayoutParams generateAodIconLayoutParams() {
+        return new FrameLayout.LayoutParams(getAodIconsSize(), getAodIconsSize());
+    }
+
     private void reloadDimens(Context context) {
         Resources res = context.getResources();
         mIconSize = res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_icon_size);
         mIconHPadding = res.getDimensionPixelSize(R.dimen.status_bar_icon_padding);
         mAodIconAppearTranslation = res.getDimensionPixelSize(
                 R.dimen.shelf_appear_translation);
+    }
+
+    private int getAodIconsSize() {
+        return Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.AMBIENT_ICONS_SIZE, 80, UserHandle.USER_CURRENT);
+    }
+
+    private int getAodIconsColor() {
+        return Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.AMBIENT_ICONS_COLOR, Color.WHITE, UserHandle.USER_CURRENT);
     }
 
     /**
@@ -455,6 +473,8 @@ public class NotificationIconAreaController implements DarkReceiver,
         }
 
         final FrameLayout.LayoutParams params = generateIconLayoutParams();
+        final FrameLayout.LayoutParams aodParams = generateAodIconLayoutParams();
+        final boolean isAodHostLayout = hostLayout == mAodIcons;
         for (int i = 0; i < toShow.size(); i++) {
             StatusBarIconView v = toShow.get(i);
             // The view might still be transiently added if it was just removed and added again
@@ -463,7 +483,7 @@ public class NotificationIconAreaController implements DarkReceiver,
                 if (hideDismissed) {
                     v.setOnDismissListener(mUpdateStatusBarIcons);
                 }
-                hostLayout.addView(v, i, params);
+                hostLayout.addView(v, i, isAodHostLayout ? aodParams : params);
             }
         }
 
@@ -477,7 +497,7 @@ public class NotificationIconAreaController implements DarkReceiver,
                 continue;
             }
             hostLayout.removeView(expected);
-            hostLayout.addView(expected, i);
+            hostLayout.addView(expected, i, isAodHostLayout ? aodParams : params);
         }
         hostLayout.setChangingViewPositions(false);
         hostLayout.setReplacingIcons(null);
@@ -594,8 +614,7 @@ public class NotificationIconAreaController implements DarkReceiver,
     }
 
     private void reloadAodColor() {
-        mAodIconTint = Utils.getColorAttrDefaultColor(mContext,
-                R.attr.wallpaperTextColor);
+        mAodIconTint = getAodIconsColor();
     }
     private void updateAodIconColors() {
         for (int i = 0; i < mAodIcons.getChildCount(); i++) {
@@ -629,12 +648,16 @@ public class NotificationIconAreaController implements DarkReceiver,
     }
 
     private void updateAodIconsVisibility(boolean animate) {
+        boolean showIconsLockScreen = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.AMBIENT_ICONS_LOCKSCREEN,
+                0, UserHandle.USER_CURRENT) != 0;
         boolean visible = mBypassController.getBypassEnabled()
-                || mWakeUpCoordinator.getNotificationsFullyHidden();
+                || mWakeUpCoordinator.getNotificationsFullyHidden() || showIconsLockScreen;
+        mAodIcons.getLayoutParams().height = getAodIconsSize();
         if (mStatusBarStateController.getState() != StatusBarState.KEYGUARD) {
             visible = false;
         }
-        if (visible && mWakeUpCoordinator.isPulseExpanding()) {
+        if (visible && mWakeUpCoordinator.isPulseExpanding() && !showIconsLockScreen) {
             visible = false;
         }
         if (mAodIconsVisible != visible) {

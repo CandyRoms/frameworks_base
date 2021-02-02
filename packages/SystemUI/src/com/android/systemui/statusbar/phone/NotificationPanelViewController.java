@@ -46,6 +46,8 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.MathUtils;
+import android.os.UserHandle;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -2139,15 +2141,22 @@ public class NotificationPanelViewController extends PanelViewController {
         return (int) totalHeight;
     }
 
-    private void updateNotificationTranslucency() {
+    public void updateNotificationTranslucency() {
         float alpha = 1f;
+        boolean showIconsLockScreen = Settings.System.getIntForUser(mView.getContext().getContentResolver(),
+                Settings.System.AMBIENT_ICONS_LOCKSCREEN,
+                0, UserHandle.USER_CURRENT) != 0;
+
+
         if (mClosingWithAlphaFadeOut && !mExpandingFromHeadsUp
-                && !mHeadsUpManager.hasPinnedHeadsUp()) {
+                && !mHeadsUpManager.hasPinnedHeadsUp() && !showIconsLockScreen) {
             alpha = getFadeoutAlpha();
         }
         if (mBarState == StatusBarState.KEYGUARD && !mHintAnimationRunning
-                && !mKeyguardBypassController.getBypassEnabled()) {
+                && !mKeyguardBypassController.getBypassEnabled() && !showIconsLockScreen) {
             alpha *= mClockPositionResult.clockAlpha;
+        } else if (mBarState == StatusBarState.KEYGUARD && showIconsLockScreen) {
+            alpha = 0;
         }
         mNotificationStackScroller.setAlpha(alpha);
     }
