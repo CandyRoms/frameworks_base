@@ -71,4 +71,8 @@
         <item>restart</item>
         <item>screenshot</item> <!--2 buttons nav-->
     </string-array>
+ 
+    <!-- If not zero, limits the internal screen recorder's framerate to the set value. -->
+    <integer name="config_screenRecorderMaxFramerate">0</integer>
+
 </resources>
