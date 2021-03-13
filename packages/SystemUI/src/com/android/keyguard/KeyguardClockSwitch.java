@@ -130,6 +130,7 @@ public class KeyguardClockSwitch extends RelativeLayout {
     private boolean mShowingHeader;
     private boolean mSupportsDarkText;
     private int[] mColorPalette;
+    private boolean mShowCurrentUserTime;
 
     /**
      * Track the state of the status bar to know when to hide the big_clock_container.
@@ -189,6 +190,10 @@ public class KeyguardClockSwitch extends RelativeLayout {
         return mClockPlugin != null;
     }
 
+    public boolean hasCustomClockInBigContainer() {
+        return hasCustomClock() && mClockPlugin.shouldShowInBigContainer();
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -223,6 +228,10 @@ public class KeyguardClockSwitch extends RelativeLayout {
             if (smallClockView != null && smallClockView.getParent() == mSmallClockFrame) {
                 mSmallClockFrame.removeView(smallClockView);
             }
+            View bigClockView = mClockPlugin.getBigClockView();
+            if (bigClockView != null && bigClockView.getParent() == mSmallClockFrame) {
+                mSmallClockFrame.removeView(bigClockView);
+            }
             if (mBigClockContainer != null) {
                 mBigClockContainer.removeAllViews();
                 updateBigClockVisibility();
@@ -242,20 +251,37 @@ public class KeyguardClockSwitch extends RelativeLayout {
             mKeyguardStatusArea.setVisibility(View.VISIBLE);
             return;
         }
+
+
         // Attach small and big clock views to hierarchy.
         View smallClockView = plugin.getView();
-        if (smallClockView != null) {
-            mSmallClockFrame.addView(smallClockView, -1,
-                    new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        View bigClockView = plugin.getBigClockView();
+
+        if (plugin.shouldShowInBigContainer()) {
+            if (smallClockView != null) {
+                mSmallClockFrame.addView(smallClockView, -1,
+                        new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT));
+                mClockView.setVisibility(View.GONE);
+                mClockViewBold.setVisibility(View.GONE);
+            }
+            if (bigClockView != null && mBigClockContainer != null) {
+                mBigClockContainer.addView(bigClockView);
+                updateBigClockVisibility();
+            }
+        } else {
             mClockView.setVisibility(View.GONE);
             mClockViewBold.setVisibility(View.GONE);
+
+            if (bigClockView != null ) {
+                mSmallClockFrame.addView(bigClockView, -1,
+                        new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
+            }
         }
-        View bigClockView = plugin.getBigClockView();
-        if (bigClockView != null && mBigClockContainer != null) {
-            mBigClockContainer.addView(bigClockView);
-            updateBigClockVisibility();
-        }
+
+
+
         // Hide default clock.
         if (!plugin.shouldShowStatusArea()) {
             mKeyguardStatusArea.setVisibility(View.GONE);
@@ -275,12 +301,16 @@ public class KeyguardClockSwitch extends RelativeLayout {
      */
     public void setBigClockContainer(ViewGroup container) {
         if (mClockPlugin != null && container != null) {
-            View bigClockView = mClockPlugin.getBigClockView();
-            if (bigClockView != null) {
-                container.addView(bigClockView);
+            if (mClockPlugin.shouldShowInBigContainer()) {
+                View bigClockView = mClockPlugin.getBigClockView();
+                if (bigClockView != null) {
+                    container.addView(bigClockView);
+                }
+                mBigClockContainer = container;
+            } else {
+                mBigClockContainer = null;
             }
         }
-        mBigClockContainer = container;
         updateBigClockVisibility();
     }
 
@@ -309,6 +339,7 @@ public class KeyguardClockSwitch extends RelativeLayout {
     public void setShowCurrentUserTime(boolean showCurrentUserTime) {
         mClockView.setShowCurrentUserTime(showCurrentUserTime);
         mClockViewBold.setShowCurrentUserTime(showCurrentUserTime);
+        mShowCurrentUserTime = showCurrentUserTime;
     }
 
     public void setTextSize(int unit, float size) {
@@ -458,49 +489,6 @@ public class KeyguardClockSwitch extends RelativeLayout {
             return;
         }
         mShowingHeader = hasHeader;
-        if (hasCustomClock()) {
-            return;
-        }
-
-        float smallFontSize = mContext.getResources().getDimensionPixelSize(
-                R.dimen.widget_small_font_size);
-        float bigFontSize = mContext.getResources().getDimensionPixelSize(
-                R.dimen.widget_big_font_size);
-        mClockTransition.setScale(smallFontSize / bigFontSize);
-        mBoldClockTransition.setScale(bigFontSize / smallFontSize);
-
-        // End any current transitions before starting a new transition so that the new transition
-        // starts from a good state instead of a potentially bad intermediate state arrived at
-        // during a transition animation.
-        TransitionManager.endTransitions((ViewGroup) mClockView.getParent());
-
-        if (hasHeader) {
-            // After the transition, make the default clock GONE so that it doesn't make the
-            // KeyguardStatusView appear taller in KeyguardClockPositionAlgorithm and elsewhere.
-            mTransition.addListener(new TransitionListenerAdapter() {
-                @Override
-                public void onTransitionEnd(Transition transition) {
-                    super.onTransitionEnd(transition);
-                    // Check that header is actually showing. I saw issues where this event was
-                    // fired after the big clock transitioned back to visible, which causes the time
-                    // to completely disappear.
-                    if (mShowingHeader) {
-                        mClockView.setVisibility(View.GONE);
-                    }
-                    transition.removeListener(this);
-                }
-            });
-        }
-
-        TransitionManager.beginDelayedTransition((ViewGroup) mClockView.getParent(), mTransition);
-        mClockView.setVisibility(hasHeader ? View.INVISIBLE : View.VISIBLE);
-        mClockViewBold.setVisibility(hasHeader ? View.VISIBLE : View.INVISIBLE);
-        int paddingBottom = mContext.getResources().getDimensionPixelSize(hasHeader
-                ? R.dimen.widget_vertical_padding_clock : R.dimen.title_clock_padding);
-        mClockView.setPadding(mClockView.getPaddingLeft(), mClockView.getPaddingTop(),
-                mClockView.getPaddingRight(), paddingBottom);
-        mClockViewBold.setPadding(mClockViewBold.getPaddingLeft(), mClockViewBold.getPaddingTop(),
-                mClockViewBold.getPaddingRight(), paddingBottom);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

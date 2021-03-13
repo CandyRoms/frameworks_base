@@ -20,12 +20,11 @@
 
 <!-- Power menu -->
   <java-symbol type="string" name="system_error_vendorprint" />
-
-
   <java-symbol type="array" name="config_blockPackagesSensorDrain" />
-
-
   <java-symbol type="array" name="config_vendorPlatformSignatures" />
+
+ <!-- Screen recorder framerate limit -->
+   <java-symbol type="integer" name="config_screenRecorderMaxFramerate" />
 
 </resources>
 

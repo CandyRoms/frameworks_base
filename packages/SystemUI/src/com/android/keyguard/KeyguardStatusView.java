@@ -145,6 +145,10 @@ public class KeyguardStatusView extends GridLayout implements
         return mClockView.hasCustomClock();
     }
 
+    public boolean hasCustomClockInBigContainer() {
+        return mClockView.hasCustomClockInBigContainer();
+    }
+
     /**
      * Set whether or not the lock screen is showing notifications.
      */
@@ -326,6 +330,11 @@ public class KeyguardStatusView extends GridLayout implements
     @Override
     public void onLocaleListChanged() {
         refreshFormat();
+    }
+
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
     }
 
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {

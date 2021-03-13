@@ -51,16 +51,13 @@
     <color name="global_actions_alert_text">@color/GM2_red_700</color>
 
     <!-- The color of the background of the emergency button when home controls are visible -->
-    <color name="global_actions_emergency_background">@color/GM2_red_400</color>
+    <color name="global_actions_emergency_background">@color/GM2_red_700</color>
     <color name="global_actions_emergency_text">@color/GM2_grey_100</color>
 
     <!-- Tint color for the content on the notification overflow card. -->
     <color name="keyguard_overflow_content_color">#ff686868</color>
 
     <color name="keyguard_affordance">#ffffffff</color>
-
-    <!-- Shadows under the clock, date and other keyguard text fields -->
-    <color name="keyguard_shadow_color">#B2000000</color>
 
     <!-- Color for rounded background for activated user in keyguard user switcher -->
     <color name="kg_user_switcher_activated_background_color">#26000000</color>
@@ -200,7 +197,7 @@
     <color name="global_screenshot_button_text">#000000</color>
     <color name="global_screenshot_button_border">@color/GM2_grey_300</color>
     <color name="global_screenshot_button_ripple">#1f000000</color>
-    <color name="global_screenshot_button_icon">@color/GM2_blue_500</color>
+    <color name="global_screenshot_button_icon">@*android:color/accent_device_default_light</color>
     <color name="global_screenshot_dismiss_background">#FFFFFF</color>
     <color name="global_screenshot_dismiss_foreground">@color/GM2_grey_500</color>
     <color name="global_screenshot_background_protection_start">#40000000</color> <!-- 25% black -->

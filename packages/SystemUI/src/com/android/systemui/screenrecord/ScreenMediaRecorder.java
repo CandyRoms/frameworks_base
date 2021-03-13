@@ -38,6 +38,7 @@ import android.media.projection.IMediaProjectionManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -62,6 +63,7 @@ public class ScreenMediaRecorder {
     private static final int TOTAL_NUM_TRACKS = 1;
     private static final int VIDEO_FRAME_RATE = 30;
     private static final int VIDEO_FRAME_RATE_TO_RESOLUTION_RATIO = 6;
+    private static final int LOW_VIDEO_BIT_RATE = 3000000;
     private static final int AUDIO_BIT_RATE = 196000;
     private static final int AUDIO_SAMPLE_RATE = 44100;
     private static final int MAX_DURATION_MS = 60 * 60 * 1000;
@@ -80,6 +82,8 @@ public class ScreenMediaRecorder {
     private ScreenInternalAudioRecorder mAudio;
     private ScreenRecordingAudioSource mAudioSource;
 
+    private boolean mLowQuality;
+
     private Context mContext;
     MediaRecorder.OnInfoListener mListener;
 
@@ -90,6 +94,10 @@ public class ScreenMediaRecorder {
         mUser = user;
         mListener = listener;
         mAudioSource = audioSource;
+    }
+
+    public void setLowQuality(boolean low) {
+        mLowQuality = low;
     }
 
     private void prepare() throws IOException, RemoteException {
@@ -126,13 +134,21 @@ public class ScreenMediaRecorder {
         wm.getDefaultDisplay().getRealMetrics(metrics);
         int screenWidth = metrics.widthPixels;
         int screenHeight = metrics.heightPixels;
-        int refereshRate = (int) wm.getDefaultDisplay().getRefreshRate();
-        int vidBitRate = screenHeight * screenWidth * refereshRate / VIDEO_FRAME_RATE
+        int refereshRate = mLowQuality? VIDEO_FRAME_RATE : (int) wm.getDefaultDisplay().getRefreshRate();
+        int maxRefreshRate = mContext.getResources().getInteger(
+                com.android.internal.R.integer.config_screenRecorderMaxFramerate);
+        if (maxRefreshRate != 0 && refereshRate > maxRefreshRate) refereshRate = maxRefreshRate;
+        // TODO: make low quality bitrate scalable per device, like the default one
+        int vidBitRate = mLowQuality ? LOW_VIDEO_BIT_RATE :
+                screenHeight * screenWidth * refereshRate / VIDEO_FRAME_RATE
                 * VIDEO_FRAME_RATE_TO_RESOLUTION_RATIO;
+        /* PS: HEVC can be set too, to reduce file size without quality loss (h265 is more efficient than h264),
+        but at the same time the cpu load is 8-10 times higher and some devices don't support it yet */
         mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        mMediaRecorder.setVideoEncodingProfileLevel(
-                MediaCodecInfo.CodecProfileLevel.AVCProfileHigh,
-                MediaCodecInfo.CodecProfileLevel.AVCLevel3);
+                mMediaRecorder.setVideoEncodingProfileLevel(
+                MediaCodecInfo.CodecProfileLevel.AVCProfileMain,/*actually the common used high level profile*/
+                mLowQuality ? MediaCodecInfo.CodecProfileLevel.AVCLevel32/*level 3.2*/
+                : MediaCodecInfo.CodecProfileLevel.AVCLevel42/*level 4.2*/);
         mMediaRecorder.setVideoSize(screenWidth, screenHeight);
         mMediaRecorder.setVideoFrameRate(refereshRate);
         mMediaRecorder.setVideoEncodingBitRate(vidBitRate);
@@ -223,6 +239,7 @@ public class ScreenMediaRecorder {
         values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
         values.put(MediaStore.Video.Media.DATE_ADDED, System.currentTimeMillis());
         values.put(MediaStore.Video.Media.DATE_TAKEN, System.currentTimeMillis());
+        values.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + File.separator + "ScreenRecords");
 
         ContentResolver resolver = mContext.getContentResolver();
         Uri collectionUri = MediaStore.Video.Media.getContentUri(

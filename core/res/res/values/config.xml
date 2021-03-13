@@ -1657,6 +1657,10 @@
         <item>com.android.location.fused</item>
         <!-- The (faked) microg fused location provider (a free reimplementation) -->
         <item>com.google.android.gms</item>
+        <!-- microG unifiednlp location provider (standalone) -->
+        <item>org.microg.nlp</item>
+        <!-- The (faked) microg fused location provider (a free reimplementation) -->
+        <item>com.google.android.gms</item>
     </string-array>
 
     <!-- This string array can be overriden to enable test location providers initially. -->
@@ -3776,7 +3780,7 @@
     <string name="config_mediaProjectionPermissionDialogComponent" translatable="false">com.android.systemui/com.android.systemui.media.MediaProjectionPermissionActivity</string>
 
     <!-- Corner radius of system dialogs -->
-    <dimen name="config_dialogCornerRadius">2dp</dimen>
+    <dimen name="config_dialogCornerRadius">@dimen/dialog_corner_radius</dimen>
     <!-- Corner radius of system buttons -->
     <dimen name="config_buttonCornerRadius">@dimen/control_corner_material</dimen>
     <!-- Corner radius for bottom sheet system dialogs -->

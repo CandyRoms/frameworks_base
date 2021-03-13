@@ -666,6 +666,10 @@ public class NotificationPanelViewController extends PanelViewController {
         return mKeyguardStatusView.hasCustomClock();
     }
 
+    public boolean hasCustomClockInBigContainer() {
+        return mKeyguardStatusView.hasCustomClockInBigContainer();
+    }
+
     private void setStatusBar(StatusBar bar) {
         // TODO: this can be injected.
         mStatusBar = bar;
@@ -709,6 +713,21 @@ public class NotificationPanelViewController extends PanelViewController {
                 R.layout.keyguard_status_view, mView, false);
         mView.addView(mKeyguardStatusView, index);
 
+        index = mView.indexOfChild(mKeyguardStatusBar);
+        mView.removeView(mKeyguardStatusBar);
+        mKeyguardStatusBar = (KeyguardStatusBarView) mInjectionInflationController
+                .injectable(LayoutInflater.from(mView.getContext())).inflate(
+                        R.layout.keyguard_status_bar,
+                        mView,
+                        false);
+        mView.addView(mKeyguardStatusBar, index);
+        if (mQs != null && mQs instanceof QSFragment) {
+            mKeyguardStatusBar.setQSPanel(((QSFragment) mQs).getQsPanel());
+        }
+        mKeyguardStatusBar.setAlpha(mBarState == StatusBarState.KEYGUARD ? 0f : 1f);
+        mKeyguardStatusBar.setVisibility(
+                mBarState == StatusBarState.KEYGUARD ? View.VISIBLE : View.INVISIBLE);
+
         // Re-associate the clock container with the keyguard clock switch.
         mBigClockContainer.removeAllViews();
         KeyguardClockSwitch keyguardClockSwitch = mView.findViewById(R.id.keyguard_clock_container);
@@ -728,9 +747,9 @@ public class NotificationPanelViewController extends PanelViewController {
         mStatusBarStateListener.onDozeAmountChanged(mStatusBarStateController.getDozeAmount(),
                 mStatusBarStateController.getInterpolatedDozeAmount());
 
-        if (mKeyguardStatusBar != null) {
+        /*if (mKeyguardStatusBar != null) {
             mKeyguardStatusBar.onThemeChanged();
-        }
+        }*/
 
         setKeyguardStatusViewVisibility(mBarState, false, false);
         setKeyguardBottomAreaVisibility(mBarState, false);
@@ -821,7 +840,7 @@ public class NotificationPanelViewController extends PanelViewController {
             mClockPositionAlgorithm.setup(mStatusBarMinHeight, totalHeight - bottomPadding,
                     mNotificationStackScroller.getIntrinsicContentHeight(), getExpandedFraction(),
                     totalHeight, (int) (mKeyguardStatusView.getHeight() - mShelfHeight / 2.0f
-                            - mDarkIconSize / 2.0f), clockPreferredY, hasCustomClock(),
+                            - mDarkIconSize / 2.0f), clockPreferredY, hasCustomClockInBigContainer(),
                     hasVisibleNotifications, mInterpolatedDarkAmount, mEmptyDragAmount,
                     bypassEnabled, getUnlockedStackScrollerPadding());
             mClockPositionAlgorithm.run(mClockPositionResult);
@@ -3171,6 +3190,11 @@ public class NotificationPanelViewController extends PanelViewController {
                 // to pull down QS or expand the shade.
                 if (mStatusBar.isBouncerShowingScrimmed()) {
                     return false;
+                }
+
+                if (mIsLockscreenDoubleTapEnabled && !mPulsing && !mDozing
+                        && mBarState == StatusBarState.KEYGUARD) {
+                   mLockscreenDoubleTapToSleep.onTouchEvent(event);
                 }
 
                 // Make sure the next touch won't the blocked after the current ends.
