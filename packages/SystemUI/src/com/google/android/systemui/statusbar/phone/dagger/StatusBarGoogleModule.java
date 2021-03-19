@@ -98,6 +98,7 @@ import com.android.systemui.statusbar.policy.FlashlightController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.RemoteInputQuickSettingsDisabler;
+import com.android.systemui.statusbar.policy.TaskHelper;
 import com.android.systemui.statusbar.policy.UserInfoControllerImpl;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.volume.VolumeComponent;
@@ -205,7 +206,8 @@ public interface StatusBarGoogleModule {
             DismissCallbackRegistry dismissCallbackRegistry,
             StatusBarTouchableRegionManager statusBarTouchableRegionManager,
             FlashlightController flashlightController,
-            FODCircleViewImpl fodCircleViewImpl) {
+            FODCircleViewImpl fodCircleViewImpl,
+            TaskHelper taskHelper) {
         return new StatusBarGoogle(
                 smartSpaceController,
                 wallpaperNotifier,
@@ -287,6 +289,7 @@ public interface StatusBarGoogleModule {
                 notificationShadeDepthController,
                 statusBarTouchableRegionManager,
                 flashlightController,
-                fodCircleViewImpl);
+                fodCircleViewImpl,
+                taskHelper);
     }
 }
