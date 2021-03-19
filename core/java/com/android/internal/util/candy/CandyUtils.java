@@ -59,7 +59,7 @@ import java.util.Locale;
 public class CandyUtils {
 
     public static final String TAG = "CandyUtils";
-   
+
     public static final String INTENT_SCREENSHOT = "action_take_screenshot";
     public static final String INTENT_REGION_SCREENSHOT = "action_take_region_screenshot";
 
@@ -79,7 +79,7 @@ public class CandyUtils {
             return mStatusBarService;
         }
     }
- 
+
     public static boolean isAppInstalled(Context context, String appUri) {
         try {
             PackageManager pm = context.getPackageManager();
@@ -353,5 +353,13 @@ public class CandyUtils {
         final TypedValue value = new TypedValue ();
         context.getTheme ().resolveAttribute (android.R.attr.colorAccent, value, true);
         return value.data;
+    }
+
+    public static boolean deviceHasFOD(Context context) {
+        Context mContext = context;
+        boolean hasFOD = mContext.getPackageManager().hasSystemFeature(
+                PackageManager.FEATURE_FINGERPRINT) && context.getResources().getBoolean(
+                com.android.internal.R.bool.config_needCustomFODView);
+        return hasFOD;
     }
 }
