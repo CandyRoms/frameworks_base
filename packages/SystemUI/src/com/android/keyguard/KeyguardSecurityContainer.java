@@ -69,6 +69,7 @@ import com.android.internal.logging.UiEvent;
 import com.android.internal.logging.UiEventLogger;
 import com.android.internal.logging.UiEventLoggerImpl;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
+import com.android.internal.util.candy.CandyUtils;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardSecurityModel.SecurityMode;
 import com.android.settingslib.utils.ThreadUtils;
@@ -79,6 +80,8 @@ import com.android.systemui.SystemUIFactory;
 import com.android.systemui.shared.system.SysUiStatsLog;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.util.InjectionInflationController;
+
+
 
 import java.util.List;
 
@@ -265,8 +268,7 @@ public class KeyguardSecurityContainer extends FrameLayout implements KeyguardSe
                 mUpdateMonitor, mCallback, new Handler(Looper.myLooper()));
 
         PackageManager packageManager = mContext.getPackageManager();
-        mHasFod = packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT) &&
-                context.getResources().getBoolean(com.android.internal.R.bool.config_needCustomFODView);;
+        mHasFod = CandyUtils.deviceHasFOD(context);
     }
 
     public void setSecurityCallback(SecurityCallback callback) {
@@ -989,4 +991,3 @@ public class KeyguardSecurityContainer extends FrameLayout implements KeyguardSe
         mSecurityViewFlipper.showUsabilityHint();
     }
 }
-
