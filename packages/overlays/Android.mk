@@ -48,7 +48,7 @@ LOCAL_REQUIRED_MODULES := \
 	DisplayCutoutEmulationTallOverlay \
 	DisplayCutoutEmulationWaterfallOverlay \
         AccentColoriOSBlueOverlay \
-	FontNotoSerifSourceOverlay \
+        FontNotoSerifSourceOverlay \
         FontAclonicaSourceOverlay \
         FontAmaranteSourceOverlay \
         FontBariolSourceOverlay \
@@ -61,7 +61,10 @@ LOCAL_REQUIRED_MODULES := \
         FontSurferSourceOverlay \
 	FontOneplusSlateSource \
 	FontSamsungOneSourceOverlay \
-	IconPackCircularAndroidOverlay \
+	FontKaiOverlay \
+	FontVictorOverlay \
+	FontSamOverlay \
+        IconPackCircularAndroidOverlay \
 	IconPackCircularLauncherOverlay \
 	IconPackCircularSettingsOverlay \
 	IconPackCircularSystemUIOverlay \
