@@ -26,9 +26,6 @@ LOCAL_REQUIRED_MODULES := \
 	AccentColorSpaceOverlay \
 	AccentColorGreenOverlay \
 	AccentColorPurpleOverlay \
-	AccentColorPaletteOverlay \
-	AccentColorCarbonOverlay \
-	AccentColorSandOverlay \
 	AccentColorAmethystOverlay \
 	AccentColorAquamarineOverlay \
 	AccentColorTangerineOverlay \
@@ -42,7 +39,7 @@ LOCAL_REQUIRED_MODULES := \
 	AccentColorFlatPinkOverlay \
 	AccentColorCyanOverlay \
 	AccentColorBlueGrayOverlay \
- 	DisplayCutoutEmulationCornerOverlay \
+	DisplayCutoutEmulationCornerOverlay \
 	DisplayCutoutEmulationDoubleOverlay \
         DisplayCutoutEmulationHoleOverlay \
 	DisplayCutoutEmulationTallOverlay \
@@ -65,6 +62,8 @@ LOCAL_REQUIRED_MODULES := \
 	FontVictorOverlay \
 	FontSamOverlay \
         IconPackCircularAndroidOverlay \
+	FontNotoSerifSourceOverlay \
+	IconPackCircularAndroidOverlay \
 	IconPackCircularLauncherOverlay \
 	IconPackCircularSettingsOverlay \
 	IconPackCircularSystemUIOverlay \
