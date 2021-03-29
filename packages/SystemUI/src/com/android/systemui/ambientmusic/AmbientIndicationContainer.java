@@ -40,6 +40,7 @@ import com.android.systemui.statusbar.NotificationMediaManager;
 import com.android.systemui.statusbar.phone.StatusBar;
 import com.android.systemui.util.wakelock.SettableWakeLock;
 import com.android.systemui.util.wakelock.WakeLock;
+import com.android.internal.util.candy.CandyUtils;
 
 public class AmbientIndicationContainer extends AutoReinflateContainer implements
         NotificationMediaManager.MediaListener {
