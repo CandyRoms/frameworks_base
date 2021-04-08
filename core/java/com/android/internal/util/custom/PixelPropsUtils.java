@@ -31,8 +31,11 @@ public class PixelPropsUtils {
     private static final Map<String, Object> propsToChange;
 
     private static final String[] packagesToChange = {
+            "com.google.android.apps.fitness",
+            "com.google.android.apps.recorder",
             "com.google.android.apps.safetyhub",
             "com.google.android.apps.turbo",
+             "com.google.android.apps.tachyon",
             "com.google.android.apps.turboadapter",
             "com.google.android.apps.wallpaper",
             "com.google.android.apps.maps",
