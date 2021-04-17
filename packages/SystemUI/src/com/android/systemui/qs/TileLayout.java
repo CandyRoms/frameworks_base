@@ -121,17 +121,17 @@ public class TileLayout extends ViewGroup implements QSTileLayout {
         int rows;
         if (res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mResourceColumns = Math.max(1, Settings.System.getIntForUser(resolver,
-                    Settings.System.QS_COLUMNS_PORTRAIT, 4,
+                    Settings.System.QS_COLUMNS_PORTRAIT, 5,
                     UserHandle.USER_CURRENT));
             rows = Math.max(1, Settings.System.getIntForUser(mContext.getContentResolver(),
                     Settings.System.QS_ROWS_PORTRAIT, 3,
                     UserHandle.USER_CURRENT));
         } else {
             mResourceColumns = Math.max(1, Settings.System.getIntForUser(resolver,
-                    Settings.System.QS_COLUMNS_LANDSCAPE, 4,
+                    Settings.System.QS_COLUMNS_LANDSCAPE, 5,
                     UserHandle.USER_CURRENT));
             rows = Math.max(1, Settings.System.getIntForUser(mContext.getContentResolver(),
-                        Settings.System.QS_ROWS_LANDSCAPE, 1,
+                        Settings.System.QS_ROWS_LANDSCAPE, 2,
                         UserHandle.USER_CURRENT));
         }
         //mCellHeight = mContext.getResources().getDimensionPixelSize(R.dimen.qs_tile_height);
