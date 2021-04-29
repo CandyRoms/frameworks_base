@@ -115,7 +115,6 @@ public class BatteryMeterView extends LinearLayout implements
     public int mShowBatteryPercent;
 
     private boolean mBatteryHidden;
-    private int mBatteryStyle = BATTERY_STYLE_PORTRAIT;
 
     private DualToneHandler mDualToneHandler;
     private int mUser;
