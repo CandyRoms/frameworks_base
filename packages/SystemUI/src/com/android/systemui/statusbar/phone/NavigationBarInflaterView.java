@@ -46,18 +46,20 @@ import com.android.systemui.shared.system.QuickStepContract;
 import com.android.systemui.statusbar.phone.ReverseLinearLayout.ReverseRelativeLayout;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.tuner.TunerService;
+import com.android.systemui.tuner.TunerService.Tunable;
 
 import java.io.PrintWriter;
 import java.util.Objects;
 
 public class NavigationBarInflaterView extends FrameLayout
-        implements NavigationModeController.ModeChangedListener, TunerService.Tunable {
+        implements NavigationModeController.ModeChangedListener, Tunable {
 
     private static final String TAG = "NavBarInflater";
 
     public static final String NAV_BAR_VIEWS = "sysui_nav_bar";
     public static final String NAV_BAR_LEFT = "sysui_nav_bar_left";
     public static final String NAV_BAR_RIGHT = "sysui_nav_bar_right";
+    public static final String NAV_BAR_INVERSE = "sysui_nav_bar_inverse";
 
     public static final String MENU_IME_ROTATE = "menu_ime";
     public static final String BACK = "back";
@@ -106,11 +108,14 @@ public class NavigationBarInflaterView extends FrameLayout
 
     private boolean mIsVertical;
     private boolean mAlternativeOrder;
+    private boolean mUsingCustomLayout;
 
     private OverviewProxyService mOverviewProxyService;
     private int mNavBarMode = NAV_BAR_MODE_3BUTTON;
 
     private boolean mIsHintEnabled;
+
+    private boolean mInverseLayout;
 
     public NavigationBarInflaterView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -165,12 +170,13 @@ public class NavigationBarInflaterView extends FrameLayout
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Dependency.get(TunerService.class).addTunable(this, KEY_NAVIGATION_HINT);
+        Dependency.get(TunerService.class).addTunable(this, NAV_BAR_VIEWS, NAV_BAR_INVERSE);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         Dependency.get(NavigationModeController.class).removeListener(this);
+        Dependency.get(TunerService.class).removeTunable(this);
         super.onDetachedFromWindow();
     }
 
@@ -180,11 +186,30 @@ public class NavigationBarInflaterView extends FrameLayout
             mIsHintEnabled = TunerService.parseIntegerSwitch(newValue, true);
             updateHint();
             onLikelyDefaultLayoutChange();
+        } else if (NAV_BAR_VIEWS.equals(key)) {
+            setNavigationBarLayout(newValue);
+        } else if (NAV_BAR_INVERSE.equals(key)) {
+            mInverseLayout = TunerService.parseIntegerSwitch(newValue, true);
+            updateLayoutInversion();
         }
     }
 
     public boolean isHintEnabled() {
         return mIsHintEnabled;
+    }
+
+    public void setNavigationBarLayout(String layoutValue) {
+        if (!Objects.equals(mCurrentLayout, layoutValue)) {
+            mUsingCustomLayout = layoutValue != null;
+            clearViews();
+            inflateLayout(layoutValue);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        updateLayoutInversion();
     }
 
     public void onLikelyDefaultLayoutChange() {
@@ -315,6 +340,19 @@ public class NavigationBarInflaterView extends FrameLayout
         updateButtonDispatchersCurrentView();
     }
 
+    private void updateLayoutInversion() {
+        if (mInverseLayout) {
+            Configuration config = mContext.getResources().getConfiguration();
+            if (config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+                setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+            } else {
+                setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+            }
+        } else {
+            setLayoutDirection(View.LAYOUT_DIRECTION_INHERIT);
+        }
+    }
+
     private void addGravitySpacer(LinearLayout layout) {
         layout.addView(new Space(mContext), new LinearLayout.LayoutParams(0, 0, 1));
     }
@@ -417,7 +455,9 @@ public class NavigationBarInflaterView extends FrameLayout
         } else if (RIGHT.equals(button)) {
             button = extractButton(MENU_IME_ROTATE);
         }
-        if (HOME.equals(button)) {
+        if(HOME_HANDLE.equals(button)) {
+            v = inflater.inflate(R.layout.home_handle, parent, false);
+        } else if (HOME.equals(button)) {
             v = inflater.inflate(R.layout.home, parent, false);
         } else if (BACK.equals(button)) {
             v = inflater.inflate(R.layout.back, parent, false);
@@ -431,8 +471,6 @@ public class NavigationBarInflaterView extends FrameLayout
             v = inflater.inflate(R.layout.clipboard, parent, false);
         } else if (CONTEXTUAL.equals(button)) {
             v = inflater.inflate(R.layout.contextual, parent, false);
-        } else if (HOME_HANDLE.equals(button)) {
-            v = inflater.inflate(R.layout.home_handle, parent, false);
         } else if (IME_SWITCHER.equals(button)) {
             v = inflater.inflate(R.layout.ime_switcher, parent, false);
         } else if (button.startsWith(KEY)) {
