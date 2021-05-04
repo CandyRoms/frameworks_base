@@ -272,10 +272,12 @@
     <!-- Permission to make accessibility service access Bubbles -->
     <uses-permission android:name="android.permission.ADD_TRUSTED_DISPLAY" />
 
-
     <!-- Pulse -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Asus Long screenshot -->
+    <uses-permission android:name="com.asus.stitchimage.permission.EXPORTED_FOR_ASUS_APPS"/>
 
     <protected-broadcast android:name="com.android.settingslib.action.REGISTER_SLICE_RECEIVER" />
     <protected-broadcast android:name="com.android.settingslib.action.UNREGISTER_SLICE_RECEIVER" />
@@ -426,6 +428,10 @@
 
         <!-- Callback for deleting screenshot notification -->
         <receiver android:name=".screenshot.DeleteScreenshotReceiver"
+            android:exported="false" />
+
+        <!-- Callback for scrolling screenshot notification -->
+        <receiver android:name=".screenshot.ScrollScreenshotReceiver"
             android:exported="false" />
 
         <!-- Callback for invoking a smart action from the screenshot notification. -->
