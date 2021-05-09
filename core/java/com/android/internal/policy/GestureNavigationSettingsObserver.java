@@ -32,7 +32,7 @@ import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
-import com.android.internal.util.custom.Utils;
+import com.android.internal.util.candy.CandyUtils;
 
 /**
  * @hide

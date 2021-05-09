@@ -46,6 +46,8 @@ import android.os.SystemProperties;
 import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.Vibrator;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.DisplayInfo;
@@ -56,8 +58,6 @@ import android.view.IWindowManager;
 import android.view.WindowManager;
 import android.view.WindowManagerGlobal;
 import android.widget.Toast;
-
-import android.util.DisplayMetrics;
 
 import com.android.internal.R;
 import com.android.internal.statusbar.IStatusBarService;
