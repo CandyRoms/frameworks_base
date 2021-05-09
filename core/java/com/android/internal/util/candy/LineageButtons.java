@@ -205,7 +205,7 @@ public final class LineageButtons {
     public void performTriggeredAction(String action, Context context, boolean interactive) {
         switch(action) {
             case "flashlight":
-                CandyUtils.toggleCameraFlash(false);
+                CandyUtils.toggleCameraFlash();
                 break;
             case "assist":
                 CandyUtils.startAssist();
