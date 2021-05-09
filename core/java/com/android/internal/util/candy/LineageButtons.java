@@ -296,7 +296,7 @@ public final class LineageButtons {
                 CandyUtils.launchCamera(context);
                 break;
             case 4: // Flashlight
-                CandyUtils.toggleCameraFlash(false/*no proximity check*/);
+                CandyUtils.toggleCameraFlash();
                 break;
             case 5: // Application
                 CandyUtils.launchApp(context, leftEdge, isVerticalSwipe);

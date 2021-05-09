@@ -57,7 +57,7 @@ import android.view.WindowManagerGlobal;
 
 import com.android.internal.config.sysui.SystemUiDeviceConfigFlags;
 import com.android.internal.policy.GestureNavigationSettingsObserver;
-import com.android.internal.util.custom.LineageButtons;
+import com.android.internal.util.candy.LineageButtons;
 import com.android.systemui.Dependency;
 import com.android.systemui.R;
 import com.android.systemui.SystemUIFactory;
@@ -620,12 +620,6 @@ public class EdgeBackGestureHandler extends CurrentUserTracker implements Displa
         if (mYDeadzoneDivider != 0 && y < (mDisplaySize.y / mYDeadzoneDivider)) {
             return false;
         }
-
-        // Denotes whether we should proceed with the gesture.
-        // Even if it is false, we may want to log it assuming
-        // it is not invalid due to exclusion.
-        boolean withinRange = x <= mEdgeWidthLeft + mLeftInset
-                || x >= (mDisplaySize.x - mEdgeWidthRight - mRightInset);
 
         // Always allow if the user is in a transient sticky immersive state
         if (mIsNavBarShownTransiently) {

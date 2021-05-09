@@ -73,7 +73,7 @@ public class GestureNavigationSettingsObserver extends ContentObserver {
                 // Get packageName from Uri
                 String packageName = intent.getData().getSchemeSpecificPart();
                 // If the package is still installed
-                if (Utils.isPackageInstalled(context, packageName)) {
+                if (CandyUtils.isPackageInstalled(context, packageName)) {
                     // it's an application update, we can skip the rest.
                     return;
                 }

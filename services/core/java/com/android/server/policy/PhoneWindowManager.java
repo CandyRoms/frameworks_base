@@ -203,7 +203,7 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.candy.CandyUtils;
 import com.android.internal.util.ScreenshotHelper;
-import com.android.internal.util.custom.LineageButtons;
+import com.android.internal.util.candy.LineageButtons;
 import com.android.server.ExtconStateObserver;
 import com.android.server.ExtconUEventObserver;
 import com.android.server.GestureLauncherService;
