@@ -59,7 +59,7 @@ public class BatteryStatus {
     public final int maxChargingCurrent;
     public final int maxChargingVoltage;
     public final int maxChargingWattage;
-    public final int temperature;
+    public final float temperature;
 
     public final boolean dashChargeStatus;
     public final boolean warpChargeStatus;
