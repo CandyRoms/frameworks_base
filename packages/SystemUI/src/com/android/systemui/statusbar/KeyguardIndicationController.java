@@ -66,6 +66,8 @@ import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.util.wakelock.SettableWakeLock;
 import com.android.systemui.util.wakelock.WakeLock;
 
+import com.android.internal.util.candy.CandyUtils;
+
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
@@ -129,6 +131,7 @@ public class KeyguardIndicationController implements StateListener,
     private int mChargingCurrent;
     private double mChargingVoltage;
     private float mTemperature;
+    private float mBatteryTemp;
     private String mMessageToShowOnScreenOn;
 
     private KeyguardUpdateMonitorCallback mUpdateMonitorCallback;
@@ -575,6 +578,9 @@ public class KeyguardIndicationController implements StateListener,
                     : R.string.keyguard_plugged_in_wireless;
         }
 
+        boolean mUseForC = CandyUtils.mccCheck(mContext);
+        String mBattTemp = CandyUtils.batteryTemperature(mContext, mUseForC);
+
         String batteryInfo = "";
         boolean showbatteryInfo = Settings.System.getIntForUser(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_BATTERY_INFO, 1, UserHandle.USER_CURRENT) == 1;
@@ -592,7 +598,7 @@ public class KeyguardIndicationController implements StateListener,
             }
             if (mTemperature > 0) {
                 batteryInfo = (batteryInfo == "" ? "" : batteryInfo + " · ") +
-                        mTemperature / 10 + "°C";
+                        mBattTemp;
             }
             if (batteryInfo != "") {
                 batteryInfo = "\n" + batteryInfo;
