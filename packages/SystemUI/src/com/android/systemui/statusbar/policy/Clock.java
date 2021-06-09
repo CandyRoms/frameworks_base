@@ -67,6 +67,8 @@ import java.util.TimeZone;
 public class Clock extends TextView implements DemoMode, Tunable, CommandQueue.Callbacks,
         DarkReceiver, ConfigurationListener {
 
+    public static final String STATUS_BAR_CLOCK =
+            "system:" + Settings.Secure.STATUS_BAR_CLOCK;
     public static final String STATUS_BAR_CLOCK_SECONDS = "system:status_bar_clock_seconds";
     private static final String STATUS_BAR_AM_PM = "system:status_bar_am_pm";
     public static final String STATUS_BAR_CLOCK_DATE_DISPLAY =
@@ -108,6 +110,10 @@ public class Clock extends TextView implements DemoMode, Tunable, CommandQueue.C
     private boolean mScreenOn = true;
     private Handler autoHideHandler = new Handler();
 
+    private static final int CLOCK_POSITION_RIGHT = 0;
+    private static final int CLOCK_POSITION_CENTER = 1;
+    private static final int CLOCK_POSITION_LEFT = 2;
+
     private static final int AM_PM_STYLE_NORMAL  = 0;
     private static final int AM_PM_STYLE_SMALL   = 1;
     private static final int AM_PM_STYLE_GONE    = 2;
@@ -127,6 +133,7 @@ public class Clock extends TextView implements DemoMode, Tunable, CommandQueue.C
 
     private int mAmPmStyle = AM_PM_STYLE_GONE;
     private final boolean mShowDark;
+    private int mClockPosition;
     private boolean mShowSeconds;
     private Handler mSecondsHandler;
     private int mClockDateDisplay = CLOCK_DATE_DISPLAY_GONE;
@@ -232,6 +239,7 @@ public class Clock extends TextView implements DemoMode, Tunable, CommandQueue.C
             mBroadcastDispatcher.registerReceiverWithHandler(mIntentReceiver, filter,
                     Dependency.get(Dependency.TIME_TICK_HANDLER), UserHandle.ALL);
             Dependency.get(TunerService.class).addTunable(this,
+                    STATUS_BAR_CLOCK,
                     STATUS_BAR_CLOCK_SECONDS,
                     STATUS_BAR_AM_PM,
                     STATUS_BAR_CLOCK_DATE_DISPLAY,
@@ -387,6 +395,10 @@ public class Clock extends TextView implements DemoMode, Tunable, CommandQueue.C
     @Override
     public void onTuningChanged(String key, String newValue) {
         switch (key) {
+            case STATUS_BAR_CLOCK:
+                mClockPosition = 
+                        TunerService.parseInteger(newValue, CLOCK_POSITION_LEFT);
+                break;
             case STATUS_BAR_CLOCK_SECONDS:
                 mShowSeconds =
                         TunerService.parseIntegerSwitch(newValue, false);
