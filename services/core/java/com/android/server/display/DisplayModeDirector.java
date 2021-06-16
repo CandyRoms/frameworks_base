@@ -50,9 +50,12 @@ import com.android.server.display.utils.AmbientFilter;
 import com.android.server.display.utils.AmbientFilterFactory;
 
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -62,6 +65,7 @@ import java.util.Objects;
 public class DisplayModeDirector {
     private static final String TAG = "DisplayModeDirector";
     private static final boolean DEBUG = false;
+    private boolean mLoggingEnabled;
 
     private static final int MSG_REFRESH_RATE_RANGE_CHANGED = 1;
     private static final int MSG_BRIGHTNESS_THRESHOLDS_CHANGED = 2;
@@ -128,6 +132,14 @@ public class DisplayModeDirector {
             notifyDesiredDisplayModeSpecsChangedLocked();
         }
 
+    }
+
+    public void setLoggingEnabled(boolean loggingEnabled) {
+        if (mLoggingEnabled == loggingEnabled) {
+            return;
+        }
+        mLoggingEnabled = loggingEnabled;
+        mBrightnessObserver.setLoggingEnabled(loggingEnabled);
     }
 
     @NonNull
@@ -231,7 +243,7 @@ public class DisplayModeDirector {
 
                 availableModes = filterModes(modes, primarySummary);
                 if (availableModes.length > 0) {
-                    if (DEBUG) {
+                    if (mLoggingEnabled) {
                         Slog.w(TAG, "Found available modes=" + Arrays.toString(availableModes)
                                 + " with lowest priority considered "
                                 + Vote.priorityToString(lowestConsideredPriority)
@@ -244,7 +256,7 @@ public class DisplayModeDirector {
                     break;
                 }
 
-                if (DEBUG) {
+                if (mLoggingEnabled) {
                     Slog.w(TAG, "Couldn't find available modes with lowest priority set to "
                             + Vote.priorityToString(lowestConsideredPriority)
                             + " and with the following constraints: "
@@ -266,7 +278,7 @@ public class DisplayModeDirector {
                     Math.min(appRequestSummary.minRefreshRate, primarySummary.minRefreshRate);
             appRequestSummary.maxRefreshRate =
                     Math.max(appRequestSummary.maxRefreshRate, primarySummary.maxRefreshRate);
-            if (DEBUG) {
+            if (mLoggingEnabled) {
                 Slog.i(TAG,
                         String.format("App request range: [%.0f %.0f]",
                                 appRequestSummary.minRefreshRate,
@@ -293,7 +305,7 @@ public class DisplayModeDirector {
         for (Display.Mode mode : supportedModes) {
             if (mode.getPhysicalWidth() != summary.width
                     || mode.getPhysicalHeight() != summary.height) {
-                if (DEBUG) {
+                if (mLoggingEnabled) {
                     Slog.w(TAG, "Discarding mode " + mode.getModeId() + ", wrong size"
                             + ": desiredWidth=" + summary.width
                             + ": desiredHeight=" + summary.height
@@ -308,7 +320,7 @@ public class DisplayModeDirector {
             // comparison.
             if (refreshRate < (summary.minRefreshRate - FLOAT_TOLERANCE)
                     || refreshRate > (summary.maxRefreshRate + FLOAT_TOLERANCE)) {
-                if (DEBUG) {
+                if (mLoggingEnabled) {
                     Slog.w(TAG, "Discarding mode " + mode.getModeId()
                             + ", outside refresh rate bounds"
                             + ": minRefreshRate=" + summary.minRefreshRate
@@ -391,7 +403,7 @@ public class DisplayModeDirector {
     }
 
     private void updateVoteLocked(int displayId, int priority, Vote vote) {
-        if (DEBUG) {
+        if (mLoggingEnabled) {
             Slog.i(TAG, "updateVoteLocked(displayId=" + displayId
                     + ", priority=" + Vote.priorityToString(priority)
                     + ", vote=" + vote + ")");
@@ -412,7 +424,7 @@ public class DisplayModeDirector {
         }
 
         if (votes.size() == 0) {
-            if (DEBUG) {
+            if (mLoggingEnabled) {
                 Slog.i(TAG, "No votes left for display " + displayId + ", removing.");
             }
             mVotesByDisplay.remove(displayId);
@@ -1131,6 +1143,14 @@ public class DisplayModeDirector {
             mDeviceConfigDisplaySettings.startListening();
         }
 
+        public void setLoggingEnabled(boolean loggingEnabled) {
+            if (mLoggingEnabled == loggingEnabled) {
+                return;
+            }
+            mLoggingEnabled = loggingEnabled;
+            mLightSensorListener.setLoggingEnabled(loggingEnabled);
+        }
+
         public void onRefreshRateSettingChangedLocked(float min, float max) {
             boolean changeable = (max - min > 1f && max > 60f);
             if (mRefreshRateChangeable != changeable) {
@@ -1333,9 +1353,15 @@ public class DisplayModeDirector {
                     && mRefreshRateChangeable) {
                 mSensorManager.registerListener(mLightSensorListener,
                         mLightSensor, LIGHT_SENSOR_RATE_MS * 1000, mHandler);
+                if (mLoggingEnabled) {
+                    Slog.d(TAG, "updateSensorStatus: registerListener");
+                }
             } else {
                 mLightSensorListener.removeCallbacks();
                 mSensorManager.unregisterListener(mLightSensorListener);
+                if (mLoggingEnabled) {
+                    Slog.d(TAG, "updateSensorStatus: unregisterListener");
+                }
             }
         }
 
@@ -1349,15 +1375,26 @@ public class DisplayModeDirector {
         private final class LightSensorEventListener implements SensorEventListener {
             final private static int INJECT_EVENTS_INTERVAL_MS = LIGHT_SENSOR_RATE_MS;
             private float mLastSensorData;
+            private long mTimestamp;
+            private boolean mLoggingEnabled;
 
             public void dumpLocked(PrintWriter pw) {
                 pw.println("    mLastSensorData: " + mLastSensorData);
+                pw.println("    mTimestamp: " + formatTimestamp(mTimestamp));
+            }
+
+
+            public void setLoggingEnabled(boolean loggingEnabled) {
+                if (mLoggingEnabled == loggingEnabled) {
+                    return;
+                }
+                mLoggingEnabled = loggingEnabled;
             }
 
             @Override
             public void onSensorChanged(SensorEvent event) {
                 mLastSensorData = event.values[0];
-                if (DEBUG) {
+                if (mLoggingEnabled) {
                     Slog.d(TAG, "On sensor changed: " + mLastSensorData);
                 }
 
@@ -1389,6 +1426,12 @@ public class DisplayModeDirector {
 
             public void removeCallbacks() {
                 mHandler.removeCallbacks(mInjectSensorEventRunnable);
+            }
+
+            private String formatTimestamp(long time) {
+                SimpleDateFormat dateFormat =
+                        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+                return dateFormat.format(new Date(time));
             }
 
             private void processSensorData(long now) {
@@ -1526,5 +1569,4 @@ public class DisplayModeDirector {
             return array;
         }
     }
-
 }
