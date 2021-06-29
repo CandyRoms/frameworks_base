@@ -16,9 +16,14 @@
 
 package com.android.systemui.biometrics;
 
+import static android.app.WindowConfiguration.ACTIVITY_TYPE_ASSISTANT;
+import static android.app.WindowConfiguration.WINDOWING_MODE_UNDEFINED;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.ActivityManager.StackInfo;
+import android.app.ActivityTaskManager;
 import android.app.admin.DevicePolicyManager;
 import android.app.WallpaperColors;
 import android.app.WallpaperManager;
@@ -64,8 +69,9 @@ import com.android.keyguard.KeyguardUpdateMonitorCallback;
 import com.android.settingslib.utils.ThreadUtils;
 import com.android.systemui.Dependency;
 import com.android.systemui.R;
+import com.android.systemui.shared.system.ActivityManagerWrapper;
+import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.statusbar.policy.ConfigurationController;
-import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 
 import vendor.lineage.biometrics.fingerprint.inscreen.V1_0.IFingerprintInscreen;
 import vendor.lineage.biometrics.fingerprint.inscreen.V1_0.IFingerprintInscreenCallback;
@@ -106,6 +112,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private boolean mIsKeyguard;
     private boolean mTouchedOutside;
     private boolean mIsAnimating = false;
+    private boolean mIsAssistantVisible = false;
 
     private Handler mHandler;
 
@@ -294,7 +301,32 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         public void onScreenTurnedOn() {
             if (mUpdateMonitor.isFingerprintDetectionRunning()) {
                 show();
-            }
+        }
+        @Override
+        public void onFinishedGoingToSleep() {
+            updateIconDim(true);
+        }
+    };
+
+    private final TaskStackChangeListener
+            mTaskStackChangeListener = new TaskStackChangeListener() {
+        @Override
+        public void onTaskStackChangedBackground() {
+            try {
+                StackInfo stackInfo = ActivityTaskManager.getService().getStackInfo(
+                        WINDOWING_MODE_UNDEFINED, ACTIVITY_TYPE_ASSISTANT);
+                if (stackInfo == null && mIsAssistantVisible) {
+                        mIsAssistantVisible = false;
+                        if (mUpdateMonitor.isFingerprintDetectionRunning()) {
+                            mHandler.post(() -> show());
+                    }
+                    return;
+                }
+                mIsAssistantVisible = stackInfo.visible;
+                if (mIsAssistantVisible) {
+                    mHandler.post(() -> hide());
+                }
+            } catch (RemoteException ignored) { }
         }
     };
 
@@ -467,7 +499,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             }
             updateStyle();
         }
-
     }
 
     @Override
@@ -721,6 +752,11 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         }
 
         if (mIsKeyguard && !mIsBiometricRunning) {
+            return;
+        }
+
+        if (mIsAssistantVisible) {
+            // Don't show when assistant UI is visible
             return;
         }
 
