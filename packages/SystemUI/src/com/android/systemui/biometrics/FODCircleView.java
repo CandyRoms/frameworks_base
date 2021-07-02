@@ -73,6 +73,7 @@ import com.android.systemui.R;
 import com.android.systemui.shared.system.ActivityManagerWrapper;
 import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.statusbar.policy.ConfigurationController;
+import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 
 import vendor.lineage.biometrics.fingerprint.inscreen.V1_0.IFingerprintInscreen;
 import vendor.lineage.biometrics.fingerprint.inscreen.V1_0.IFingerprintInscreenCallback;
@@ -112,6 +113,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private boolean mIsDreaming;
     private boolean mIsKeyguard;
     private boolean mTouchedOutside;
+    private boolean mIsScreenTurnedOn;
     private boolean mIsAnimating = false;
     private boolean mIsAssistantVisible = false;
 
@@ -267,6 +269,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             mIsBouncer = isBouncer;
             if (mUpdateMonitor.isFingerprintDetectionRunning() && !mUpdateMonitor.userNeedsStrongAuth()) {
                 if (isPinOrPattern(KeyguardUpdateMonitor.getCurrentUser()) || !isBouncer) {
+                    mIsAssistantVisible = false;
                     show();
                 } else {
                     hide();
@@ -282,23 +285,21 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         @Override
         public void onScreenTurnedOn() {
+            mIsScreenTurnedOn = true;
             if (mUpdateMonitor.isFingerprintDetectionRunning()) {
                 show();
         }
 
         @Override
-        public void onScreenTurnedOff() {
-            if (!mHideFodCircleGoingToSleep) {
-                hide();
-            }
+        public void onScreenTurningOff() {
+            hide();
         }
 
         @Override
-        public void onStartedGoingToSleep(int why) {
-            if (mHideFodCircleGoingToSleep) {
-                hide();
-            }
+        public void onScreenTurnedOff() {
+            mIsScreenTurnedOn = false;
         }
+
     };
 
     private final WakefulnessLifecycle mWakefulnessMonitor;
@@ -430,6 +431,9 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         mHandler = new Handler(Looper.getMainLooper());
 
+        mCustomSettingsObserver = new CustomSettingsObserver(mHandler);
+        mCustomSettingsObserver.update();
+
         mParams.height = mSize;
         mParams.width = mSize;
         mParams.format = PixelFormat.TRANSLUCENT;
@@ -461,8 +465,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         mWindowManager.addView(this, mParams);
 
-        mCustomSettingsObserver.observe();
-        mCustomSettingsObserver.update();
         updatePosition();
         hide();
 
@@ -515,6 +517,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         mUpdateMonitor.registerCallback(mMonitorCallback);
         ActivityManagerWrapper.getInstance().registerTaskStackListener(
                 mTaskStackChangeListener);
+    }
 
     @Override
     protected void onDetachedFromWindow() {
@@ -743,7 +746,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         green = green > 255 ? 255 : green;
         red = red > 255 ? 255 : red;
 
-        return Color.argb(Color.alpha(color), red, green, blue);
+        return Color.argb(Color.alpha(color), red, green, blue);	
     }
 
     public void show() {
@@ -762,7 +765,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             return;
         }
 
-        if (mIsKeyguard && KeyguardUpdateMonitor.getUserCanSkipBouncer(mUpdateMonitor.getCurrentUser())) {
+        if (mIsKeyguard && mUpdateMonitor.getUserCanSkipBouncer(mUpdateMonitor.getCurrentUser())) {
             // Ignore show calls if user can skip bouncer
             return;
         }
