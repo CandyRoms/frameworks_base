@@ -22,6 +22,7 @@ import static android.app.WindowConfiguration.WINDOWING_MODE_UNDEFINED;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.ActivityManager.StackInfo;
 import android.app.ActivityTaskManager;
 import android.app.admin.DevicePolicyManager;
@@ -288,6 +289,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             mIsScreenTurnedOn = true;
             if (mUpdateMonitor.isFingerprintDetectionRunning()) {
                 show();
+            }
         }
 
         @Override
@@ -318,7 +320,28 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         }
     };
 
-    private CustomSettingsObserver mCustomSettingsObserver = new CustomSettingsObserver(mHandler);
+    private final TaskStackChangeListener
+            mTaskStackChangeListener = new TaskStackChangeListener() {
+        @Override
+        public void onTaskStackChangedBackground() {
+            try {
+                StackInfo stackInfo = ActivityTaskManager.getService().getStackInfo(
+                        WINDOWING_MODE_UNDEFINED, ACTIVITY_TYPE_ASSISTANT);
+                if (stackInfo == null && mIsAssistantVisible) {
+                        mIsAssistantVisible = false;
+                        if (mUpdateMonitor.isFingerprintDetectionRunning()) {
+                            mHandler.post(() -> show());
+                    }
+                    return;
+                }
+                if (stackInfo != null) mIsAssistantVisible = stackInfo.visible;
+                if (mIsAssistantVisible) {
+                    mHandler.post(() -> hide());
+                }
+            } catch (RemoteException ignored) { }
+        }
+    };
+
     private class CustomSettingsObserver extends ContentObserver {
 
         CustomSettingsObserver(Handler handler) {
@@ -358,31 +381,12 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         }
     }
 
-    private final TaskStackChangeListener
-            mTaskStackChangeListener = new TaskStackChangeListener() {
-        @Override
-        public void onTaskStackChangedBackground() {
-            try {
-                StackInfo stackInfo = ActivityTaskManager.getService().getStackInfo(
-                        WINDOWING_MODE_UNDEFINED, ACTIVITY_TYPE_ASSISTANT);
-                if (stackInfo == null && mIsAssistantVisible) {
-                        mIsAssistantVisible = false;
-                        if (mUpdateMonitor.isFingerprintDetectionRunning()) {
-                            mHandler.post(() -> show());
-                    }
-                    return;
-                }
-                mIsAssistantVisible = stackInfo.visible;
-                if (mIsAssistantVisible) {
-                    mHandler.post(() -> hide());
-                }
-            } catch (RemoteException ignored) { }
-        }
-    };
-
     private boolean mCutoutMasked;
     private int mStatusbarHeight;
 
+    private final CustomSettingsObserver mCustomSettingsObserver;
+
+    @SuppressLint("RtlHardcoded")
     public FODCircleView(Context context) {
         super(context);
         mContext = context;
@@ -403,12 +407,9 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         Resources res = context.getResources();
 
-        mPaintFingerprint.setColor(res.getColor(R.color.config_fodColor));
+        mPaintFingerprint.setColor(res.getColor(R.color.config_fodColor, null));
         mPaintFingerprint.setAntiAlias(true);
-        mColorBackground = res.getColor(R.color.config_fodColorBackground);
-        mDefaultPressedColor = res.getInteger(com.android.internal.R.
-             integer.config_fod_pressed_color);
-        mPaintFingerprintBackground.setColor(mColorBackground);
+        mPaintFingerprintBackground.setColor(res.getColor(R.color.config_fodColorBackground, null));
         mPaintFingerprintBackground.setAntiAlias(true);
 
         float[] icon_dim_amount =
@@ -537,6 +538,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         super.onDraw(canvas);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getAxisValue(MotionEvent.AXIS_X);
@@ -828,6 +830,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
                 Settings.System.FOD_COLOR, mDefaultPressedColor);
     }
 
+    @SuppressWarnings("SuspiciousNameCombination")
     private void updatePosition() {
         Display defaultDisplay = mContext.getDisplay();
 
