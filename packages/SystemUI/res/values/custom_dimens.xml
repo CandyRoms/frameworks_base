@@ -36,9 +36,6 @@
     <!-- Bottom margin size when fingerprint in display is active -->
     <dimen name="keyguard_security_fod_view_margin">128dp</dimen>
 
-    <!-- Biometric Prompt -->
-    <dimen name="biometric_dialog_fod_margin">44dp</dimen>
-
     <!-- Volume panel -->
     <dimen name="volume_dialog_panel_transparent_padding_left">20dp</dimen>
 </resources>
