@@ -280,9 +280,6 @@ public class AuthContainerView extends LinearLayout
         mPanelView = mInjector.getPanelView(mFrameLayout);
         mPanelController = mInjector.getPanelController(mContext, mPanelView);
 
-        mPackageManager = mContext.getPackageManager();
-        mHasFod = CandyUtils.deviceHasFOD(mContext);
-
         // Inflate biometric view only if necessary.
         if (Utils.isBiometricAllowed(mConfig.mBiometricPromptBundle)) {
             if (config.mModalityMask == BiometricAuthenticator.TYPE_FINGERPRINT) {
@@ -471,7 +468,6 @@ public class AuthContainerView extends LinearLayout
     public void show(WindowManager wm, @Nullable Bundle savedState) {
         if (mBiometricView != null) {
             mBiometricView.restoreState(savedState);
-            hasFod = CandyUtils.deviceHasFOD(getContext());
         }
         wm.addView(this, getLayoutParams(mWindowToken));
     }

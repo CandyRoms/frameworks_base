@@ -123,7 +123,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private int mSelectedIcon;
     private final int[] ICON_STYLES = {
         R.drawable.fod_icon_default,
-        R.drawable.fod_icon_candy,
+        R.drawable.fod_icon_default_1,
         R.drawable.fod_icon_candy_2,
         R.drawable.fod_icon_default_2,
         R.drawable.fod_icon_default_3,
@@ -610,7 +610,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
     private int getFODIcon() {
         return Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.FOD_ICON, 0);
+                Settings.System.FOD_ICON, 2);
     }
 
     private void setFODIcon() {
@@ -621,43 +621,45 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         } else if (fodicon == 1) {
             this.setImageResource(R.drawable.fod_icon_default_1);
         } else if (fodicon == 2) {
-            this.setImageResource(R.drawable.fod_icon_default_2);
+            this.setImageResource(R.drawable.fod_icon_candy_2);
         } else if (fodicon == 3) {
-            this.setImageResource(R.drawable.fod_icon_default_3);
+            this.setImageResource(R.drawable.fod_icon_default_2);
         } else if (fodicon == 4) {
-            this.setImageResource(R.drawable.fod_icon_default_4);
+            this.setImageResource(R.drawable.fod_icon_default_3);
         } else if (fodicon == 5) {
-            this.setImageResource(R.drawable.fod_icon_default_5);
+            this.setImageResource(R.drawable.fod_icon_default_4);
         } else if (fodicon == 6) {
-            this.setImageResource(R.drawable.fod_icon_arc_reactor);
+            this.setImageResource(R.drawable.fod_icon_default_5);
         } else if (fodicon == 7) {
-            this.setImageResource(R.drawable.fod_icon_cpt_america_flat);
+            this.setImageResource(R.drawable.fod_icon_arc_reactor);
         } else if (fodicon == 8) {
-            this.setImageResource(R.drawable.fod_icon_cpt_america_flat_gray);
+            this.setImageResource(R.drawable.fod_icon_cpt_america_flat);
         } else if (fodicon == 9) {
-            this.setImageResource(R.drawable.fod_icon_dragon_black_flat);
+            this.setImageResource(R.drawable.fod_icon_broncos);
         } else if (fodicon == 10) {
-            this.setImageResource(R.drawable.fod_icon_future);
+            this.setImageResource(R.drawable.fod_icon_cowboys);
         } else if (fodicon == 11) {
-            this.setImageResource(R.drawable.fod_icon_glow_circle);
+            this.setImageResource(R.drawable.fod_icon_patriots);
         } else if (fodicon == 12) {
-            this.setImageResource(R.drawable.fod_icon_neon_arc);
+            this.setImageResource(R.drawable.fod_icon_bruins);
         } else if (fodicon == 13) {
-            this.setImageResource(R.drawable.fod_icon_neon_arc_gray);
+            this.setImageResource(R.drawable.fod_icon_bucs);
         } else if (fodicon == 14) {
-            this.setImageResource(R.drawable.fod_icon_neon_circle_pink);
+            this.setImageResource(R.drawable.fod_icon_dragon_black_flat);
         } else if (fodicon == 15) {
-            this.setImageResource(R.drawable.fod_icon_neon_triangle);
+            this.setImageResource(R.drawable.fod_icon_future);
         } else if (fodicon == 16) {
-            this.setImageResource(R.drawable.fod_icon_paint_splash_circle);
+            this.setImageResource(R.drawable.fod_icon_glow_circle);
         } else if (fodicon == 17) {
-            this.setImageResource(R.drawable.fod_icon_rainbow_horn);
+            this.setImageResource(R.drawable.fod_icon_paint_splash_circle);
         } else if (fodicon == 18) {
-            this.setImageResource(R.drawable.fod_icon_shooky);
+            this.setImageResource(R.drawable.fod_icon_rainbow_horn);
         } else if (fodicon == 19) {
-            this.setImageResource(R.drawable.fod_icon_spiral_blue);
+            this.setImageResource(R.drawable.fod_icon_shooky);
         } else if (fodicon == 20) {
-            this.setImageResource(R.drawable.fod_icon_sun_metro);
+            this.setImageResource(R.drawable.fod_icon_spiral_blue);
+        } else if (fodicon == 21) {
+            this.setImageResource(R.drawable.fod_icon_default_1);
         }
 
         if (useWallpaperColor()) {
