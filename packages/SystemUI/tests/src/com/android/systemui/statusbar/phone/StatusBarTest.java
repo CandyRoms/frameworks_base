@@ -406,7 +406,7 @@ public class StatusBarTest extends SysuiTestCase {
                 mKeyguardIndicationController,
                 mDismissCallbackRegistry,
                 mNotificationShadeDepthControllerLazy,
-                mStatusBarTouchableRegionManager);
+                mStatusBarTouchableRegionManager,
                 mFODCircleViewImpl);
 
         when(mNotificationShadeWindowView.findViewById(R.id.lock_icon_container)).thenReturn(
