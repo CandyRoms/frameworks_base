@@ -220,6 +220,11 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             if (biometricSourceType == BiometricSourceType.FINGERPRINT) {
                 mIsBiometricRunning = running;
             }
+            if (running) {
+                show();
+            } else {
+                hide();
+            }
         }
 
         @Override
@@ -748,7 +753,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         green = green > 255 ? 255 : green;
         red = red > 255 ? 255 : red;
 
-        return Color.argb(Color.alpha(color), red, green, blue);	
+        return Color.argb(Color.alpha(color), red, green, blue);
     }
 
     public void show() {
