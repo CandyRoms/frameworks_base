@@ -796,7 +796,8 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
                 .setDuration(FADE_ANIM_DURATION)
                 .withEndAction(() -> mFading = false)
                 .start();
-        ThreadUtils.postOnBackgroundThread(this::dispatchShow);
+        /*ThreadUtils.postOnBackgroundThread(this::dispatchShow);*/
+        dispatchShow();	
     }
 
     public void hide() {
@@ -806,14 +807,12 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
                 .withEndAction(() -> {
                     setVisibility(View.GONE);
                     mFading = false;
-                    dispatchHide();
-                    hideCircle();
                 })
                 .start();
-        mCustomSettingsObserver.unobserve();
-        hideCircle();
-        ThreadUtils.postOnBackgroundThread(this::dispatchHide);
 
+        hideCircle();
+        /*ThreadUtils.postOnBackgroundThread(this::dispatchHide);*/
+        dispatchHide();
     }
 
     public int getHeight(boolean includeDecor) {
