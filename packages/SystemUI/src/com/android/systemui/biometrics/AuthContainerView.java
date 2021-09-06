@@ -51,7 +51,7 @@ import com.android.systemui.keyguard.WakefulnessLifecycle;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.android.internal.util.candy.CandyUtils;;
+import com.android.internal.util.candy.CandyUtils;
 
 /**
  * Top level container/controller for the BiometricPrompt UI.

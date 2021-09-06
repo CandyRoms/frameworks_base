@@ -797,7 +797,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
                 .withEndAction(() -> mFading = false)
                 .start();
         /*ThreadUtils.postOnBackgroundThread(this::dispatchShow);*/
-        dispatchShow();	
+        dispatchShow();
     }
 
     public void hide() {
