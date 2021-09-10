@@ -49,6 +49,7 @@ import android.app.WindowConfiguration;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.UserHandle;
 import android.platform.test.annotations.Presubmit;
 
 import androidx.test.filters.SmallTest;
@@ -199,8 +200,6 @@ public class RootWindowContainerTests extends WindowTestsBase {
                 .setUid(UserHandle.PER_USER_RANGE + 1)
                 .setTask(task)
                 .build();
-        doReturn(true).when(topActivity).okToShowLocked();
-        topActivity.intent.setAction(Intent.ACTION_MAIN);
 
         // Make sure the listeners will be notified for putting the task to locked state
         TaskChangeNotificationController controller =
@@ -208,23 +207,6 @@ public class RootWindowContainerTests extends WindowTestsBase {
         spyOn(controller);
         mWm.mRoot.lockAllProfileTasks(0);
         verify(controller).notifyTaskProfileLocked(eq(task.mTaskId), eq(0));
-
-        // Create the work lock activity on top of the task
-        final ActivityRecord workLockActivity =
-                new ActivityTestsBase.ActivityBuilder(mWm.mAtmService)
-                        .setStack(stack)
-                        .setUid(UserHandle.PER_USER_RANGE + 1)
-                        .setTask(task)
-                        .build();
-        doReturn(true).when(workLockActivity).okToShowLocked();
-        workLockActivity.intent.setAction(ACTION_CONFIRM_DEVICE_CREDENTIAL_WITH_USER);
-        doReturn(workLockActivity.mActivityComponent).when(
-                mWm.mAtmService).getSysUiServiceComponentLocked();
-
-        // Make sure the listener won't be notified again.
-        clearInvocations(controller);
-        mWm.mRoot.lockAllProfileTasks(0);
-        verify(controller, never()).notifyTaskProfileLocked(eq(task.mTaskId), anyInt());
     }
 }
 
