@@ -299,7 +299,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         @Override
         public void onScreenTurningOff() {
-            hide();
+            hide();			
         }
 
         @Override
@@ -360,6 +360,9 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.FOD_COLOR),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.FOD_ICON),
+                    false, this, UserHandle.USER_ALL);
         }
 
         void unobserve() {
@@ -368,9 +371,10 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
-            if (uri.equals(Settings.System.getUriFor(Settings.System.FOD_COLOR))) {
+            if (uri.equals(Settings.System.getUriFor(Settings.System.FOD_COLOR)) ||
+                    uri.equals(Settings.System.getUriFor(Settings.System.FOD_ICON))) {
                 updateStyle();
-            } if (uri.equals(Settings.System.getUriFor(SCREEN_BRIGHTNESS))) {
+            } else if (uri.equals(Settings.System.getUriFor(SCREEN_BRIGHTNESS))) {
                 update();
             }
         }
@@ -438,7 +442,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         mHandler = new Handler(Looper.getMainLooper());
 
         mCustomSettingsObserver = new CustomSettingsObserver(mHandler);
-        mCustomSettingsObserver.update();
 
         mParams.height = mSize;
         mParams.width = mSize;
@@ -471,6 +474,8 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         mWindowManager.addView(this, mParams);
 
+        mCustomSettingsObserver.observe();
+        mCustomSettingsObserver.update();
         updatePosition();
         hide();
 
@@ -647,13 +652,11 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         if (mIsDreaming && !shouldShowOnDoze()) {
             setImageDrawable(null);
         } else {
-            setImageResource(R.drawable.fod_icon_default);
+            setImageResource(ICON_STYLES[mSelectedIcon]);
         }
         invalidate();
 
         ThreadUtils.postOnBackgroundThread(this::dispatchRelease);
-
-        setFODIcon();
 
         setDim(false);
 
@@ -665,60 +668,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
                 Settings.System.FOD_ICON_WALLPAPER_COLOR, 0) != 0;
     }
 
-    private int getFODIcon() {
-        return Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.FOD_ICON, 2);
-    }
-
-    private void setFODIcon() {
-        int fodicon = getFODIcon();
-
-        if (fodicon == 0) {
-            this.setImageResource(R.drawable.fod_icon_default);
-        } else if (fodicon == 1) {
-            this.setImageResource(R.drawable.fod_icon_default_1);
-        } else if (fodicon == 2) {
-            this.setImageResource(R.drawable.fod_icon_candy_2);
-        } else if (fodicon == 3) {
-            this.setImageResource(R.drawable.fod_icon_default_2);
-        } else if (fodicon == 4) {
-            this.setImageResource(R.drawable.fod_icon_default_3);
-        } else if (fodicon == 5) {
-            this.setImageResource(R.drawable.fod_icon_default_4);
-        } else if (fodicon == 6) {
-            this.setImageResource(R.drawable.fod_icon_default_5);
-        } else if (fodicon == 7) {
-            this.setImageResource(R.drawable.fod_icon_arc_reactor);
-        } else if (fodicon == 8) {
-            this.setImageResource(R.drawable.fod_icon_cpt_america_flat);
-        } else if (fodicon == 9) {
-            this.setImageResource(R.drawable.fod_icon_broncos);
-        } else if (fodicon == 10) {
-            this.setImageResource(R.drawable.fod_icon_cowboys);
-        } else if (fodicon == 11) {
-            this.setImageResource(R.drawable.fod_icon_patriots);
-        } else if (fodicon == 12) {
-            this.setImageResource(R.drawable.fod_icon_bruins);
-        } else if (fodicon == 13) {
-            this.setImageResource(R.drawable.fod_icon_bucs);
-        } else if (fodicon == 14) {
-            this.setImageResource(R.drawable.fod_icon_dragon_black_flat);
-        } else if (fodicon == 15) {
-            this.setImageResource(R.drawable.fod_icon_future);
-        } else if (fodicon == 16) {
-            this.setImageResource(R.drawable.fod_icon_glow_circle);
-        } else if (fodicon == 17) {
-            this.setImageResource(R.drawable.fod_icon_paint_splash_circle);
-        } else if (fodicon == 18) {
-            this.setImageResource(R.drawable.fod_icon_rainbow_horn);
-        } else if (fodicon == 19) {
-            this.setImageResource(R.drawable.fod_icon_shooky);
-        } else if (fodicon == 20) {
-            this.setImageResource(R.drawable.fod_icon_spiral_blue);
-        } else if (fodicon == 21) {
-            this.setImageResource(R.drawable.fod_icon_default_1);
-        }
-
+    
         if (useWallpaperColor()) {
             try {
                 WallpaperManager wallpaperManager = WallpaperManager.getInstance(mContext);
@@ -830,6 +780,8 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     }
 
     private void updateStyle() {
+        mSelectedIcon = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.FOD_ICON, 2);
         mPressedColor = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.FOD_COLOR, mDefaultPressedColor);
     }
