@@ -299,7 +299,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         @Override
         public void onScreenTurningOff() {
-            hide();			
+            hide();
         }
 
         @Override
@@ -661,33 +661,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         setDim(false);
 
         setKeepScreenOn(false);
-    }
-
-    private boolean useWallpaperColor() {
-        return Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.FOD_ICON_WALLPAPER_COLOR, 0) != 0;
-    }
-
-    
-        if (useWallpaperColor()) {
-            try {
-                WallpaperManager wallpaperManager = WallpaperManager.getInstance(mContext);
-                Drawable wallpaperDrawable = wallpaperManager.getDrawable();
-                Bitmap bitmap = ((BitmapDrawable)wallpaperDrawable).getBitmap();
-                if (bitmap != null) {
-                    Palette p = Palette.from(bitmap).generate();
-                    int wallColor = p.getDominantColor(iconcolor);
-                    if (iconcolor != wallColor) {
-                        iconcolor = wallColor;
-                    }
-                    this.setColorFilter(lighter(iconcolor, 3));
-                }
-            } catch (Exception e) {
-                // Nothing to do
-            }
-        } else {
-            this.setColorFilter(null);
-        }
     }
 
     private static int lighter(int color, int factor) {
