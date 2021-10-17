@@ -3382,6 +3382,15 @@ class RootWindowContainer extends WindowContainer<DisplayContent>
         mService.deferWindowLayout();
         try {
             forAllLeafTasks(task -> {
+                final ActivityRecord top = task.topRunningActivity();
+                if (top != null && !top.finishing
+                        && ACTION_CONFIRM_DEVICE_CREDENTIAL_WITH_USER.equals(top.intent.getAction())
+                        && top.packageName.equals(
+                                mService.getSysUiServiceComponentLocked().getPackageName())) {
+                    // Do nothing since the task is already secure by sysui.
+                    return;
+                }
+
                 if (task.getActivity(activity -> !activity.finishing && activity.mUserId == userId)
                         != null) {
                     mService.getTaskChangeNotificationController().notifyTaskProfileLocked(
