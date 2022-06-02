@@ -95,4 +95,6 @@
     <!-- Light / Regular style fonts -->
     <java-symbol type="string" name="config_lightFontFamily" />
     <java-symbol type="string" name="config_regularFontFamily" />
+    <!-- Lock gesture -->
+    <java-symbol type="string" name="gesture_locked_warning" />
 </resources>
