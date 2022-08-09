@@ -53,6 +53,7 @@ import android.view.Surface;
 import android.view.WindowManager;
 
 import com.android.systemui.mediaprojection.MediaProjectionCaptureTarget;
+import com.android.systemui.res.R;
 
 import java.io.Closeable;
 import java.io.File;
@@ -90,6 +91,7 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
     private ScreenRecordingAudioSource mAudioSource;
     private final MediaProjectionCaptureTarget mCaptureRegion;
     private final Handler mHandler;
+    private String mAvcProfileLevel;
 
     private Context mContext;
     ScreenMediaRecorderListener mListener;
@@ -104,6 +106,8 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
         mCaptureRegion = captureRegion;
         mListener = listener;
         mAudioSource = audioSource;
+        mAvcProfileLevel = mContext.getResources().getString(
+                R.string.config_screenRecorderAVCProfileLevel);
     }
 
     private void prepare() throws IOException, RemoteException, RuntimeException {
@@ -151,7 +155,7 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
         mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mMediaRecorder.setVideoEncodingProfileLevel(
                 MediaCodecInfo.CodecProfileLevel.AVCProfileMain,
-                MediaCodecInfo.CodecProfileLevel.AVCLevel3);
+                getAvcProfileLevelCodeByName(mAvcProfileLevel));
         mMediaRecorder.setVideoSize(width, height);
         mMediaRecorder.setVideoFrameRate(refreshRate);
         mMediaRecorder.setVideoEncodingBitRate(vidBitRate);
@@ -194,6 +198,21 @@ public class ScreenMediaRecorder extends MediaProjection.Callback {
                     mMediaProjection, mAudioSource == MIC_AND_INTERNAL);
         }
 
+    }
+
+    /**
+     * Match human-readable AVC level name to its constant value.
+     */
+    private int getAvcProfileLevelCodeByName(final String levelName) {
+        switch (levelName) {
+            case "3": return MediaCodecInfo.CodecProfileLevel.AVCLevel3;
+            case "3.1": return MediaCodecInfo.CodecProfileLevel.AVCLevel31;
+            case "3.2": return MediaCodecInfo.CodecProfileLevel.AVCLevel32;
+            case "4": return MediaCodecInfo.CodecProfileLevel.AVCLevel4;
+            case "4.1": return MediaCodecInfo.CodecProfileLevel.AVCLevel41;
+            default:
+            case "4.2": return MediaCodecInfo.CodecProfileLevel.AVCLevel42;
+        }
     }
 
     /**
