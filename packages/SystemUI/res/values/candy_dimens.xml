@@ -69,4 +69,8 @@
 
     <!-- Width of the landscape battery icon in the status bar. -->
     <dimen name="status_bar_battery_icon_width_landscape">20dp</dimen>
+
+    <!-- battery Styles -->
+    <dimen name="status_bar_battery_icon_height_landscape_a_o">22.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_a_o">25.0dip</dimen>
 </resources>
