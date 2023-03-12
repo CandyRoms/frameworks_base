@@ -71,6 +71,37 @@
     <dimen name="status_bar_battery_icon_width_landscape">20dp</dimen>
 
     <!-- battery Styles -->
-    <dimen name="status_bar_battery_icon_height_landscape_a_o">22.0dip</dimen>
-    <dimen name="status_bar_battery_icon_width_landscape_a_o">25.0dip</dimen>
+    <!-- Battery Icon Height -->
+    <dimen name="status_bar_battery_icon_height_landscape_a">15.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_b">15.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_c">14.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_d">16.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_e">16.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_f">16.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_g">12.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_h">16.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_i">14.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_j">15.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_k">18.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_l">15.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_m">16.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_n">13.0dip</dimen>
+    <dimen name="status_bar_battery_icon_height_landscape_o">14.0dip</dimen>
+
+    <!-- Battery Icon Width -->
+    <dimen name="status_bar_battery_icon_width_landscape_a">25.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_b">25.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_c">24.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_d">22.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_e">24.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_f">28.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_g">20.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_h">28.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_i">25.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_j">24.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_k">26.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_l">27.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_m">28.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_n">25.0dip</dimen>
+    <dimen name="status_bar_battery_icon_width_landscape_o">22.0dip</dimen>
 </resources>
