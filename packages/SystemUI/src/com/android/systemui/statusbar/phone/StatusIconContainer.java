@@ -508,7 +508,7 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
         public AnimationFilter getAnimationFilter() {
             return mAnimationFilter;
         }
-    }.setDuration(200).setDelay(50);
+    }.setDuration(100);
 
     private static final AnimationProperties X_ANIMATION_PROPERTIES = new AnimationProperties() {
         private AnimationFilter mAnimationFilter = new AnimationFilter().animateX();
@@ -517,7 +517,7 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
         public AnimationFilter getAnimationFilter() {
             return mAnimationFilter;
         }
-    }.setDuration(200);
+    }.setDuration(100);
 
     private static final AnimationProperties ANIMATE_ALL_PROPERTIES = new AnimationProperties() {
         private AnimationFilter mAnimationFilter = new AnimationFilter().animateX().animateY()
@@ -527,5 +527,5 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
         public AnimationFilter getAnimationFilter() {
             return mAnimationFilter;
         }
-    }.setDuration(200);
+    }.setDuration(100);
 }
