@@ -24,6 +24,8 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 
+import java.util.ArrayDeque;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragment;
 import androidx.preference.PreferenceScreen;
@@ -47,6 +49,7 @@ public class TunerActivity extends CollapsingToolbarBaseActivity implements
     private final DemoModeController mDemoModeController;
     private final TunerService mTunerService;
     private final GlobalSettings mGlobalSettings;
+    private final ArrayDeque<String> titleStack = new ArrayDeque<>();
 
     @Inject
     TunerActivity(
@@ -100,7 +103,22 @@ public class TunerActivity extends CollapsingToolbarBaseActivity implements
 
     @Override
     public void onBackPressed() {
-        if (!getFragmentManager().popBackStackImmediate()) {
+        if (getFragmentManager().popBackStackImmediate()) {
+            String title = titleStack.poll();
+            if (title != null) {
+                setTitle(title);
+            }
+            try {
+                Fragment f = getFragmentManager().findFragmentById(R.id.content_frame);
+                Fragment fragment = (Fragment) f.getClass().newInstance();
+                fragment.setArguments(f.getArguments());
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.content_frame, fragment);
+                transaction.commit();
+            } catch (InstantiationException | IllegalAccessException e) {
+                Log.d("TunerActivity", "Problem launching fragment", e);
+            }
+        } else {
             super.onBackPressed();
         }
     }
@@ -114,6 +132,7 @@ public class TunerActivity extends CollapsingToolbarBaseActivity implements
             b.putString(PreferenceFragment.ARG_PREFERENCE_ROOT, pref.getKey());
             fragment.setArguments(b);
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            titleStack.push(getTitle().toString());
             setTitle(pref.getTitle());
             transaction.replace(R.id.content_frame, fragment);
             transaction.addToBackStack("PreferenceFragment");
