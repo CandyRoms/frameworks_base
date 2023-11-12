@@ -6169,6 +6169,10 @@ public final class Settings {
          */
         public static final String HIGH_TOUCH_POLLING_RATE_ENABLE =
                 "high_touch_polling_rate_enable";
+	/**
+         * @hide
+         */
+        public static final String VOLUME_MEDIA_OUTPUT_TOGGLE = "volume_media_output_toggle";
 
         /**
          * Adaptive playback
