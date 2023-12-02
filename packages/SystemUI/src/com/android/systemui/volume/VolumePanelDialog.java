@@ -227,6 +227,7 @@ public class VolumePanelDialog extends SystemUIDialog implements LifecycleOwner 
         uris.add(VOLUME_CALL_URI);
         uris.add(VOLUME_RINGER_URI);
         uris.add(VOLUME_ALARM_URI);
+        uris.add(APP_VOLUME_SLICE_URI);
         return uris;
     }
 
@@ -266,6 +267,12 @@ public class VolumePanelDialog extends SystemUIDialog implements LifecycleOwner 
             .authority(SETTINGS_SLICE_AUTHORITY)
             .appendPath(SettingsSlicesContract.PATH_SETTING_ACTION)
             .appendPath("alarm_volume")
+            .build();
+    private static final Uri APP_VOLUME_SLICE_URI = new Uri.Builder()
+            .scheme(ContentResolver.SCHEME_CONTENT)
+            .authority(SETTINGS_SLICE_AUTHORITY)
+            .appendPath(SettingsSlicesContract.PATH_SETTING_ACTION)
+            .appendPath("app_volume")
             .build();
 
     private Uri getExtraControlUri() {
