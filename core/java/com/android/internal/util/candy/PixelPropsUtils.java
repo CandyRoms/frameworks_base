@@ -35,6 +35,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.internal.R;
+import com.android.internal.util.candy.CandyUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.Random;
 
 public class PixelPropsUtils {
 
@@ -58,9 +60,6 @@ public class PixelPropsUtils {
 
     private static final String TAG = PixelPropsUtils.class.getSimpleName();
     private static final boolean DEBUG = false;
-
-    private static final String[] sCertifiedProps =
-            Resources.getSystem().getStringArray(R.array.config_certifiedBuildProperties);
 
     private static final Boolean sEnablePixelProps =
             Resources.getSystem().getBoolean(R.bool.config_enablePixelProps);
@@ -244,18 +243,47 @@ public class PixelPropsUtils {
         }
     }
 
-    private static void spoofBuildGms() {
-        if (sCertifiedProps == null || sCertifiedProps.length == 0) return;
-        // Alter build parameters to avoid hardware attestation enforcement
-        setPropValue("BRAND", sCertifiedProps[0]);
-        setPropValue("MANUFACTURER", sCertifiedProps[1]);
-        setPropValue("ID", sCertifiedProps[2].isEmpty() ? getBuildID(sCertifiedProps[6]) : sCertifiedProps[2]);
-        setPropValue("DEVICE", sCertifiedProps[3].isEmpty() ? getDeviceName(sCertifiedProps[6]) : sCertifiedProps[3]);
-        setPropValue("PRODUCT", sCertifiedProps[4].isEmpty() ? getDeviceName(sCertifiedProps[6]) : sCertifiedProps[4]);
-        setPropValue("MODEL", sCertifiedProps[5]);
-        setPropValue("FINGERPRINT", sCertifiedProps[6]);
-        setPropValue("TYPE", sCertifiedProps[7].isEmpty() ? "user" : sCertifiedProps[7]);
-        setPropValue("TAGS", sCertifiedProps[8].isEmpty() ? "release-keys" : sCertifiedProps[8]);
+    public static void spoofBuildGms(Context context) {
+        String packageName = "org.evolution.pif";
+
+        if (!CandyUtils.isPackageInstalled(context, packageName)) {
+            Log.e(TAG, "'" + packageName + "' is not installed.");
+            return;
+        }
+
+        PackageManager pm = context.getPackageManager();
+
+        try {
+            Resources resources = pm.getResourcesForApplication(packageName);
+
+            int resourceId = resources.getIdentifier("device_arrays", "array", packageName);
+            if (resourceId != 0) {
+                String[] deviceArrays = resources.getStringArray(resourceId);
+
+                if (deviceArrays.length > 0) {
+                    int randomIndex = new Random().nextInt(deviceArrays.length);
+                    int selectedArrayResId = resources.getIdentifier(deviceArrays[randomIndex], "array", packageName);
+                    String[] selectedDeviceProps = resources.getStringArray(selectedArrayResId);
+
+                    setPropValue("BRAND", selectedDeviceProps[0]);
+                    setPropValue("MANUFACTURER", selectedDeviceProps[1]);
+                    setPropValue("ID", selectedDeviceProps[2].isEmpty() ? getBuildID(selectedDeviceProps[6]) : selectedDeviceProps[2]);
+                    setPropValue("DEVICE", selectedDeviceProps[3].isEmpty() ? getDeviceName(selectedDeviceProps[6]) : selectedDeviceProps[3]);
+                    setPropValue("PRODUCT", selectedDeviceProps[4].isEmpty() ? getDeviceName(selectedDeviceProps[6]) : selectedDeviceProps[4]);
+                    setPropValue("MODEL", selectedDeviceProps[5]);
+                    setPropValue("FINGERPRINT", selectedDeviceProps[6]);
+                    setPropValue("TYPE", selectedDeviceProps[7].isEmpty() ? "user" : selectedDeviceProps[7]);
+                    setPropValue("TAGS", selectedDeviceProps[8].isEmpty() ? "release-keys" : selectedDeviceProps[8]);
+                } else {
+                    Log.e(TAG, "No device arrays found.");
+                }
+            } else {
+                Log.e(TAG, "Resource 'device_arrays' not found.");
+            }
+
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Error getting resources for '" + packageName + "': " + e.getMessage());
+        }
     }
 
     public static void setProps(Context context) {
@@ -283,7 +311,7 @@ public class PixelPropsUtils {
         if (sIsGms) {
             if (shouldTryToCertifyDevice()) {
                 dlog("Spoofing build for GMS");
-                spoofBuildGms();
+                spoofBuildGms(context);
             }
         } else if (packageName.equals(PACKAGE_GMS)) {
             setPropValue("TIME", System.currentTimeMillis());
