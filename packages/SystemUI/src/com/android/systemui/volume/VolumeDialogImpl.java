@@ -275,14 +275,14 @@ public class VolumeDialogImpl implements VolumeDialog, Dumpable,
     private ImageButton mRingerIcon;
     private ViewGroup mODICaptionsView;
     private CaptionsToggleImageButton mODICaptionsIcon;
-    private View mSettingsView;
+    private ViewGroup mSettingsView;
     private RotateAnimation rotateAnimation;
     private ImageButton mSettingsIcon;
 
-    private View mAppVolumeView;
+    private ViewGroup mAppVolumeView;
     private ImageButton mAppVolumeIcon;
     private String mAppVolumeActivePackageName;
-    private View mExpandRowsView;
+    private ViewGroup mExpandRowsView;
     private ImageButton mExpandRows;
     private final List<VolumeRow> mRows = new ArrayList<>();
     private ConfigurableTexts mConfigurableTexts;
@@ -753,6 +753,15 @@ public class VolumeDialogImpl implements VolumeDialog, Dumpable,
             if (mRingerAndDrawerContainer != null) {
                 mRingerAndDrawerContainer.setLayoutDirection(LAYOUT_DIRECTION_RTL);
             }
+
+            setGravity(mSettingsView, Gravity.LEFT);
+            setLayoutGravity(mSettingsView, Gravity.LEFT);
+            
+            setGravity(mExpandRowsView, Gravity.LEFT);
+            setLayoutGravity(mExpandRowsView, Gravity.LEFT);
+            
+            setGravity(mAppVolumeView, Gravity.LEFT);
+            setLayoutGravity(mAppVolumeView, Gravity.LEFT);
 
             ViewGroup container = mDialog.findViewById(R.id.volume_dialog_container);
             setGravity(container, Gravity.LEFT);
