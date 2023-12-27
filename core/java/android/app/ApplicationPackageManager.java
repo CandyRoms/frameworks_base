@@ -817,9 +817,14 @@ public class ApplicationPackageManager extends PackageManager {
                     }
                 }
             };
-
+            
+    private static final String[] featuresAndroid = {
+            "android.software.freeform_window_management"
+    };
+    
     @Override
     public boolean hasSystemFeature(String name, int version) {
+        if (Arrays.asList(featuresAndroid).contains(name)) return true;
         return mHasSystemFeatureCache.query(new HasSystemFeatureQuery(name, version));
     }
 
