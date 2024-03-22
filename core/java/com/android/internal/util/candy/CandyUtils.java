@@ -196,10 +196,10 @@ public class CandyUtils {
         FireActions.toggleCameraFlash();
     }
 
-    public static void takeScreenshot(boolean full) {
+    public static void takeScreenshot() {
         IWindowManager wm = WindowManagerGlobal.getWindowManagerService();
         try {
-            wm.sendCustomAction(new Intent(full? INTENT_SCREENSHOT : INTENT_REGION_SCREENSHOT));
+            wm.sendCustomAction(new Intent(INTENT_SCREENSHOT));
         } catch (RemoteException e) {
             e.printStackTrace();
         }
