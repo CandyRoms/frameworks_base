@@ -493,7 +493,7 @@ open class LandscapeBatteryJ(private val context: Context, frameColor: Int) : Dr
         return batteryLevel
     }
 
-    override fun onBoundsChange(bounds: Rect?) {
+    override fun onBoundsChange(bounds: Rect) {
         super.onBoundsChange(bounds)
         updateSize()
     }
